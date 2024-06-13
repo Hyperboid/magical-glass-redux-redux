@@ -308,7 +308,7 @@ function LightActionBox:drawStatusStrip()
             end
         end
         love.graphics.setColor(color)
-        love.graphics.printAlign(current .. "/" .. max, x + 197, y + 3 - (karma_mode and not Kristal.getLibConfig("magical-glass", "multi_neat_ui") and 2 or 0), "right")
+        Draw.printAlign(current .. "/" .. max, x + 197, y + 3 - (karma_mode and not Kristal.getLibConfig("magical-glass", "multi_neat_ui") and 2 or 0), "right")
         
         if Game.battle.current_selecting == self.index or DEBUG_RENDER and Input.alt() then
             love.graphics.setColor(self.battler.chara:getLightColor())
