@@ -158,7 +158,7 @@ function LightShop:postInit()
         self:onEmote(node.arguments[1])
     end
 
-    self.dialogue_text = DialogueText(nil, 40, 260, 372, 194)
+    self.dialogue_text = DialogueText(nil, 40, 260, 372, 226)
 
     self.dialogue_text:registerCommand("emote", emoteCommand)
 
