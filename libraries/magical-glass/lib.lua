@@ -538,23 +538,6 @@ function lib:init()
             return self:addItemTo(self:getDefaultStorage(item, ignore_convert), item)
         end
     end)
-
-    Utils.hook(Inventory, "loadStorage", function(orig, self, storage, data)
-        storage.max = data.max
-        for i = 1, storage.max do
-            local item = data.items[tostring(i)]
-            if item then
-                if Registry.getItem(item.id) then
-                    storage[i] = Registry.createItem(item.id)
-                    storage[i]:load(item)
-                else
-                    Kristal.Console:error("Could not load item \""..item.id.."\". Replacing with placeholder item.")
-                    storage[i] = Registry.createItem("ut_items/invalid")
-                    storage[i]:load(item)
-                end
-            end
-        end
-    end)
     
     Utils.hook(Inventory, "tryGiveItem", function(orig, self, item, ignore_convert)
         if type(item) == "string" then
@@ -2940,11 +2923,9 @@ function lib:registerDebugOptions(debug)
 
     for id, item_data in pairs(Registry.items) do
         local item = item_data()
-        if item.id ~= "ut_items/invalid" then
-            debug:registerOption("give_item", item.name + (item.light and " (Light Item)" or ""), item.description, function ()
-                Game.inventory:tryGiveItem(item_data())
-            end)
-        end
+        debug:registerOption("give_item", item.name + (item.light and " (Light Item)" or ""), item.description, function ()
+            Game.inventory:tryGiveItem(item_data())
+        end)
     end
 
     debug:registerMenu("encounter_select", "Encounter Select")
