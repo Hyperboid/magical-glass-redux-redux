@@ -15,7 +15,8 @@ function LightEncounter:init()
 
     -- Whether the default grid background is drawn
     self.background = true
-    self.background_image = Game:isLight() and "ui/lightbattle/backgrounds/battle" or "ui/lightbattle/backgrounds/battle_dark"
+    self.background_image = "ui/lightbattle/backgrounds/battle"
+    self.background_color = Game:isLight() and {34/255, 177/255, 76/255, 1} or {175/255, 35/255, 175/255, 1}
 
     -- The music used for this encounter
     self.music = "battleut"
@@ -261,7 +262,7 @@ function LightEncounter:update() end
 
 function LightEncounter:draw() end
 function LightEncounter:drawBackground()
-    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setColor(self.background_color or {1, 1, 1, 1})
     love.graphics.draw(Assets.getTexture(self.background_image) or Assets.getTexture("ui/lightbattle/backgrounds/battle"), 15, 9)
 end
 
