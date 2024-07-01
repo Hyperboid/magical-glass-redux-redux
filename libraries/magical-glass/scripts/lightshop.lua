@@ -748,7 +748,7 @@ function LightShop:draw()
 
         local current_storage = Game.inventory:getStorage("items")
 
-        love.graphics.print(#current_storage .. "/" .. current_storage.max, 560, 420)
+        love.graphics.print(Game.inventory:getItemCount("items", false) .. "/" .. current_storage.max, 560, 420)
     elseif self.state == "SELLING" then
         Draw.setColor(COLORS.yellow)
         love.graphics.setFont(self.font)
