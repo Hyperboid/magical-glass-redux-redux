@@ -20,12 +20,10 @@ function item:init()
 
     -- Light world check text
     self.check = {
-        "Armor 1 MG\n* Kris's beloved red horned headband."
+        "Armor 1 DF\n* Kris's beloved red horned headband."
     }
     
     self.price = 100
-    
-    self.shop_magic = true
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -33,7 +31,7 @@ function item:init()
     self.result_item = nil
 
     self.bonuses = {
-        magic = 1
+        defense = 1
     }
 
 end
