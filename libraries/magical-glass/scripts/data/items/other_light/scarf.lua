@@ -15,7 +15,7 @@ function item:init()
     self.description = "A magical pink scarf.\nVery fluffy."
 
     -- Light world check text
-    self.check = "Weapon 2 MG\n* A magical pink scarf.\n* Very fluffy."
+    self.check = "Weapon 3 MG\n* A magical pink scarf.\n* Very fluffy."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -26,7 +26,7 @@ function item:init()
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {
-        magic = 2
+        magic = 3
     }
 
     -- Default dark item conversion for this item
