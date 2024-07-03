@@ -34,6 +34,7 @@ function LightBattle:init()
     self.xp = 0
 
     self.used_violence = false
+    self.become_stronger = false
 
     self.ui_move = Assets.newSound("ui_move")
     self.ui_select = Assets.newSound("ui_select")
@@ -1172,7 +1173,7 @@ function LightBattle:onStateChange(old,new)
             -- if (in_dojo) then
             --     win_text == "* You won the battle!"
             -- end
-            if self.used_violence and Game:getConfig("growStronger") then
+            if self.become_stronger and Game:getConfig("growStronger") then
                 local stronger = "You"
 
                 for _,battler in ipairs(self.party) do
