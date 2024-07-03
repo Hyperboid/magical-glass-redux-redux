@@ -2904,7 +2904,7 @@ end
 function lib:preUpdate()
     lib.is_light_menu_partyselect = nil
     Game.lw_xp = nil
-    for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP (might be used for shared exp at some point)
+    for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP
         if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then  
             Game.lw_xp = party:getLightEXP()
         end
