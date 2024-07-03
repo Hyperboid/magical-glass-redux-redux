@@ -28,9 +28,6 @@ function item:init()
     self.bonuses = {
         attack = 1
     }
-
-    -- Default dark item conversion for this item
-    self.dark_item = "mane_ax"
 end
 
 return item
