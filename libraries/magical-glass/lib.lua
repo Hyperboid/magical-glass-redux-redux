@@ -51,7 +51,7 @@ function lib:save(data)
     data.magical_glass["game_overs"] = lib.game_overs
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
-    data.magical_glass["lw_save_lv"] = Game.party[1]:getLightLV()
+    data.magical_glass["lw_save_lv"] = Game.party[1] and Game.party[1]:getLightLV() or 0
     data.magical_glass["in_light_shop"] = lib.in_light_shop
 end
 
