@@ -269,9 +269,10 @@ function LightEnemyBattler:spare(pacify)
 
             dust.layer = BATTLE_LAYERS["above_ui"] + 3
         end
+        
+        self:defeat(pacify and "PACIFIED" or "SPARED", false)
     end
 
-    self:defeat(pacify and "PACIFIED" or "SPARED", false)
     self:onSpared()
 end
 
