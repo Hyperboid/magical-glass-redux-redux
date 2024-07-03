@@ -1024,15 +1024,11 @@ function LightShop:sellItem(current_item)
 end
 
 function LightShop:getMoney()
-    return Game:isLight() and Game.lw_money or Game.money
+    return Game.lw_money
 end
 
 function LightShop:setMoney(amount)
-    if Game:isLight() then
-        Game.lw_money = amount
-    else
-        Game.money = amount
-    end
+    Game.lw_money = amount
 end
 
 function LightShop:addMoney(amount)
