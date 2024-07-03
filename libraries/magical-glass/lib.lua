@@ -826,6 +826,63 @@ function lib:init()
     
     end)
     
+    if not Kristal.getLibConfig("magical-glass", "key_item_conversion") then
+        Utils.hook(Item, "convertToLight", function(orig, self, inventory) return false end)
+        Utils.hook(Item, "convertToDark", function(orig, self, inventory) return false end)
+        
+        -- Don't give the ball of junk
+        Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
+            return Game.dark_inventory
+        end)
+        Utils.hook(DarkInventory, "convertToLight", function(orig, self)
+            local new_inventory = LightInventory()
+
+            local was_storage_enabled = new_inventory.storage_enabled
+            new_inventory.storage_enabled = true
+            
+            for k,storage in pairs(self:getLightInventory().storages) do
+                for i = 1, storage.max do
+                    if storage[i] then
+                        if not new_inventory:addItemTo(storage.id, i, storage[i]) then
+                            new_inventory:addItem(storage[i])
+                        end
+                    end
+                end
+            end
+
+            Kristal.callEvent(KRISTAL_EVENT.onConvertToLight, new_inventory)
+
+            for _,storage_id in ipairs(self.convert_order) do
+                local storage = Utils.copy(self:getStorage(storage_id))
+                for i = 1, storage.max do
+                    local item = storage[i]
+                    if item then
+                        local result = item:convertToLight(new_inventory)
+
+                        if result then
+                            self:removeItem(item)
+
+                            if type(result) == "string" then
+                                result = Registry.createItem(result)
+                            end
+                            if isClass(result) then
+                                new_inventory:addItem(result)
+                            end
+                        end
+                    end
+                end
+            end
+
+            new_inventory.storage_enabled = was_storage_enabled
+            
+            Game.dark_inventory = self
+
+            return new_inventory
+        end)
+    end
+    Utils.hook(LightEquipItem, "convertToDark", function(orig, self, inventory) return false end)
+    Utils.hook(LightEquipItem, "convertToLightEquip", function(orig, self, chara) return false end)
+    
     Utils.hook(Item, "getLightBattleText", function(orig, self, user, target)
         if self.target == "ally" then
             return "* " .. target.chara:getNameOrYou() .. " "..self:getUseMethod(target.chara).." the " .. self:getUseName() .. "."
@@ -1782,11 +1839,47 @@ function lib:init()
         end
     end)
     
-    -- Prevents the heal when starting the game in the Light World so you can customize the starting Light World HP
     Utils.hook(PartyMember, "convertToLight", function(orig, self)
-        local lw_health = self.lw_health
-        orig(self)
-        self.lw_health = lw_health
+        local last_weapon = self:getWeapon() and self:getWeapon().id or false
+        local last_armors = {self:getArmor(1) and self:getArmor(1).id or false, self:getArmor(2) and self:getArmor(2).id or false}
+        
+        self.equipped = {weapon = nil, armor = {}}
+        
+        if self:getFlag("light_weapon") then
+            self.equipped.weapon = Registry.createItem(self:getFlag("light_weapon"))
+        end
+        if self:getFlag("light_armor") then
+            self.equipped.armor[1] = Registry.createItem(self:getFlag("light_armor"))
+        end
+        
+        if self:getFlag("light_weapon") == nil then
+            self.equipped.weapon = Registry.createItem(self.lw_weapon_default)
+        end
+        if self:getFlag("light_armor") == nil then
+            self.equipped.armor[1] = Registry.createItem(self.lw_armor_default)
+        end
+        
+        self:setFlag("dark_weapon", last_weapon)
+        self:setFlag("dark_armors", last_armors)
+    end)
+    
+    Utils.hook(PartyMember, "convertToDark", function(orig, self)
+        local last_weapon = self:getWeapon() and self:getWeapon().id or false
+        local last_armor = self:getArmor(1) and self:getArmor(1).id or false
+        
+        self.equipped = {weapon = nil, armor = {}}
+        
+        if self:getFlag("dark_weapon") then
+            self.equipped.weapon = Registry.createItem(self:getFlag("dark_weapon"))
+        end
+        for i = 1, 2 do
+            if self:getFlag("dark_armors") and self:getFlag("dark_armors")[i] then
+                self.equipped.armor[i] = Registry.createItem(self:getFlag("dark_armors")[i])
+            end
+        end
+        
+        self:setFlag("light_weapon", last_weapon)
+        self:setFlag("light_armor", last_armor)
     end)
 
     Utils.hook(PartyMember, "getLightEXP", function(orig, self)
