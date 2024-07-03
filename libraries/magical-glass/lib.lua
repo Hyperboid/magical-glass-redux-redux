@@ -885,13 +885,13 @@ function lib:init()
         
         Utils.hook(LightInventory, "tryGiveItem", function(orig, self, item, ignore_dark)
             if Game.inventory:hasItem("light/ball_of_junk") then
-                orig(self, item, ignore_dark)
+                return orig(self, item, ignore_dark)
             else
                 if type(item) == "string" then
                     item = Registry.createItem(item)
                 end
                 if ignore_dark or item.light then
-                    return super.tryGiveItem(self, item, ignore_dark)
+                    return Inventory.tryGiveItem(self, item, ignore_dark)
                 else
                     local dark_inv = self:getDarkInventory()
                     local result = dark_inv:addItem(item)
@@ -1209,7 +1209,7 @@ function lib:init()
         self.face = Sprite(nil, self.face_x, self.face_y, nil, nil, "face")
         self.face:setScale(2, 2)
         self.face.getDebugOptions = function(self2, context)
-            context = super.getDebugOptions(self2, context)
+            context = Object.getDebugOptions(self2, context)
             if Kristal.DebugSystem then
                 context:addMenuItem("Change", "Change this portrait to a different one", function()
                     Kristal.DebugSystem:setState("FACES", self)
@@ -2554,12 +2554,14 @@ function lib:init()
 
     Utils.hook(SpeechBubble, "init", function(orig, self, text, x, y, options, speaker)
         orig(self, text, x, y, options, speaker)
-        self.text.no_sound_overlap = options["no_sound_overlap"] or true
+        if Game.battle and Game.battle.light then
+            self.text.no_sound_overlap = options["no_sound_overlap"] or true
+        end
     end)
 
     Utils.hook(SpeechBubble, "draw", function(orig, self)
-        if not self.auto then
-            if self.right and Game.battle.light then
+        if Game.battle and Game.battle.light and not self.auto then
+            if self.right then
                 local width = self:getSpriteSize()
                 Draw.draw(self:getSprite(), width - 12, 0, 0, -1, 1)
             else
