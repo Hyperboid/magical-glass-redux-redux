@@ -6,7 +6,7 @@ function UnderPlayer:init(chara, x, y)
 	-- If 'true', the player will be unable to run, like in Undertale
     self.force_walk = not Kristal.getLibConfig("magical-glass", "undertale_movement_can_run")
 	-- The movement speed of the player.
-    self.walk_speed = Game:isLight() and 6 or 4
+    self.walk_speed = 6
     
     -- Related to holding up and down at the same time (also known as the Frisk Dance or Murder Dance)
     self.dance = nil
@@ -93,7 +93,7 @@ function UnderPlayer:handleMovement()
 
     local speed = self.walk_speed
     if running then
-        speed = speed + (Game:isLight() and 6 or 5)
+        speed = speed + 3
     end
     
     if Input.down("up") and Input.down("down") then
