@@ -13,7 +13,7 @@ end
 
 function item:onWorldUse()
     Game.world:startCutscene(function(cutscene)
-        if Game.party[1]:getHealth() > 1 then
+        if Game.party[1] and Game.party[1]:getHealth() > 1 then
             Game.party[1]:setHealth(Game.party[1]:getHealth() - 1)
         end
         cutscene:text("* (You unhesitatingly devoured\nthe box of heart shaped\ncandies.)")

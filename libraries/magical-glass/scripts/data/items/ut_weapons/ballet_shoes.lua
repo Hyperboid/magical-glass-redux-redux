@@ -49,12 +49,11 @@ function item:showEquipText(target)
 end
 
 function item:getLightBattleText(user, target)
-    -- if user == target then
-        -- return "* ".. user.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
-    -- else
-        -- return "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and ".. target.chara:getNameOrYou(true) .. " equipped it."
-    -- end
-    return "* ".. target.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
+    local text = "* "..target.chara:getNameOrYou().." equipped "..self:getUseName().."."
+    if user ~= target then
+        text = "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+    end
+    return text
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch, crit)
