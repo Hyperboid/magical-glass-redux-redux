@@ -38,7 +38,6 @@ function LightActionButton:select()
         Game.battle:setState("ENEMYSELECT", "ATTACK")
     elseif self.type == "act" then
         Game.battle:setState("ENEMYSELECT", "ACT")
-        -- todo: mini party member shit
     elseif self.type == "spell" then
         Game.battle:clearMenuItems()
         Game.battle.current_menu_columns = 2
