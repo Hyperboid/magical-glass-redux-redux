@@ -827,13 +827,12 @@ function lib:init()
     end)
     
     if not Kristal.getLibConfig("magical-glass", "key_item_conversion") then
-        Utils.hook(Item, "convertToLight", function(orig, self, inventory) return false end)
-        Utils.hook(Item, "convertToDark", function(orig, self, inventory) return false end)
-        
         -- Don't give the ball of junk
         Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
             return Game.dark_inventory
         end)
+        
+        -- Prevent items conversion
         Utils.hook(DarkInventory, "convertToLight", function(orig, self)
             local new_inventory = LightInventory()
 
@@ -852,36 +851,39 @@ function lib:init()
 
             Kristal.callEvent(KRISTAL_EVENT.onConvertToLight, new_inventory)
 
-            for _,storage_id in ipairs(self.convert_order) do
-                local storage = Utils.copy(self:getStorage(storage_id))
-                for i = 1, storage.max do
-                    local item = storage[i]
-                    if item then
-                        local result = item:convertToLight(new_inventory)
-
-                        if result then
-                            self:removeItem(item)
-
-                            if type(result) == "string" then
-                                result = Registry.createItem(result)
-                            end
-                            if isClass(result) then
-                                new_inventory:addItem(result)
-                            end
-                        end
-                    end
-                end
-            end
-
             new_inventory.storage_enabled = was_storage_enabled
             
             Game.dark_inventory = self
 
             return new_inventory
         end)
+        
+        Utils.hook(LightInventory, "convertToDark", function(orig, self)
+            local new_inventory = DarkInventory()
+
+            local was_storage_enabled = new_inventory.storage_enabled
+            new_inventory.storage_enabled = true
+
+            for k,storage in pairs(self:getDarkInventory().storages) do
+                for i = 1, storage.max do
+                    if storage[i] then
+                        if not new_inventory:addItemTo(storage.id, i, storage[i]) then
+                            new_inventory:addItem(storage[i])
+                        end
+                    end
+                end
+            end
+
+            Kristal.callEvent(KRISTAL_EVENT.onConvertToDark, new_inventory)
+
+            new_inventory.storage_enabled = was_storage_enabled
+            
+            Game.light_inventory = self
+
+            return new_inventory
+        end)
     end
     Utils.hook(LightEquipItem, "convertToDark", function(orig, self, inventory) return false end)
-    Utils.hook(LightEquipItem, "convertToLightEquip", function(orig, self, chara) return false end)
     
     Utils.hook(Item, "getLightBattleText", function(orig, self, user, target)
         if self.target == "ally" then
