@@ -52,16 +52,6 @@ function lib:save(data)
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1]:getLightLV()
-    if lib.light_inv and not lib.light_inv_saved then
-        data.magical_glass["light_inv"] = lib.light_inv:save()
-        data.magical_glass["light_inv_saved"] = true
-    end
-    if lib.dark_inv and not lib.dark_inv_saved then
-        data.magical_glass["dark_inv"] = lib.dark_inv:save()
-        data.magical_glass["dark_inv_saved"] = true
-    end
-    data.magical_glass["light_equip"] = lib.light_equip
-    data.magical_glass["dark_equip"] = lib.dark_equip
     data.magical_glass["in_light_shop"] = lib.in_light_shop
 end
 
@@ -78,11 +68,7 @@ function lib:load(data, new_file)
         lib.serious_mode = false
         lib.name_color = COLORS.yellow
         lib.lw_save_lv = 0
-        lib.light_equip = {}
-        lib.dark_equip = {}
         lib.in_light_shop = false
-        lib.light_inv = LightInventory()
-        lib.dark_inv = DarkInventory()
     else
         data.magical_glass = data.magical_glass or {}
         lib.kills = data.magical_glass["kills"] or 0
@@ -90,12 +76,6 @@ function lib:load(data, new_file)
         lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
-        lib.light_inv = data.magical_glass["light_inv"] or LightInventory()
-        lib.light_inv_saved = data.magical_glass["light_inv_saved"]
-        lib.dark_inv = data.magical_glass["dark_inv"] or DarkInventory()
-        lib.dark_inv_saved = data.magical_glass["dark_inv_saved"]
-        lib.light_equip = data.magical_glass["light_equip"] or {}
-        lib.dark_equip = data.magical_glass["dark_equip"] or {}
         lib.in_light_shop = data.magical_glass["in_light_shop"] or false
     end
 end
@@ -317,261 +297,6 @@ function lib:init()
     Utils.hook(Soul, "init", function(orig, self, x, y, color)
         orig(self, x, y, color)
         self.speed = self.speed + Game.battle.soul_speed_bonus
-    end)
-
-    Utils.hook(Game, "setLight", function(orig, self, light, temp)
-        if lib.temp_light == nil and temp then
-            lib.temp_light = self:isLight()
-        end
-        light = light or false
-        if not self.started then
-            self.light = light
-            return
-        end
-        if self.light == light then return end
-        self.light = light
-        
-        if temp and not lib.temp_running then
-            lib.temp_running = true
-            Game.stage.timer:after(1/30, function()
-                self:setLight(lib.temp_light, false)
-                lib.temp_light = nil
-                lib.temp_running = false
-            end)
-        end
-        
-        if light then
-            for _,party in pairs(self.party_data) do
-                if not lib.dark_equip[party.id] then
-                    lib.dark_equip[party.id] = {}
-                    lib.dark_equip[party.id].armor = {}
-                end
-                lib.dark_equip[party.id].weapon = party:getWeapon() and party:getWeapon().id or false
-                for i = 1, 2 do
-                    lib.dark_equip[party.id].armor[i] = party:getArmor(i) and party:getArmor(i).id or false
-                end
-            end
-            
-            lib.dark_inv = self.inventory
-            lib.dark_inv_saved = false
-            
-            local has_shadowcrystal = self.inventory:hasItem("shadowcrystal")
-            local has_egg = self.inventory:hasItem("egg")
-            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
-                Game:setFlag("has_cell_phone", Game.inventory:hasItem("cell_phone"))
-            end
-            
-            self.inventory = LightInventory()
-            if lib.light_inv_saved then
-                self.inventory:load(lib.light_inv)
-            else
-                self.inventory = lib.light_inv
-            end
-            
-            if Kristal.getLibConfig("magical-glass", "key_item_conversion") and not temp then
-                if not self.inventory:hasItem("light/ball_of_junk") then
-                    self.inventory:addItem("light/ball_of_junk")
-                end
-                
-                if has_shadowcrystal then
-                    if not self.inventory:hasItem("light/glass") then
-                        self.inventory:addItem("light/glass")
-                    end
-                else
-                    while self.inventory:hasItem("light/glass") do
-                        self.inventory:removeItem("light/glass")
-                    end
-                end
-                if has_egg then
-                    if not self.inventory:hasItem("light/egg") then
-                        self.inventory:addItem("light/egg")
-                    end
-                else
-                    while self.inventory:hasItem("light/egg") do
-                        self.inventory:removeItem("light/egg")
-                    end
-                end
-            end
-            
-            for _,party in pairs(self.party_data) do
-                if lib.light_equip[party.id] then
-                    if lib.light_equip[party.id].weapon then
-                        party:setWeapon(lib.light_equip[party.id].weapon)
-                    else
-                        party:setWeapon(nil)
-                    end
-                else
-                    party:setWeapon(party.lw_weapon_default)
-                end
-                if lib.light_equip[party.id] then
-                    if lib.light_equip[party.id].armor[1] then
-                        party:setArmor(1, lib.light_equip[party.id].armor[1])
-                    else
-                        party:setArmor(1, nil)
-                    end
-                else
-                    party:setArmor(1, party.lw_armor_default)
-                end
-                party:setArmor(2, nil)
-            end
-        else
-            for _,party in pairs(self.party_data) do
-                if not lib.light_equip[party.id] then
-                    lib.light_equip[party.id] = {}
-                    lib.light_equip[party.id].armor = {}
-                end
-                lib.light_equip[party.id].weapon = party:getWeapon() and party:getWeapon().id or false
-                lib.light_equip[party.id].armor[1] = party:getArmor(1) and party:getArmor(1).id or false
-            end
-            
-            lib.light_inv = self.inventory
-            lib.light_inv_saved = false
-            
-            self.inventory = DarkInventory()
-            if lib.dark_inv_saved then
-                self.inventory:load(lib.dark_inv)
-            else
-                self.inventory = lib.dark_inv
-            end
-            
-            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
-                if Game:getFlag("tossed_ball_of_junk") then
-                    for i = 1, self.inventory.storages.items.max do
-                        self.inventory.storages.items[i] = nil
-                    end
-                    for i = 1, self.inventory.storages.weapons.max do
-                        self.inventory.storages.weapons[i] = nil
-                    end
-                    for i = 1, self.inventory.storages.armors.max do
-                        self.inventory.storages.armors[i] = nil
-                    end
-                end
-                if Game:getFlag("has_cell_phone", Kristal.getModOption("cell") ~= false) then
-                    if not Game.inventory:hasItem("cell_phone") then
-                        Game.inventory:addItemTo("key_items", 1, "cell_phone")
-                    end
-                else
-                    while Game.inventory:hasItem("cell_phone") do
-                        Game.inventory:removeItem("cell_phone")
-                    end
-                end
-            end
-            
-            Game:setFlag("tossed_ball_of_junk", nil)
-
-            for _,party in pairs(self.party_data) do
-                if lib.dark_equip[party.id] then
-                    if lib.dark_equip[party.id].weapon then
-                        party:setWeapon(lib.dark_equip[party.id].weapon)
-                    else
-                        party:setWeapon(nil)
-                    end
-                else
-                    if party:getFlag("weapon_default") then
-                        party:setWeapon(party:getFlag("weapon_default"))
-                    else
-                        party:setWeapon(nil)
-                    end
-                end
-                for i = 1, 2 do
-                    if lib.dark_equip[party.id] then
-                        if lib.dark_equip[party.id].armor[i] then
-                            party:setArmor(i, lib.dark_equip[party.id].armor[i])
-                        else
-                            party:setArmor(i, nil)
-                        end
-                    else
-                        if party:getFlag("armor_default")[i] then
-                            party:setArmor(i, party:getFlag("armor_default")[i])
-                        else
-                            party:setArmor(i, nil)
-                        end
-                    end
-                end
-            end
-        end
-    end)
-    
-    Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
-        Game:setLight(false, true)
-        return Game.inventory
-    end)
-    
-    Utils.hook(LightInventory, "tryGiveItem", function(orig, self, item, ignore_dark)
-        if type(item) == "string" then
-            item = Registry.createItem(item)
-        end
-        if ignore_dark or item.light then
-            return Inventory.tryGiveItem(self, item, ignore_dark)
-        else
-            local dark_inv = self:getDarkInventory()
-            local result = dark_inv:addItem(item)
-            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
-                if result then
-                    return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]BALL OF JUNK[color:reset].)"
-                else
-                    return false, "* (Your [color:yellow]BALL OF JUNK[color:reset] is too big to take [color:yellow]"..item:getName().."[color:reset].)"
-                end
-            else
-                if result then
-                    return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]DARK INVENTORY[color:reset].)"
-                else
-                    return false, "* (Your [color:yellow]DARK INVENTORY[color:reset] is too big to take [color:yellow]"..item:getName().."[color:reset].)"
-                end
-            end
-        end
-    end)
-    
-    Utils.hook(Inventory, "addItem", function(orig, self, item, ignore_convert)
-        if type(item) == "string" then
-            item = Registry.createItem(item)
-        end
-        if item.light and not Game:isLight() and not ignore_convert then
-            Game:setLight(true, true)
-            if #Game.inventory.storages.items < Game.inventory.storages.items.max then
-                Game.inventory:addItem(item.id)
-                return true
-            else
-                return false
-            end
-        else
-            return self:addItemTo(self:getDefaultStorage(item, ignore_convert), item)
-        end
-    end)
-    
-    Utils.hook(Inventory, "tryGiveItem", function(orig, self, item, ignore_convert)
-        if type(item) == "string" then
-            item = Registry.createItem(item)
-        end
-        local result = self:addItem(item, ignore_convert)
-        if item.light and lib.temp_light == false and not ignore_convert then
-            if result then
-                return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]LIGHT ITEMs[color:reset].)"
-            else
-                return false, "* (You have too many [color:yellow]LIGHT ITEMs[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
-            end
-        else
-            if result then
-                local destination = self:getStorage(self.stored_items[result].storage)
-                return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]"..destination.name.."[color:reset].)"
-            else
-                local destination = self:getDefaultStorage(item)
-                return false, "* (You have too many [color:yellow]"..destination.name.."[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
-            end
-        end
-    end)
-    
-    Utils.hook(Inventory, "removeItem", function(orig, self, item, light)
-        if light == nil then
-            if Game.inventory:hasItem(item) then
-                return orig(self, item)
-            else
-                return
-            end
-        else
-            Game:setLight(light, true)
-            return Game.inventory:removeItem(item)
-        end
     end)
 
     Utils.hook(TensionItem, "onBattleSelect", function(orig, self, user, target)
@@ -2041,17 +1766,6 @@ function lib:init()
         self.light_xact_color = nil
 
         self.lw_stats["magic"] = 0
-        
-        local equipment = self.equipped
-        Game.stage.timer:after(1/30, function()
-            if self:getFlag("weapon_default") == nil then
-                self:setFlag("weapon_default", equipment.weapon and equipment.weapon.id or false)
-            end
-            if self:getFlag("armor_default") == nil then
-                self:setFlag("armor_default", {equipment.armor[1] and equipment.armor[1].id or false, equipment.armor[2] and equipment.armor[2].id or false})
-            end
-        end)
-
     end)
 
     Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
