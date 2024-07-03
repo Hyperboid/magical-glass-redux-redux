@@ -2856,7 +2856,6 @@ function lib:setupLightShop(shop)
     end
 
     Game.shop = shop
-    lib.in_light_shop = true
     Game.shop:postInit()
 end
 
@@ -2877,6 +2876,8 @@ function lib:enterLightShop(shop, options)
     end
 
     Game.state = "SHOP"
+    
+    lib.in_light_shop = true
 
     Game.stage:addChild(Game.shop)
     Game.shop:onEnter()
