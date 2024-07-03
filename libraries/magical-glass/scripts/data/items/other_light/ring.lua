@@ -31,9 +31,6 @@ function item:init()
 
     -- Attack animation (only used for simple animations)
     self.attack_animation = "effects/attack/slap_n"
-
-    -- Default dark item conversion for this item
-    self.dark_item = "snowring"
 end
 
 return item

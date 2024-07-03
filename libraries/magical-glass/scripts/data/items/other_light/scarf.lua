@@ -28,9 +28,6 @@ function item:init()
     self.bonuses = {
         magic = 3
     }
-
-    -- Default dark item conversion for this item
-    self.dark_item = "red_scarf"
 end
 
 return item
