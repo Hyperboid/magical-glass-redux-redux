@@ -59,7 +59,7 @@ function LightActionBox:createButtons()
             button.actbox = self
             table.insert(self.buttons, button)
             self:addChild(button)
-        elseif not type(btn) == "boolean" then -- nothing, used to create an empty space
+        elseif type(btn) ~= "boolean" then -- nothing if a boolean value, used to create an empty space
             btn:setPosition(math.floor(66 + ((i - 1) * 156)) + 0.5, 183)
             btn.battler = self.battler
             btn.actbox = self
