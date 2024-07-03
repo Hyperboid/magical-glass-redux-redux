@@ -39,20 +39,19 @@ function item:showEquipText()
 end
 
 function item:getLightBattleText(user, target)
-    -- if user == target then
-        -- return "* Right where it belongs."
-    -- else
-        -- return "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n* Right where it belongs."
-    -- end
-    return "* Right where it belongs."
+    local text = "* Right where it belongs."
+    if user ~= target then
+        text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+    end
+    return text
 end
 
 function item:getBattleText(user, target)
-    if user == target then
-        return "* Right where it belongs."
-    else
-        return "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName()..".\n* Right where it belongs."
+    local text = "* Right where it belongs."
+    if user ~= target then
+        text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. text
     end
+    return text
 end
 
 return item

@@ -55,7 +55,11 @@ function item:showEquipText(target)
 end
 
 function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped Tough Glove 2."
+    local text = "* "..target.chara:getNameOrYou().." equipped "..self:getUseName().."."
+    if user ~= target then
+        text = "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+    end
+    return text
 end
 
 function item:onLightBoltHit(lane)

@@ -43,27 +43,26 @@ end
 function item:onBattleUse(user, target) end
 
 function item:getLightBattleText(user, target)
-    -- if Game.battle.encounter.onStickUse then
-        -- return Game.battle.encounter:onStickUse(self, user, target)
-    -- elseif user == target then
-        -- return "* "..user.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
-    -- else
-        -- return "* "..user.chara:getNameOrYou().." gave the stick to "..target.chara:getNameOrYou(true).." and "..target.chara:getNameOrYou(true).." threw it away.\n* Then picked it back up."
-    -- end
     if Game.battle.encounter.onStickUse then
         return Game.battle.encounter:onStickUse(self, user, target)
     else
-        return "* "..target.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
+        local text = "* "..target.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
+        if user ~= target then
+            text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+        end
+        return text
     end
 end
 
 function item:getBattleText(user, target)
     if Game.battle.encounter.onStickUse then
         return Game.battle.encounter:onStickUse(self, user, target)
-    elseif user == target then
-        return "* "..user.chara:getName().." threw the stick away.\n* Then picked it back up."
     else
-        return "* "..user.chara:getName().." gave the stick to "..target.chara:getName().." and "..target.chara:getName().." threw it away.\n* Then picked it back up."
+        local text = "* "..target.chara:getName().." threw the stick away.\n* Then picked it back up."
+        if user ~= target then
+            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. text
+        end
+        return text
     end
 end
 
