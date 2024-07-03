@@ -2454,10 +2454,30 @@ function lib:init()
             end
         end)
     end)
+    
+    Utils.hook(Savepoint, "onTextEnd", function(orig, self)
+        if not Game:isLight() then
+            orig(self)
+        else
+            if not self.world then return end
+
+            if self.heals then
+                for _,party in pairs(Game.party_data) do
+                    party:heal(math.huge, false)
+                end
+            end
+            
+            if self.simple_menu or (self.simple_menu == nil and Game:getConfig("smallSaveMenu")) then
+                self.world:openMenu(LightSaveMenu(Game.save_id, self.marker))
+            else
+                self.world:openMenu(LightSaveMenuExpanded(self.marker))
+            end
+        end
+    end)
 
     Utils.hook(LightSaveMenu, "update", function(orig, self)
-        if self.state == "MAIN" and ((Input.pressed("confirm") and self.selected_x == 1) or (Input.pressed("left") or Input.pressed("right"))) then
-            Assets.playSound("ui_move")
+        if self.state == "MAIN" and (Input.pressed("left") or Input.pressed("right")) then
+            Assets.stopAndPlaySound("ui_move")
         end
         orig(self)
     end)
