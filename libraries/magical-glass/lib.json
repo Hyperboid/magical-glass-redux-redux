@@ -167,6 +167,11 @@
         /////
         "action_button_style": "magical_glass",
         
+        ///// Expanded Light Save Menu
+        // Allows having 3 save slots in the light world save points.
+        /////
+        "expanded_light_save_menu": false,
+        
         ///// Multi-Party Neat UI
         // Whether certain unimportant light battle UI objects in multi-party battles like the HP and KR sprites are visible.
         /////

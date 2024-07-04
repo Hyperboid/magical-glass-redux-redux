@@ -2467,7 +2467,7 @@ function lib:init()
                 end
             end
             
-            if self.simple_menu or (self.simple_menu == nil and Game:getConfig("smallSaveMenu")) then
+            if self.simple_menu or (self.simple_menu == nil and not Kristal.getLibConfig("magical-glass", "expanded_light_save_menu")) then
                 self.world:openMenu(LightSaveMenu(Game.save_id, self.marker))
             else
                 self.world:openMenu(LightSaveMenuExpanded(self.marker))
