@@ -13,8 +13,6 @@ function Noelle:init()
     self:addEnemy("noelle")
     self:addEnemy("froggit")
     self:addEnemy("froggit")
-    self:addEnemy("froggit")
-    self:addEnemy("froggit")
 
 end
 
