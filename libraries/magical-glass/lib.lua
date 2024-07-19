@@ -1302,7 +1302,7 @@ function lib:init()
     
         if (self.state.typing_sound ~= nil) and (self.state.typing_sound ~= "") then
             self.played_first_sound = true
-            if Kristal.callEvent("onTextSound", self.state.typing_sound, current_node) then
+            if Kristal.callEvent(KRISTAL_EVENT.onTextSound, self.state.typing_sound, current_node) then
                 return
             end
             if self.no_sound_overlap then
@@ -1479,7 +1479,7 @@ function lib:init()
     
             if Input.pressed("confirm") then
                 local item = Game.inventory:getItem(self.storage, self.item_selecting)
-                if self.option_selecting == 1 and (item.usable_in == "world" or item.usable_in == "all") then
+                if self.option_selecting == 1 and (item.usable_in == "world" or item.usable_in == "all") and not (item.target == "enemy" or item.target == "enemies") then
                     if #Game.party > 1 and item.target == "ally" then
                         self.ui_select:stop()
                         self.ui_select:play()

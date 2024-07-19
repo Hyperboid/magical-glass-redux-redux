@@ -13,6 +13,7 @@ function RandomEncounter:init()
     -- Table with the encounters that can be triggered by this random encounter
     self.encounters = {}
     
+    -- Whether the encounters are a light or dark encounters
     self.light = true
 end
 
