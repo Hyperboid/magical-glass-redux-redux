@@ -58,6 +58,10 @@ function lib:load(data, new_file)
     if not love.filesystem.getInfo("saves/" .. Mod.info.id .. "/global.json") then
         love.filesystem.write("saves/" .. Mod.info.id .. "/global.json", self:initGlobalSave())
     end
+
+    if Kristal.getModOption("encounter") then
+        Game.save_name = Game.save_name or Kristal.Config["defaultName"] or "PLAYER"
+    end
     
     Game.light = Kristal.getLibConfig("magical-glass", "default_battle_system")[2] or false
     
@@ -1022,6 +1026,60 @@ function lib:init()
         enemy:hurt(0, battler, nil, nil, anim, attacked)
     end)
 
+    Utils.hook(Item, "onCheck", function(orig, self)
+        if type(self.check) == "string" then
+            Game.world:showText("* \""..self:getName().."\" - "..self:getCheck())
+        elseif type(self.check) == "table" then
+            local text = {}
+            for i, check in ipairs(self:getCheck()) do
+                if i > 1 then
+                    table.insert(text, check)
+                end
+            end
+            Game.world:showText({{"* \""..self:getName().."\" - "..self:getCheck()[1]}, text})
+        end
+    end)
+        
+    Utils.hook(Item, "onToss", function(orig, self)
+        if Game:isLight() then
+            local choice = love.math.random(30)
+            if choice == 1 then
+                Game.world:showText("* You bid a quiet farewell\n to the " .. self:getName() .. ".")
+            elseif choice == 2 then
+                Game.world:showText("* You put the " .. self:getName() .. "\non the ground and gave it a\nlittle pat.")
+            elseif choice == 3 then
+                Game.world:showText("* You threw the " .. self:getName() .. "\non the ground like the piece\nof trash it is.")
+            elseif choice == 4 then
+                Game.world:showText("* You abandoned the\n" .. self:getName() .. ".")
+            else
+                Game.world:showText("* The " .. self:getName() .. " was\nthrown away.")
+            end
+        end
+        return true
+    end)
+
+    Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
+
+    Utils.hook(Item, "save", function(orig, self)
+        local saved_dark_item = self.dark_item
+        local saved_light_item = self.light_item
+        if isClass(self.dark_item) then saved_dark_item = self.dark_item:save() end
+        if isClass(self.light_item) then saved_light_item = self.light_item:save() end
+
+        local data = {
+            id = self.id,
+            flags = self.flags,
+
+            dark_item = saved_dark_item,
+            dark_location = self.dark_location,
+
+            light_item = saved_light_item,
+            light_location = self.light_location,
+        }
+        self:onSave(data)
+        return data
+    end)
+
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
         
@@ -1070,6 +1128,279 @@ function lib:init()
         return percent
     end)
 
+    Utils.hook(Textbox, "init", function(orig, self, x, y, width, height, default_font, default_font_size, battle_box)
+        Object.init(self, x, y, width, height)
+
+        self.box = UIBox(0, 0, width, height)
+        self.box.layer = -1
+        self.box.debug_select = false
+        self:addChild(self.box)
+    
+        self.battle_box = battle_box
+        if battle_box then
+            self.box.visible = false
+        end
+
+        if battle_box then
+            if Game.battle.light then
+                self.face_x = 6
+                self.face_y = -2
+        
+                self.text_x = 0
+                self.text_y = -2 
+            else
+                self.face_x = -4
+                self.face_y = 2
+        
+                self.text_x = 0
+                self.text_y = -2 -- TODO: This was changed 2px lower with the new font, but it was 4px offset. Why? (Used to be 0)
+            end
+        elseif Game:isLight() then
+            self.face_x = 13
+            self.face_y = 6
+    
+            self.text_x = 2
+            self.text_y = -4
+        else
+            self.face_x = 18
+            self.face_y = 6
+    
+            self.text_x = 2
+            self.text_y = -4  -- TODO: This was changed with the new font but it's accurate anyways
+        end
+    
+        self.actor = nil
+    
+        self.default_font = default_font or "main_mono"
+        self.default_font_size = default_font_size
+    
+        self.font = self.default_font
+        self.font_size = self.default_font_size
+    
+        self.face = Sprite(nil, self.face_x, self.face_y, nil, nil, "face")
+        self.face:setScale(2, 2)
+        self.face.getDebugOptions = function(self2, context)
+            context = Object.getDebugOptions(self2, context)
+            if Kristal.DebugSystem then
+                context:addMenuItem("Change", "Change this portrait to a different one", function()
+                    Kristal.DebugSystem:setState("FACES", self)
+                end)
+            end
+            return context
+        end
+        self:addChild(self.face)
+    
+        -- Added text width for autowrapping
+        self.wrap_add_w = battle_box and 0 or 14
+    
+        self.text = DialogueText("", self.text_x, self.text_y, width + self.wrap_add_w, SCREEN_HEIGHT)
+        self:addChild(self.text)
+    
+        self.reactions = {}
+        self.reaction_instances = {}
+    
+        self.text:registerCommand("face", function(text, node, dry)
+            if self.actor and self.actor:getPortraitPath() then
+                self.face.path = self.actor:getPortraitPath()
+            end
+            self:setFace(node.arguments[1], tonumber(node.arguments[2]), tonumber(node.arguments[3]))
+        end)
+        self.text:registerCommand("facec", function(text, node, dry)
+            self.face.path = "face"
+            local ox, oy = tonumber(node.arguments[2]), tonumber(node.arguments[3])
+            if self.actor then
+                local actor_ox, actor_oy = self.actor:getPortraitOffset()
+                ox = (ox or 0) - actor_ox
+                oy = (oy or 0) - actor_oy
+            end
+            self:setFace(node.arguments[1], ox, oy)
+        end)
+    
+        self.text:registerCommand("react", function(text, node, dry)
+            local react_data
+            if #node.arguments > 1 then
+                react_data = {
+                    text = node.arguments[1],
+                    x = tonumber(node.arguments[2]) or (self.battle_box and self.REACTION_X_BATTLE[node.arguments[2]] or self.REACTION_X[node.arguments[2]]),
+                    y = tonumber(node.arguments[3]) or (self.battle_box and self.REACTION_Y_BATTLE[node.arguments[3]] or self.REACTION_Y[node.arguments[3]]),
+                    face = node.arguments[4],
+                    actor = node.arguments[5] and Registry.createActor(node.arguments[5]),
+                }
+            else
+                react_data = tonumber(node.arguments[1]) and self.reactions[tonumber(node.arguments[1])] or self.reactions[node.arguments[1]]
+            end
+            local reaction = SmallFaceText(react_data.text, react_data.x, react_data.y, react_data.face, react_data.actor)
+            reaction.layer = 0.1 + (#self.reaction_instances) * 0.01
+            self:addChild(reaction)
+            table.insert(self.reaction_instances, reaction)
+        end, {instant = false})
+    
+        self.advance_callback = nil
+    end)
+
+    Utils.hook(Textbox, "advance", function(orig, self)
+        self.timer:after(self.wait, function()
+            self.text:advance()
+        end)
+    end)
+
+    Utils.hook(DialogueText, "init", function(orig, self, text, x, y, w, h, options)
+        orig(self, text, x, y, w, h, options)
+        options = options or {}
+        self.default_sound = options["default_sound"] or "default"
+        self.no_sound_overlap = options["no_sound_overlap"] or false
+    end)
+
+    Utils.hook(DialogueText, "resetState", function(orig, self)
+        Text.resetState(self)
+        self.state["typing_sound"] = self.default_sound
+    end)
+
+    Utils.hook(DialogueText, "playTextSound", function(orig, self, current_node)
+        if self.state.skipping and (Input.down("cancel") or self.played_first_sound) then
+            return
+        end
+    
+        if current_node.type ~= "character" then
+            return
+        end
+    
+        local no_sound = {"\n", " ", "^", "!", ".", "?", ",", ":", "/", "\\", "|", "*"}
+    
+        if (Utils.containsValue(no_sound, current_node.character)) then
+            return
+        end
+    
+        if (self.state.typing_sound ~= nil) and (self.state.typing_sound ~= "") then
+            self.played_first_sound = true
+            if Kristal.callEvent(KRISTAL_EVENT.onTextSound, self.state.typing_sound, current_node) then
+                return
+            end
+            if self.no_sound_overlap then
+                Assets.stopAndPlaySound("voice/"..self.state.typing_sound)
+            else
+                Assets.playSound("voice/"..self.state.typing_sound)
+            end
+        end
+    end)
+
+    Utils.hook(DialogueText, "update", function(orig, self)
+        local speed = self.state.speed
+
+        if not OVERLAY_OPEN then
+
+            if Kristal.getLibConfig("magical-glass", "undertale_text_skipping") then
+
+                local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
+
+                if input or self.auto_advance or self.should_advance then
+                    self.should_advance = false
+                    if not self.state.typing then
+                        self:advance()
+                    end
+                end
+        
+                if self.skippable and (Input.pressed("cancel") and not self.state.noskip) then
+                    if not self.skip_speed then
+                        self.state.skipping = true
+                    else
+                        speed = speed * 2
+                    end
+                end
+
+            else
+                if Input.pressed("menu") then
+                    self.fast_skipping_timer = 1
+                end
+        
+                local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
+        
+                if input or self.auto_advance or self.should_advance then
+                    self.should_advance = false
+                    if not self.state.typing then
+                        self:advance()
+                    end
+                end
+        
+                if Input.down("menu") then
+                    if self.fast_skipping_timer < 1 then
+                        self.fast_skipping_timer = self.fast_skipping_timer + DTMULT
+                    end
+                else
+                    self.fast_skipping_timer = 0
+                end
+                
+                if self.skippable and ((Input.down("cancel") and not self.state.noskip) or (Input.down("menu") and not self.state.noskip)) then
+                    if not self.skip_speed then
+                        self.state.skipping = true
+                    else
+                        speed = speed * 2
+                    end
+                end
+            end
+    
+        end
+    
+        if self.state.waiting == 0 then
+            self.state.progress = self.state.progress + (DT * 30 * speed)
+        else
+            self.state.waiting = math.max(0, self.state.waiting - DT)
+        end
+    
+        if self.state.typing then
+            self:drawToCanvas(function()
+                while (math.floor(self.state.progress) > self.state.typed_characters) or self.state.skipping do
+                    local current_node = self.nodes[self.state.current_node]
+    
+                    if current_node == nil then
+                        self.state.typing = false
+                        break
+                    end
+    
+                    self:playTextSound(current_node)
+                    self:processNode(current_node, false)
+    
+                    if self.state.skipping then
+                        self.state.progress = self.state.typed_characters
+                    end
+    
+                    self.state.current_node = self.state.current_node + 1
+                end
+            end)
+        end
+    
+        self:updateTalkSprite(self.state.talk_anim and self.state.typing)
+    
+        Text.update(self)
+    
+        self.last_talking = self.state.talk_anim and self.state.typing
+    end)
+
+    Utils.hook(Bullet, "init", function(orig, self, x, y, texture)
+    
+        orig(self, x, y, texture)
+        if Game:isLight() then
+            self.inv_timer = 1
+        end
+        self.remove_outside_of_arena = false
+
+    end)
+
+    Utils.hook(Bullet, "update", function(orig, self)
+        orig(self)
+        if self.remove_outside_of_arena then
+            if self.x < Game.battle.arena.left then
+                self:remove()
+            elseif self.x > Game.battle.arena.right then
+                self:remove()
+            elseif self.y > Game.battle.arena.bottom then
+                self:remove()
+            elseif self.y < Game.battle.arena.top then
+                self:remove()
+            end
+        end
+    end)
+
     Utils.hook(LightItemMenu, "init", function(orig, self)
     
         orig(self)
@@ -1109,6 +1440,7 @@ function lib:init()
                 self.option_selecting = self.option_selecting + 1
             end
     
+            -- this wraps in deltatraveler lmao
             self.option_selecting = Utils.clamp(self.option_selecting, 1, 3)
     
             if self.option_selecting ~= old_selecting then
@@ -1233,7 +1565,7 @@ function lib:init()
             local item = Game.inventory:getItem(self.storage, self.item_selecting)
             Draw.setColor(PALETTE["world_text"])
 
-            --Draw.printAlign("Use " .. item:getName() .. " on", 150, 233, "center")
+            Draw.printAlign("Use " .. item:getName() .. " on", 150, 233, "center")
 
             local z = Mod.libs["moreparty"] and Kristal.getLibConfig("moreparty", "classic_mode") and 3 or 4
 
@@ -1308,6 +1640,117 @@ function lib:init()
             orig(self, target, amount, text, item)
         end
     end)
+
+    if not Mod.libs["widescreen"] then
+        Utils.hook(WorldCutscene, "text", function(orig, self, text, portrait, actor, options)
+            local function waitForTextbox(self) return not self.textbox or self.textbox:isDone() end
+            if type(actor) == "table" and not isClass(actor) then
+                options = actor
+                actor = nil
+            end
+            if type(portrait) == "table" then
+                options = portrait
+                portrait = nil
+            end
+        
+            options = options or {}
+        
+            self:closeText()
+        
+            local width, height = 529, 103
+            if Game:isLight() then
+                width, height = 530, 104
+            end
+        
+            self.textbox = Textbox(56, 344, width, height)
+            self.textbox.text.hold_skip = false
+            self.textbox.layer = WORLD_LAYERS["textbox"]
+            Game.world:addChild(self.textbox)
+            self.textbox:setParallax(0, 0)
+        
+            local speaker = self.textbox_speaker
+            if not speaker and isClass(actor) and actor:includes(Character) then
+                speaker = actor.sprite
+            end
+        
+            if options["talk"] ~= false then
+                self.textbox.text.talk_sprite = speaker
+            end
+        
+            actor = actor or self.textbox_actor
+            if isClass(actor) and actor:includes(Character) then
+                actor = actor.actor
+            end
+            if actor then
+                self.textbox:setActor(actor)
+            end
+        
+            if options["top"] == nil and self.textbox_top == nil then
+                local _, player_y = Game.world.player:localToScreenPos()
+                options["top"] = player_y > 260
+            end
+            if options["top"] or (options["top"] == nil and self.textbox_top) then
+            local bx, by = self.textbox:getBorder()
+            self.textbox.y = by + 2
+            end
+        
+            self.textbox.active = true
+            self.textbox.visible = true
+            self.textbox:setFace(portrait, options["x"], options["y"])
+        
+            if options["reactions"] then
+                for id,react in pairs(options["reactions"]) do
+                    self.textbox:addReaction(id, react[1], react[2], react[3], react[4], react[5])
+                end
+            end
+        
+            if options["functions"] then
+                for id,func in pairs(options["functions"]) do
+                    self.textbox:addFunction(id, func)
+                end
+            end
+        
+            if options["font"] then
+                if type(options["font"]) == "table" then
+                    -- {font, size}
+                    self.textbox:setFont(options["font"][1], options["font"][2])
+                else
+                    self.textbox:setFont(options["font"])
+                end
+            end
+        
+            if options["align"] then
+                self.textbox:setAlign(options["align"])
+            end
+        
+            self.textbox:setSkippable(options["skip"] or options["skip"] == nil)
+            self.textbox:setAdvance(options["advance"] or options["advance"] == nil)
+            self.textbox:setAuto(options["auto"])
+        
+            if false then -- future feature
+                self.textbox:setText("[wait:2]"..text, function()
+                    self.textbox:remove()
+                    self:tryResume()
+                end)
+            else
+                self.textbox:setText(text, function()
+                    self.textbox:remove()
+                    self:tryResume()
+                end)
+            end
+        
+            local wait = options["wait"] or options["wait"] == nil
+            if not self.textbox.text.can_advance then
+                wait = options["wait"] -- By default, don't wait if the textbox can't advance
+            end
+        
+            if wait then
+                return self:wait(waitForTextbox)
+            else
+                return waitForTextbox, self.textbox
+            end
+        end)
+    end
     
     Utils.hook(PartyBattler, "calculateDamage", function(orig, self, amount)
         if Game:isLight() then
@@ -1375,6 +1818,20 @@ function lib:init()
 
         self.lw_stats["magic"] = 0
     end)
+
+    Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
+        if Game:isLight() then
+            if playsound == nil or playsound then
+                Assets.stopAndPlaySound("power")
+            end
+            if self:getHealth() < self:getStat("health") then
+                self:setHealth(math.min(self:getStat("health"), self:getHealth() + amount))
+            end
+            return self:getStat("health") == self:getHealth()
+        else
+            return orig(self, amount, playsound)
+        end
+    end)
     
     Utils.hook(PartyMember, "convertToLight", function(orig, self)
         local last_weapon = self:getWeapon() and self:getWeapon().id or false
@@ -1425,6 +1882,25 @@ function lib:init()
     
     Utils.hook(PartyMember, "getShortName", function(orig, self)
         return self.short_name or string.sub(self:getName(), 1, 6)
+    end)
+
+    Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
+        if Game.battle.turn_count == 1 and not undo then
+            if self:getWeapon() and self:getWeapon().onActionSelect then
+                self:getWeapon():onActionSelect(self)
+            end
+            if self:getArmor(1) and self:getArmor(1).onActionSelect then
+                self:getArmor(1):onActionSelect(self)
+            end
+        end
+    end)
+    
+    Utils.hook(PartyMember, "onTurnEnd", function(orig, self, battler)
+        for _,equip in ipairs(self:getEquipment()) do
+            if equip.onTurnEnd then
+                equip:onTurnEnd(self)
+            end
+        end
     end)
 
     Utils.hook(PartyMember, "getNameOrYou", function(orig, self, lower)
@@ -1584,14 +2060,85 @@ function lib:init()
         self.lw_portrait = data.lw_portrait or self.lw_portrait
     end)
 
+    Utils.hook(LightMenu, "init", function(orig, self)
+        Object.init(self, 0, 0)
+
+        self.layer = 1 -- TODO
+
+        self.parallax_x = 0
+        self.parallax_y = 0
+
+        self.animation_done = false
+        self.animation_timer = 0
+        self.animate_out = false
+
+        self.selected_submenu = 1
+
+        self.current_selecting = Game.world.current_selecting or 1
+
+        self.item_selected = 1
+
+        -- States: MAIN, ITEMMENU, ITEMUSAGE
+        self.state = "MAIN"
+        self.state_reason = nil
+        self.heart_sprite = Assets.getTexture("player/heart_menu")
+
+        self.ui_move = Assets.newSound("ui_move")
+        self.ui_select = Assets.newSound("ui_select")
+        self.ui_cant_select = Assets.newSound("ui_cant_select")
+        self.ui_cancel_small = Assets.newSound("ui_cancel_small")
+
+        self.font       = Assets.getFont("main")
+        self.font_small = Assets.getFont("small")
+
+        self.box = nil
+
+        self.top = true
+
+        self.info_box = UIBox(56, 76, 94, 62)
+        self:addChild(self.info_box)
+        self:realign()
+
+        self.choice_box = UIBox(56, 192, 94, 100)
+        self:addChild(self.choice_box)
+
+        self.storage = "items"
+        
+        if Kristal.getLibConfig("magical-glass", "hide_cell") and not Game:getFlag("has_cell_phone") then
+            self.max_selecting = 2
+        else
+            self.max_selecting = 3
+        end
+        if self.current_selecting > self.max_selecting then
+            self.current_selecting = 1
+        end
+    end)
+
+    Utils.hook(LightMenu, "onKeyPressed", function(orig, self, key)
+        if (Input.isMenu(key) or Input.isCancel(key)) and self.state == "MAIN" then
+            Game.world:closeMenu()
+            return
+        end
+    
+        if self.state == "MAIN" then
+            local old_selected = self.current_selecting
+            if Input.is("up", key)    then self.current_selecting = self.current_selecting - 1 end
+            if Input.is("down", key) then self.current_selecting = self.current_selecting + 1 end
+    
+            self.current_selecting = Utils.clamp(self.current_selecting, 1, self.max_selecting)
+            if old_selected ~= self.current_selecting then
+                self.ui_move:stop()
+                self.ui_move:play()
+            end
+            if Input.isConfirm(key) then
+                self:onButtonSelect(self.current_selecting)
+            end
+        end
+    end)
+
     Utils.hook(LightMenu, "draw", function(orig, self)
         Object.draw(self)
-
-        local offset = 0
-        if self.top then
-            offset = 270
-        end
-
+        
         love.graphics.setFont(self.font)
         if Game.inventory:getItemCount(self.storage, false) <= 0 then
             Draw.setColor(PALETTE["world_gray"])
@@ -1601,42 +2148,61 @@ function lib:init()
         love.graphics.print("ITEM", 84, 188 + (36 * 0))
         Draw.setColor(PALETTE["world_text"])
         love.graphics.print("STAT", 84, 188 + (36 * 1))
-        if Game:getFlag("has_cell_phone", false) then
-            if #Game.world.calls > 0 then
+    
+        if not Kristal.getLibConfig("magical-glass", "hide_cell") then
+            if Game:getFlag("has_cell_phone") and #Game.world.calls > 0 then
                 Draw.setColor(PALETTE["world_text"])
             else
                 Draw.setColor(PALETTE["world_gray"])
             end
             love.graphics.print("CELL", 84, 188 + (36 * 2))
+        else
+            if Game:getFlag("has_cell_phone") then
+                if #Game.world.calls > 0 then
+                    Draw.setColor(PALETTE["world_text"])
+                else
+                    Draw.setColor(PALETTE["world_gray"])
+                end
+                love.graphics.print("CELL", 84, 188 + (36 * 2))
+            end
         end
-
+        
         if self.state == "MAIN" then
             Draw.setColor(Game:getSoulColor())
             Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
         end
         
-        if self.top and lib.is_light_menu_partyselect and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
-            love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
+        local offset = 0
+        if self.top then
+            offset = 270
+            if lib.is_light_menu_partyselect and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
+                love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
+            end
         end
-        
+    
         local chara = Game.party[1]
-
+    
         love.graphics.setFont(self.font)
         Draw.setColor(PALETTE["world_text"])
         love.graphics.print(chara:getName(), 46, 60 + offset)
-
         love.graphics.setFont(self.font_small)
         love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
         love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
-        love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4)..Game.lw_money, 46, 136 + offset)
+        -- pastency when -sam, to sam
+        love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
+        love.graphics.print(Game.lw_money, 82, 136 + offset)
     end)
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
         orig(self)
         self.party_selecting = 1
 
+        self.style = Kristal.getLibConfig("magical-glass", "light_stat_menu_style")
         self.undertale_stat_display = Kristal.getLibConfig("magical-glass", "undertale_stat_display")
         self.always_show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic")
+
+        self.rightpressed = false
+        self.leftpressed = false
     end)
 
     Utils.hook(LightStatMenu, "update", function(orig, self)
@@ -1647,10 +2213,22 @@ function lib:init()
         if not OVERLAY_OPEN or TextInput.active then
             if Input.pressed("right") then
                 self.party_selecting = self.party_selecting + 1
+                if self.rightpressed ~= true then
+                    self.rightpressed = true
+                    Game.stage.timer:after(0.1, function()
+                        self.rightpressed = false
+                    end)
+                end
             end
 
             if Input.pressed("left") then
                 self.party_selecting = self.party_selecting - 1
+                if self.leftpressed ~= true then
+                    self.leftpressed = true
+                    Game.stage.timer:after(0.1, function()
+                        self.leftpressed = false
+                    end)
+                end
             end
         end
 
@@ -1675,6 +2253,7 @@ function lib:init()
         end
 
         Object.update(self)
+
     end)
 
     Utils.hook(LightStatMenu, "draw", function(orig, self)
@@ -1697,8 +2276,26 @@ function lib:init()
             Draw.setColor(Game:getSoulColor())
             Draw.draw(self.heart_sprite, 212, 124, 0, 2, 2)
             
-            Draw.setColor(PALETTE["world_text"])
-            love.graphics.print("<                >", 162, 116)
+            if self.style == "deltatraveler" then
+                Draw.setColor(PALETTE["world_text"])
+                love.graphics.print("<                >", 162, 116)
+            elseif self.style == "magical_glass" then
+                if self.rightpressed == true then
+                    Draw.setColor({1,1,0})
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268 + 4, 124 - 3, 0, 2, 2)
+                else
+                    Draw.setColor(PALETTE["world_text"])
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268, 124 - 3, 0, 2, 2)
+                end
+
+                if self.leftpressed == true then
+                    Draw.setColor({1,1,0})
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 158 - 4, 124 - 3, 0, 2, 2)
+                else
+                    Draw.setColor(PALETTE["world_text"])
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 158, 124 - 3, 0, 2, 2)
+                end
+            end
         end
 
         Draw.setColor(PALETTE["world_text"])
@@ -1754,6 +2351,10 @@ function lib:init()
         end
     end)
 
+    Utils.hook(World, "registerCall", function(orig, self, name, scene, sound)
+        table.insert(self.calls, {name, scene, sound})
+    end)
+
     Utils.hook(World, "spawnPlayer", function(orig, self, ...)
         local args = {...}
 
@@ -1803,6 +2404,17 @@ function lib:init()
         if self.camera.attached_y then
             self.camera:setPosition(self.camera.x, self.player.y - (self.player.height * 2)/2)
         end
+    end)
+
+    Utils.hook(LightCellMenu, "runCall", function(orig, self, call)
+        if call[3] == nil or call[3] then
+            Assets.playSound("phone", 0.7)
+        end
+
+        Game.world.menu:closeBox()
+        Game.world.menu.state = "TEXT"
+        Game.world:setCellFlag(call[2], Game.world:getCellFlag(call[2], -1) + 1)
+        Game.world:startCutscene(call[2])
     end)
 
     Utils.hook(Savepoint, "init", function(orig, self, x, y, properties)
@@ -1929,6 +2541,13 @@ function lib:init()
             message = "* The enemies recovered " .. amount .. " HP."
         end
         return message
+    end)
+
+    Utils.hook(SpeechBubble, "init", function(orig, self, text, x, y, options, speaker)
+        orig(self, text, x, y, options, speaker)
+        if Game.battle and Game.battle.light then
+            self.text.no_sound_overlap = options["no_sound_overlap"] or true
+        end
     end)
 
     Utils.hook(SpeechBubble, "draw", function(orig, self)

@@ -42,9 +42,11 @@ function LightBattleUI:init()
 
     -- active: 237
     -- inactive: 280
-    self.help_window = HelpWindow(SCREEN_WIDTH/2, 280) -- height is 99px in dt
-    self.help_window.layer = self.arena.layer - 10
-    Game.battle:addChild(self.help_window)
+    if Kristal.getLibConfig("magical-glass", "item_info") == "deltatraveler" then
+        self.help_window = HelpWindow(SCREEN_WIDTH/2, 280) -- height is 99px in dt
+        self.help_window.layer = self.arena.layer - 10
+        Game.battle:addChild(self.help_window)
+    end
 
     self.attack_box = nil
     self.action_boxes = {}
@@ -285,12 +287,20 @@ function LightBattleUI:drawState()
         if current_item.description then
             if self.help_window then
                 self.help_window:setDescription(current_item.description)
+            elseif Kristal.getLibConfig("magical-glass", "item_info") == "magical_glass" then
+                Draw.setColor(COLORS.gray)
+                local str = current_item.description:gsub('\n', ' ')
+                love.graphics.print(str, 100 - 16, 64)
             end
         end
 
         if current_item.tp and current_item.tp ~= 0 then
             if self.help_window then
                 self.help_window:setTension(current_item.tp)
+                Game:setTensionPreview(current_item.tp)
+            elseif Kristal.getLibConfig("magical-glass", "item_info") == "magical_glass" then
+                Draw.setColor(PALETTE["tension_desc"])
+                love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "% "..Game:getConfig("tpName"), 260 + 208, 64)
                 Game:setTensionPreview(current_item.tp)
             end
         else

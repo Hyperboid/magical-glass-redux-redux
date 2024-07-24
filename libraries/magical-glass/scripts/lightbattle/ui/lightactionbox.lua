@@ -19,7 +19,7 @@ function LightActionBox:init(x, y, index, battler)
 end
 
 function LightActionBox:getHPGaugeLengthCap()
-    return true
+    return Kristal.getLibConfig("magical-glass", "hp_gauge_length_cap")
 end
 
 function LightActionBox:getButtons(battler) end
