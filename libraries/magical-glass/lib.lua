@@ -1353,13 +1353,11 @@ function lib:init()
     end)
 
     Utils.hook(Bullet, "init", function(orig, self, x, y, texture)
-    
         orig(self, x, y, texture)
-        if Game:isLight() then
+        if Game.battle.light then
             self.inv_timer = 1
         end
         self.remove_outside_of_arena = false
-
     end)
 
     Utils.hook(Bullet, "update", function(orig, self)
