@@ -1331,11 +1331,6 @@ function LightBattle:nextTurn()
         if self.encounter:onTurnEnd() then
             return
         end
-        for _,party in ipairs(self.party) do
-            if party.chara:onTurnEnd() then
-                return
-            end
-        end
         for _,enemy in ipairs(self:getActiveEnemies()) do
             if enemy:onTurnEnd() then
                 return

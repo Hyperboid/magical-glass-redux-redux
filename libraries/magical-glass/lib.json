@@ -7,7 +7,7 @@
         "Just Another Random User",     // contributor
         "FireRainV"                     // contributor
     ],
-    "version": "v1.2.0-dev",
+    "version": "v1.3.0",
     "engineVer": "v0.9.0-dev",
 
     "config": {
@@ -37,59 +37,17 @@
         // Adds the Defend command to the mercy action button in Light Battles.
         /////
         "light_battle_defend_btn": false,
-
-        ///// UNDERTALE Text Skipping
-        // Disables skipping text in ANY textbox when holding down confirm or menu.
-        /////
-        "undertale_text_skipping": false,
         
         ///// UNDERTALE Movement Can Run
         // Enables the ability to run when using the Undertale player movement.
         /////
         "undertale_movement_can_run": false,
-        
-        ///// Light Battles HP Gauge Length Cap
-        // Limits the length of the HP bar in light battles.
-        ///// Values:
-        //
-        // true
-        // Limits the gauge at 99. 
-        // false
-        // Doesn't limit the gauge.
-        //
-        // number
-        // Limits the gauge to the number specified.
-        //
-        /////
-        "hp_gauge_length_cap": true,
 
         ///// Key Item Conversion
         // Converts the Dark World inventory to the Ball of Junk and Shadow Crystals to Glass
         // when traveling to the Light World.
         /////
         "key_item_conversion": true,
-
-        ///// Hide CELL in The Light World Menu
-        // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.
-        /////
-        "hide_cell": true,
-
-        ///// Light World STAT Menu Style
-        // Determines the appearance of the Light World STAT menu when more than one character is
-        // in the party.
-        ///// Values:
-        //
-        // "magical_glass"
-        // Prints the current member's name and portrait, and an indicator similar to the one from
-        // Deltatraveler on top of the portrait which functions the same way but has a different design choice.
-        //
-        // "deltatraveler"
-        // The Light World STAT menu from Deltatraveler. Only shows the currently selected member's
-        // name and portrait, with an indicator underneath the portrait showing you can press left
-        // or right to select a character.
-        //
-        /////
-        "light_stat_menu_style": "magical_glass",
 
         ///// UNDERTALE Stat Display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
@@ -101,22 +59,6 @@
         // Member in the current party who has more than 0 MAGIC.
         /////
         "always_show_magic": false,
-
-        ///// Item Info
-        // Determines whether battle descriptions and TP costs should be displayed in the main
-        // window or should be displayed in a box under it similar to Deltatraveler.
-        ///// Values:
-        //
-        // "magical_glass"
-        // Battle descriptions are displayed in the main window.
-        // This style will overlap with the bottom row of menu options. (doesn't apply to spells since it limits them to 2 rows.)
-        //
-        // "deltatraveler"
-        // Battle descriptions and TP costs are displayed in a small window above
-        // the main window.
-        //
-        /////
-        "item_info": "deltatraveler",
 
         ///// Gauge Style
         // Determines the appearance of gauges drawn in ENEMYSELECT or PARTYSELECT in Light Battles.
