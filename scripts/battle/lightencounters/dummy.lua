@@ -4,7 +4,7 @@ function Dummy:init()
     super:init(self)
 
     -- Text displayed at the bottom of the screen at the start of the encounter
-    self.text = "* You encountered the Dummy...?"
+    self.text = "[ut_shake:1]* You encountered the Dummy...?"
 
     -- Battle music ("battleut" is undertale)
     self.music = nil

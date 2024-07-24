@@ -80,6 +80,20 @@ function lib:load(data, new_file)
     end
 end
 
+function lib:registerTextCommands(text)
+    text:registerCommand("ut_shake", function(text, node, dry)
+        text.state.ut_shake = tonumber(node.arguments[1]) or 1
+        text.draw_every_frame = true
+    end)
+end
+
+function lib:onDrawText(text, node, state, x, y, scale, font, use_color)
+    if state.ut_shake and state.ut_shake > 0 then
+        state.offset_x = Utils.random(state.ut_shake) - state.ut_shake / 2
+        state.offset_y = Utils.random(state.ut_shake) - state.ut_shake / 2
+    end
+end
+
 -- GLOBAL SAVE
 
 local read = love.filesystem.read
