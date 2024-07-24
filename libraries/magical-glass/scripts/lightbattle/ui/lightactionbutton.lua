@@ -6,7 +6,7 @@ function LightActionButton:init(type, battler, x, y)
     self.type = type
     self.battler = battler
     
-    if Kristal.getLibConfig("magical-glass", "action_button_style") == "deltatraveler" and Assets.getTexture("ui/lightbattle/btn/alt/" .. type) then
+    if Assets.getTexture("ui/lightbattle/btn/"..Kristal.getLibConfig("magical-glass", "action_button_style").."/" .. type) then
         self.tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type)
         self.hover_tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type .. "_h")
         self.special_tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type .. "_a")

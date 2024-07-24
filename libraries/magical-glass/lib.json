@@ -165,12 +165,12 @@
         // "magical_glass"
         // "deltatraveler"
         /////
-        "action_button_style": "magical_glass",
+        "action_button_style": "deltatraveler",
         
         ///// Expanded Light Save Menu
         // Allows having 3 save slots in the light world save points.
         /////
-        "expanded_light_save_menu": false,
+        "expanded_light_save_menu": true,
         
         ///// Multi-Party Neat UI
         // Whether certain unimportant light battle UI objects in multi-party battles like the HP and KR sprites are visible.
