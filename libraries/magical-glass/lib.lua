@@ -2171,12 +2171,8 @@ function lib:init()
         orig(self)
         self.party_selecting = 1
 
-        self.style = Kristal.getLibConfig("magical-glass", "light_stat_menu_style")
         self.undertale_stat_display = Kristal.getLibConfig("magical-glass", "undertale_stat_display")
         self.always_show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic")
-
-        self.rightpressed = false
-        self.leftpressed = false
     end)
 
     Utils.hook(LightStatMenu, "update", function(orig, self)
@@ -2187,22 +2183,10 @@ function lib:init()
         if not OVERLAY_OPEN or TextInput.active then
             if Input.pressed("right") then
                 self.party_selecting = self.party_selecting + 1
-                if self.rightpressed ~= true then
-                    self.rightpressed = true
-                    Game.stage.timer:after(0.1, function()
-                        self.rightpressed = false
-                    end)
-                end
             end
 
             if Input.pressed("left") then
                 self.party_selecting = self.party_selecting - 1
-                if self.leftpressed ~= true then
-                    self.leftpressed = true
-                    Game.stage.timer:after(0.1, function()
-                        self.leftpressed = false
-                    end)
-                end
             end
         end
 
@@ -2250,26 +2234,8 @@ function lib:init()
             Draw.setColor(Game:getSoulColor())
             Draw.draw(self.heart_sprite, 212, 124, 0, 2, 2)
             
-            if self.style == "deltatraveler" then
-                Draw.setColor(PALETTE["world_text"])
-                love.graphics.print("<                >", 162, 116)
-            elseif self.style == "magical_glass" then
-                if self.rightpressed == true then
-                    Draw.setColor({1,1,0})
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268 + 4, 124 - 3, 0, 2, 2)
-                else
-                    Draw.setColor(PALETTE["world_text"])
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268, 124 - 3, 0, 2, 2)
-                end
-
-                if self.leftpressed == true then
-                    Draw.setColor({1,1,0})
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 158 - 4, 124 - 3, 0, 2, 2)
-                else
-                    Draw.setColor(PALETTE["world_text"])
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 158, 124 - 3, 0, 2, 2)
-                end
-            end
+            Draw.setColor(PALETTE["world_text"])
+            love.graphics.print("<                >", 162, 116)
         end
 
         Draw.setColor(PALETTE["world_text"])
