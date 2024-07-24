@@ -58,10 +58,6 @@ function lib:load(data, new_file)
     if not love.filesystem.getInfo("saves/" .. Mod.info.id .. "/global.json") then
         love.filesystem.write("saves/" .. Mod.info.id .. "/global.json", self:initGlobalSave())
     end
-
-    if Kristal.getModOption("encounter") then
-        Game.save_name = Game.save_name or Kristal.Config["defaultName"] or "PLAYER"
-    end
     
     Game.light = Kristal.getLibConfig("magical-glass", "default_battle_system")[2] or false
     
@@ -1059,26 +1055,6 @@ function lib:init()
     end)
 
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
-
-    Utils.hook(Item, "save", function(orig, self)
-        local saved_dark_item = self.dark_item
-        local saved_light_item = self.light_item
-        if isClass(self.dark_item) then saved_dark_item = self.dark_item:save() end
-        if isClass(self.light_item) then saved_light_item = self.light_item:save() end
-
-        local data = {
-            id = self.id,
-            flags = self.flags,
-
-            dark_item = saved_dark_item,
-            dark_location = self.dark_location,
-
-            light_item = saved_light_item,
-            light_location = self.light_location,
-        }
-        self:onSave(data)
-        return data
-    end)
 
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
