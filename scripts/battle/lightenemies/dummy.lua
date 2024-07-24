@@ -16,8 +16,8 @@ function Dummy:init()
     -- Enemy defense (usually 0)
     self.defense = 0
     -- Enemy reward
-    self.money = 69
-    self.experience = 1
+    self.money = 0
+    self.experience = 0
     
     self.dialogue_bubble = "ut_large"
 
@@ -50,7 +50,6 @@ function Dummy:init()
 
     -- Register act called "Smile"
     self:registerAct("Smile")
-    self:registerAct("deltarune")
     self:registerAct("Attack")
     self:registerAct("lmao", "", "all")
     
@@ -92,27 +91,13 @@ function Dummy:onAct(battler, name)
         end
         return "* You and Noelle told the dummy\na bedtime story.\n* The enemies became [color:blue]TIRED[color:reset]..."
 
-    elseif name == "deltarune" then
-        local fuck = self:getAct("deltarune")
-        fuck.name = "undertale"
-        Game.battle.encounter:setFlag("deltarune", true)
-        Game.battle.tension = true
-        return "* deltrarune"
-
-    elseif name == "undertale" then
-        local fuck = self:getAct("undertale")
-        fuck.name = "deltarune"
-        Game.battle.encounter:setFlag("deltarune", false)
-        Game.battle.tension = true
-        return "* udnertal"
-
     elseif name == "Attack" then
         self.wave_override = Utils.pick({"basic", "aiming", "movingarena"})
         return "* ok"
 
     elseif name == "lmao" then
         self.menu_wave_override = "aiming"
-        return "* get fucked"
+        return "* get attacked"
 
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy

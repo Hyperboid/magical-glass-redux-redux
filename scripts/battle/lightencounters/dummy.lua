@@ -7,7 +7,7 @@ function Dummy:init()
     self.text = "* You encountered the Dummy...?"
 
     -- Battle music ("battleut" is undertale)
-    self.music = "funky_town"
+    self.music = nil
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("dummy")
@@ -15,15 +15,6 @@ function Dummy:init()
     self.bg_siners = {0, 15, 30, 45, 60, 75}
 
     self.offset = 0
-
-end
-
-function Dummy:onBattleInit()
-    if self:getFlag("deltarune") then
-        local fuck = Game.battle.enemies[1]:getAct("deltarune")
-        Game.battle.tension = true
-        fuck.name = "undertale"
-    end
 end
 
 function Dummy:update()
@@ -71,9 +62,6 @@ function Dummy:drawBackground()
             offset = offset + 101
         end
     end
-
---[[     Draw.setColor(1/2, 1/2, 1/2)
-    love.graphics.rectangle("fill", 0, 0, 999, 999) ]]
 end
 
 return Dummy
