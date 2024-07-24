@@ -48,7 +48,6 @@ end
 function lib:save(data)
     data.magical_glass = {}
     data.magical_glass["kills"] = lib.kills
-    data.magical_glass["game_overs"] = lib.game_overs
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1] and Game.party[1]:getLightLV() or 0
@@ -56,6 +55,10 @@ function lib:save(data)
 end
 
 function lib:load(data, new_file)
+    if not love.filesystem.getInfo("saves/" .. Mod.info.id .. "/global.json") then
+        love.filesystem.write("saves/" .. Mod.info.id .. "/global.json", self:initGlobalSave())
+    end
+
     if Kristal.getModOption("encounter") then
         Game.save_name = Game.save_name or Kristal.Config["defaultName"] or "PLAYER"
     end
@@ -69,14 +72,80 @@ function lib:load(data, new_file)
         lib.name_color = COLORS.yellow
         lib.lw_save_lv = 0
         lib.in_light_shop = false
+        self:setGameOvers(0)
     else
         data.magical_glass = data.magical_glass or {}
         lib.kills = data.magical_glass["kills"] or 0
-        lib.game_overs = lib.game_overs or data.magical_glass["game_overs"] or 0
+        self:setGameOvers(self:getGameOvers() or 0)
         lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.in_light_shop = data.magical_glass["in_light_shop"] or false
+    end
+end
+
+-- GLOBAL SAVE
+
+local read = love.filesystem.read
+local write = love.filesystem.write
+
+function lib:initGlobalSave()
+    local data = {}
+
+    data["global"] = {}
+
+    data["files"] = {}
+    for i = 1, 3 do
+        data["files"][i] = {}
+    end
+
+    return JSON.encode(data)
+end
+
+function lib:setGameOvers(amount)
+    lib.game_overs = amount
+    lib:writeToGlobalSaveFile("game_overs", lib.game_overs)
+end
+
+function lib:getGameOvers()
+    return lib:readFromGlobalSaveFile("game_overs")
+end
+
+function lib:writeToGlobalSaveFile(key, data, file)
+    file = file or Game.save_id
+    if love.filesystem.getInfo("saves/" .. Mod.info.id .. "/global.json") then
+        local global_data = JSON.decode(read("saves/" .. Mod.info.id .. "/global.json"))
+        global_data.files[file][key] = data
+        write("saves/" .. Mod.info.id .. "/global.json", JSON.encode(global_data))
+    end
+end
+
+function lib:writeToGlobalSave(key, data)
+    if love.filesystem.getInfo("saves/" .. Mod.info.id .. "/global.json") then
+        local global_data = JSON.decode(read("saves/" .. Mod.info.id .. "/global.json"))
+        global_data.global[key] = data
+        write("saves/" .. Mod.info.id .. "/global.json", JSON.encode(global_data))
+    end
+end
+
+function lib:readFromGlobalSaveFile(key, file)
+    file = file or Game.save_id
+    if love.filesystem.getInfo("saves/" .. Mod.info.id .. "/global.json") then
+        local global_data = JSON.decode(read("saves/" .. Mod.info.id .. "/global.json"))
+        return global_data.files[file][key]
+    end
+end
+
+function lib:readFromGlobalSave(key)
+    if love.filesystem.getInfo("saves/" .. Mod.info.id .. "/global.json") then
+        local global_data = JSON.decode(read("saves/" .. Mod.info.id .. "/global.json"))
+        return global_data.global[key]
+    end
+end
+
+function lib:clearGlobalSave()
+    if love.filesystem.getInfo("saves/" .. Mod.info.id .. "/global.json") then
+        love.filesystem.write("saves/" .. Mod.info.id .. "/global.json", self:initGlobalSave())
     end
 end
 
@@ -2596,7 +2665,7 @@ function lib:init()
 
     Utils.hook(Game, "gameOver", function(orig, self, x, y)
         orig(self, x, y)
-        lib.game_overs = lib.game_overs + 1
+        lib:setGameOvers(lib:getGameOvers() + 1)
     end)
     
     Utils.hook(SnowGraveSpell, "update", function(orig, self)
