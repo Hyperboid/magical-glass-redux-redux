@@ -8,15 +8,9 @@ function LightActionButton:init(type, battler, x, y)
     
     local folder = Kristal.getLibConfig("magical-glass", "action_button_style")
     
-    if Assets.getTexture("ui/lightbattle/btn/"..folder.."/" .. type) then
-        self.tex = Assets.getTexture("ui/lightbattle/btn/"..folder.."/" .. type)
-        self.hover_tex = Assets.getTexture("ui/lightbattle/btn/"..folder.."/" .. type .. "_h")
-        self.special_tex = Assets.getTexture("ui/lightbattle/btn/"..folder.."/" .. type .. "_a")
-    else
-        self.tex = Assets.getTexture("ui/lightbattle/btn/" .. type)
-        self.hover_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_h")
-        self.special_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_a")
-    end
+    self.tex = Assets.getTexture("ui/lightbattle/btn/" .. type)
+    self.hover_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_h")
+    self.special_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_a")
 
     self.width = self.tex:getWidth()
     self.height = self.tex:getHeight()
@@ -40,7 +34,7 @@ function LightActionButton:select()
         Game.battle:setState("ENEMYSELECT", "ATTACK")
     elseif self.type == "act" then
         Game.battle:setState("ENEMYSELECT", "ACT")
-    elseif self.type == "spell" then
+    elseif self.type == "magic" then
         Game.battle:clearMenuItems()
         Game.battle.current_menu_columns = 2
         Game.battle.current_menu_rows = Kristal.getLibConfig("magical-glass", "item_info") == "magical_glass" and 2 or 3
@@ -241,7 +235,7 @@ end
 
 function LightActionButton:hasSpecial()
     if self.highlight then
-        if self.type == "spell" then
+        if self.type == "magic" then
             if self.battler then
                 local has_tired = false
                 for _, enemy in ipairs(Game.battle:getActiveEnemies()) do

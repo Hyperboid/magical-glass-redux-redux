@@ -31,10 +31,10 @@ function LightActionBox:createButtons()
 
     self.buttons = {}
 
-    local btn_types = {"fight", "act", "spell", "item", "mercy"}
+    local btn_types = {"fight", "act", "magic", "item", "mercy"}
 
     if not self.battler.chara:hasAct() then Utils.removeFromTable(btn_types, "act") end
-    if not self.battler.chara:hasSpells() then Utils.removeFromTable(btn_types, "spell") end
+    if not self.battler.chara:hasSpells() then Utils.removeFromTable(btn_types, "magic") end
 
     for lib_id,_ in Kristal.iterLibraries() do
         btn_types = Kristal.libCall(lib_id, "getLightActionButtons", self.battler, btn_types) or btn_types
