@@ -102,22 +102,6 @@
         /////
         "always_show_magic": false,
 
-        ///// Item Info
-        // Determines whether battle descriptions and TP costs should be displayed in the main
-        // window or should be displayed in a box under it similar to Deltatraveler.
-        ///// Values:
-        //
-        // "magical_glass"
-        // Battle descriptions are displayed in the main window.
-        // This style will overlap with the bottom row of menu options. (doesn't apply to spells since it limits them to 2 rows.)
-        //
-        // "deltatraveler"
-        // Battle descriptions and TP costs are displayed in a small window above
-        // the main window.
-        //
-        /////
-        "item_info": "deltatraveler",
-
         ///// Gauge Style
         // Determines the appearance of gauges drawn in ENEMYSELECT or PARTYSELECT in Light Battles.
         ///// Values:
