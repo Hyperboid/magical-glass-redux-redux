@@ -37,7 +37,7 @@ function LightActionButton:select()
     elseif self.type == "magic" then
         Game.battle:clearMenuItems()
         Game.battle.current_menu_columns = 2
-        Game.battle.current_menu_rows = Kristal.getLibConfig("magical-glass", "item_info") == "magical_glass" and 2 or 3
+        Game.battle.current_menu_rows = 3
 
         if Game.battle.encounter.default_xactions and self.battler.chara:hasXAct() then
             local spell = {
