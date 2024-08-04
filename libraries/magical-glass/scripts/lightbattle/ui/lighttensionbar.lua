@@ -129,34 +129,34 @@ function LightTensionBar:processTension()
             if ((self.apparent - self.current) > 0) then
                 self.current = self.current + (2 * DTMULT)
             end
-            if ((self.apparent - self.current) > 10) then
+            if ((self.apparent - self.current) > self:getPercentageFor250(10)) then
                 self.current = self.current + (2 * DTMULT)
             end
-            if ((self.apparent - self.current) > 25) then
+            if ((self.apparent - self.current) > self:getPercentageFor250(25)) then
                 self.current = self.current + (3 * DTMULT)
             end
-            if ((self.apparent - self.current) > 50) then
+            if ((self.apparent - self.current) > self:getPercentageFor250(50)) then
                 self.current = self.current + (4 * DTMULT)
             end
-            if ((self.apparent - self.current) > 100) then
+            if ((self.apparent - self.current) > self:getPercentageFor250(100)) then
                 self.current = self.current + (5 * DTMULT)
             end
             if ((self.apparent - self.current) < 0) then
                 self.current = self.current - (2 * DTMULT)
             end
-            if ((self.apparent - self.current) < -10) then
+            if ((self.apparent - self.current) < self:getPercentageFor250(-10)) then
                 self.current = self.current - (2 * DTMULT)
             end
-            if ((self.apparent - self.current) < -25) then
+            if ((self.apparent - self.current) < self:getPercentageFor250(-25)) then
                 self.current = self.current - (3 * DTMULT)
             end
-            if ((self.apparent - self.current) < -50) then
+            if ((self.apparent - self.current) < self:getPercentageFor250(-50)) then
                 self.current = self.current - (4 * DTMULT)
             end
-            if ((self.apparent - self.current) < -100) then
+            if ((self.apparent - self.current) < self:getPercentageFor250(-100)) then
                 self.current = self.current - (5 * DTMULT)
             end
-            if (math.abs((self.apparent - self.current)) < 3) then
+            if (math.abs((self.apparent - self.current)) < self:getPercentageFor250(3)) then
                 self.current = self.apparent
             end
         end
@@ -175,33 +175,31 @@ function LightTensionBar:update()
 end
 
 function LightTensionBar:drawText()
-    local x = self.x - 49
     love.graphics.setFont(self.tp_font)
     love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.print("T", x + 1, 1)
-    love.graphics.print("P", x + 1, 22)
+    love.graphics.print("T", -20 + 1, 1)
+    love.graphics.print("P", -20 + 1, 22)
 
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.print("T", x, 0)
-    love.graphics.print("P", x, 21)
+    love.graphics.print("T", -20, 0)
+    love.graphics.print("P", -20, 21)
 
     local tamt = math.floor(self:getPercentageFor250(self.apparent) * 100)
     self.maxed = false
     love.graphics.setFont(self.font)
     if (tamt < 100) then
         love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.printf(tostring(math.floor(self:getPercentageFor250(self.apparent) * 100)) .. "%", self.x - 38, self.height - 4, 50, "center")
+        love.graphics.printf(tostring(math.floor(self:getPercentageFor250(self.apparent) * 100)) .. "%", 29 - 38, self.height - 4, 50, "center")
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(tostring(math.floor(self:getPercentageFor250(self.apparent) * 100)) .. "%", self.x - 39, self.height - 5, 50, "center")
-        --love.graphics.print("%", x, self.height - 4)
+        love.graphics.printf(tostring(math.floor(self:getPercentageFor250(self.apparent) * 100)) .. "%", 29 - 39, self.height - 4, 50, "center")
     end
     if (tamt >= 100) then
         self.maxed = true
 
         love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.print("MAX", self.x - 36, self.height - 4)
+        love.graphics.print("MAX", 29 - 36, self.height - 4)
         Draw.setColor(PALETTE["tension_maxtext"])
-        love.graphics.print("MAX", self.x - 37, self.height - 5)
+        love.graphics.print("MAX", 29 - 37, self.height - 5)
     end
 end
 
@@ -256,16 +254,16 @@ function LightTensionBar:drawFill()
         local alpha = (math.abs((math.sin((self.tsiner / 8)) * 0.5)) + 0.2)
         local color_to_set = {1, 1, 1, alpha}
 
-        local theight = 156 - (self:getPercentageFor250(self.current) * 156)
-        local theight2 = theight + (self:getPercentageFor(self.tension_preview) * 156)
-        -- Note: causes a visual bug.
-        if (theight2 > ((0 + 156) - 1)) then
-            theight2 = ((0 + 156) - 1)
+        local total_height = 156 - (self:getPercentageFor250(self.current) * 156)
+        local preview_height = total_height + (self:getPercentageFor(self.tension_preview) * 156)
+        -- Note: still might cause a visual bug
+        if (preview_height > ((0 + 156))) then
+            preview_height = ((0 + 156)) -- for some reason in kristal and base dr, if your tension preview is equal to the tension required to use the spell, the bar dims like when it does when you don't have enough tp
             color_to_set = {COLORS.dkgray[1], COLORS.dkgray[2], COLORS.dkgray[3], 0.7}
         end
 
         Draw.pushScissor()
-        Draw.scissorPoints(0, theight2 + 1, 25, theight + 1)
+        Draw.scissorPoints(0, math.floor(preview_height) + 1, 25, math.floor(total_height) + 1)
 
         -- No idea how Deltarune draws this, cause this code was added in Kristal:
         local r,g,b,_ = love.graphics.getColor()
@@ -279,11 +277,10 @@ function LightTensionBar:drawFill()
         Draw.setColor(1, 1, 1, 1)
     end
 
-
     if ((self.apparent > 20) and (self.apparent < 250)) then
         Draw.setColor(1, 1, 1, 1)
         Draw.pushScissor()
-        Draw.scissorPoints(0, 156 - (self:getPercentageFor250(self.current) * 156) + 1, 25, 156 - (self:getPercentageFor250(self.current) * 156) + 3)
+        Draw.scissorPoints(0, 156 - (self:getPercentageFor250(self.current) * 156) + 1, 25, math.ceil(156 - (self:getPercentageFor250(self.current) * 156) + 3))
         Draw.draw(self.tp_bar_fill, 0, 0)
         Draw.popScissor()
     end
