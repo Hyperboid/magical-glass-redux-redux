@@ -743,6 +743,16 @@ function LightBattleUI:drawState()
 
 end
 
+function LightBattleUI:update()
+    if self.help_window then
+        if math.ceil(self.help_window.y) < 280 then
+            self.help_window.visible = true
+        else
+            self.help_window.visible = false
+        end
+    end
+end
+
 function LightBattleUI:draw()
     self:drawState()
     super.draw(self)
