@@ -2293,17 +2293,6 @@ function lib:init()
         end
     end)
 
-    Utils.hook(LightCellMenu, "runCall", function(orig, self, call)
-        if call[3] == nil or call[3] then
-            Assets.playSound("phone", 0.7)
-        end
-
-        Game.world.menu:closeBox()
-        Game.world.menu.state = "TEXT"
-        Game.world:setCellFlag(call[2], Game.world:getCellFlag(call[2], -1) + 1)
-        Game.world:startCutscene(call[2])
-    end)
-
     Utils.hook(Savepoint, "init", function(orig, self, x, y, properties)
         orig(self, x, y, properties)
         Game.world.timer:after(1/30, function()
