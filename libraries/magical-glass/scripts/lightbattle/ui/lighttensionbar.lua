@@ -175,33 +175,31 @@ function LightTensionBar:update()
 end
 
 function LightTensionBar:drawText()
-    local x = self.x - 49
     love.graphics.setFont(self.tp_font)
     love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.print("T", x + 1, 1)
-    love.graphics.print("P", x + 1, 22)
+    love.graphics.print("T", -20 + 1, 1)
+    love.graphics.print("P", -20 + 1, 22)
 
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.print("T", x, 0)
-    love.graphics.print("P", x, 21)
+    love.graphics.print("T", -20, 0)
+    love.graphics.print("P", -20, 21)
 
     local tamt = math.floor(self:getPercentageFor250(self.apparent) * 100)
     self.maxed = false
     love.graphics.setFont(self.font)
     if (tamt < 100) then
         love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.printf(tostring(math.floor(self:getPercentageFor250(self.apparent) * 100)) .. "%", self.x - 38, self.height - 4, 50, "center")
+        love.graphics.printf(tostring(math.floor(self:getPercentageFor250(self.apparent) * 100)) .. "%", 29 - 38, self.height - 4, 50, "center")
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(tostring(math.floor(self:getPercentageFor250(self.apparent) * 100)) .. "%", self.x - 39, self.height - 5, 50, "center")
-        --love.graphics.print("%", x, self.height - 4)
+        love.graphics.printf(tostring(math.floor(self:getPercentageFor250(self.apparent) * 100)) .. "%", 29 - 39, self.height - 5, 50, "center")
     end
     if (tamt >= 100) then
         self.maxed = true
 
         love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.print("MAX", self.x - 36, self.height - 4)
+        love.graphics.print("MAX", 29 - 36, self.height - 4)
         Draw.setColor(PALETTE["tension_maxtext"])
-        love.graphics.print("MAX", self.x - 37, self.height - 5)
+        love.graphics.print("MAX", 29 - 37, self.height - 5)
     end
 end
 
