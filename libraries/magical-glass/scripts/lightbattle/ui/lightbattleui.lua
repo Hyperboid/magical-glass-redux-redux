@@ -88,6 +88,12 @@ function LightBattleUI:init()
         Game.battle.arena:addChild(self.xact_text[i])
     end
     
+    self.party_text = {}
+    for i = 1, 3 do
+        self.party_text[i] = Text("", 62, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
+        Game.battle.arena:addChild(self.party_text[i])
+    end
+    
 end
 
 function LightBattleUI:clearEncounterText()
@@ -144,6 +150,9 @@ function LightBattleUI:drawState()
         text:setText("")
     end
     for _,text in ipairs(self.xact_text) do
+        text:setText("")
+    end
+    for _,text in ipairs(self.party_text) do
         text:setText("")
     end
         
@@ -722,8 +731,9 @@ function LightBattleUI:drawState()
         local hp_x = 190 + (name_length * 16)
 
         for index = page_offset + 1, math.min(page_offset + 3, #Game.battle.party) do
+            local party_text = self.party_text[index - page_offset]
             Draw.setColor(1, 1, 1, 1)
-            love.graphics.print("* " .. Game.battle.party[index].chara:getName(), 100, 0 + ((index - page_offset - 1) * 32))
+            party_text:setText("* " .. Game.battle.party[index].chara:getName())
 
             if self.style ~= "deltarune" then
                 Draw.setColor(PALETTE["action_health_bg_ut"])
@@ -793,6 +803,13 @@ function LightBattleUI:update()
     end
     for _,text in ipairs(self.xact_text) do
         if state == "ENEMYSELECT" and Game.battle.state_reason == "XACT" and #text.text > 0 then
+            text.visible = true
+        else
+            text.visible = false
+        end
+    end
+    for _,text in ipairs(self.party_text) do
+        if state == "PARTYSELECT" and #text.text > 0 then
             text.visible = true
         else
             text.visible = false
