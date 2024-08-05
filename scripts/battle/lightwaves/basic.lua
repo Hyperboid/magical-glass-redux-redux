@@ -1,4 +1,10 @@
-local Basic, super = Class(Wave)
+local Basic, super = Class(LightWave)
+
+function Basic:init()
+    super.init(self)
+
+    self:setArenaSize(100)
+end
 
 function Basic:onStart()
     -- Every 0.33 seconds...
@@ -19,7 +25,7 @@ end
 function Basic:update()
     -- Code here gets called every frame
 
-    super.update(self)
+    super:update(self)
 end
 
 return Basic

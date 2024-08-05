@@ -6,6 +6,7 @@ LightEnemySprite         = libRequire("magical-glass", "scripts/lightbattle/ligh
 LightArena               = libRequire("magical-glass", "scripts/lightbattle/lightarena")
 LightEncounter           = libRequire("magical-glass", "scripts/lightbattle/lightencounter")
 LightSoul                = libRequire("magical-glass", "scripts/lightbattle/lightsoul")
+LightWave                = libRequire("magical-glass", "scripts/lightbattle/lightwave")
 LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/ui/lightbattleui")
 HelpWindow               = libRequire("magical-glass", "scripts/lightbattle/ui/helpwindow")
 LightDamageNumber        = libRequire("magical-glass", "scripts/lightbattle/ui/lightdamagenumber")
@@ -32,6 +33,7 @@ function lib:unload()
     LightArena               = nil
     LightEncounter           = nil
     LightSoul                = nil
+    LightWave                = nil
     LightBattleUI            = nil
     HelpWindow               = nil
     LightDamageNumber        = nil
@@ -164,6 +166,7 @@ function lib:preInit()
     self.random_encounters = {}
     self.light_encounters = {}
     self.light_enemies = {}
+    self.light_waves = {}
     self.light_shops = {}
 
     for _,path,rnd_enc in Registry.iterScripts("battle/randomencounters") do
@@ -182,6 +185,12 @@ function lib:preInit()
         assert(light_enemy ~= nil, '"lightenemies/'..path..'.lua" does not return value')
         light_enemy.id = light_enemy.id or path
         self.light_enemies[light_enemy.id] = light_enemy
+    end
+    
+    for _,path,light_wave in Registry.iterScripts("battle/lightwaves") do
+        assert(light_wave ~= nil, '"lightwaves/'..path..'.lua" does not return value')
+        light_wave.id = light_wave.id or path
+        self.light_waves[light_wave.id] = light_wave
     end
 
     for _,path,light_shop in Registry.iterScripts("lightshops") do
@@ -706,83 +715,6 @@ function lib:init()
     Utils.hook(Battle, "returnToWorld", function(orig, self)
         orig(self)
         Game:setFlag("current_battle_system#", nil)
-    end)
-
-    Utils.hook(Wave, "init", function(orig, self)
-        orig(self)
-
-        self.allow_duplicates = false
-
-        self.has_soul = true
-        self.darken = false
-        self.auto_clear = true
-    end)
-
-    Utils.hook(Wave, "getAllowDuplicates", function(orig, self)
-        return self.allow_duplicates
-    end)
-    
-    Utils.hook(Wave, "setArenaSize", function(orig, self, width, height)
-        if Game.battle.light then
-            self.arena_width = width
-            self.arena_height = height or width
-        else
-            orig(self, width, height)
-        end
-    end)
-
-    Utils.hook(Wave, "setArenaPosition", function(orig, self, x, y)
-        if Game.battle.light then
-            self.arena_x = x
-            self.arena_y = y
-        else
-            orig(self, x, y)
-        end
-    end)
-
-    Utils.hook(Wave, "getMenuAttackers", function(orig, self)
-        local result = {}
-        for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
-            local wave = enemy.selected_menu_wave
-            if type(wave) == "table" and wave.id == self.id or wave == self.id then
-                table.insert(result, enemy)
-            end
-        end
-        return result
-    end)
-
-    Utils.hook(Wave, "spawnBulletTo", function(orig, self, parent, bullet, ...)
-        local new_bullet
-        if isClass(bullet) and bullet:includes(Bullet) then
-            new_bullet = bullet
-        elseif Registry.getBullet(bullet) then
-            new_bullet = Registry.createBullet(bullet, ...)
-        else
-            local x, y = ...
-            table.remove(arg, 1)
-            table.remove(arg, 1)
-            new_bullet = Bullet(x, y, bullet, unpack(arg))
-        end
-        new_bullet.wave = self
-        local attackers
-        if Game.battle.light and #Game.battle.menu_waves > 0 then
-            attackers = self:getMenuAttackers()
-        end
-        if #Game.battle.waves > 0 then
-            attackers = self:getAttackers()
-        end
-        if #attackers > 0 then
-            new_bullet.attacker = Utils.pick(attackers)
-        end
-        table.insert(self.bullets, new_bullet)
-        table.insert(self.objects, new_bullet)
-        if parent then
-            new_bullet:setParent(parent)
-        elseif not new_bullet.parent then
-            Game.battle:addChild(new_bullet)
-        end
-        new_bullet:onWaveSpawn(self)
-        return new_bullet
     end)
 
     Utils.hook(Item, "init", function(orig, self)
@@ -2622,6 +2554,111 @@ function lib:init()
             orig(self)
         end
     end)
+    
+    Utils.hook(DebugSystem, "registerDefaults", function(orig, self)
+        local in_game = function () return Kristal.getState() == Game end
+        local in_battle = function () return in_game() and Game.state == "BATTLE" and not Game.battle.light end
+        local in_light_battle = function () return in_game() and Game.state == "BATTLE" and Game.battle.light end
+        local in_overworld = function () return in_game() and Game.state == "OVERWORLD" end
+
+        -- Global
+        self:registerConfigOption("main", "Object Selection Pausing",
+                                  "Pauses the game when the object selection menu is opened.", "objectSelectionSlowdown")
+
+        self:registerOption("main", "Engine Options", "Configure various noningame options.", function ()
+            self:enterMenu("engine_options", 1)
+        end)
+
+        self:registerOption("main", "Fast Forward",
+                            function () return self:appendBool("Speed up the engine.", FAST_FORWARD) end,
+                            function () FAST_FORWARD = not FAST_FORWARD end)
+        self:registerOption("main", "Debug Rendering",
+                            function () return self:appendBool("Draw debug information.", DEBUG_RENDER) end,
+                            function () DEBUG_RENDER = not DEBUG_RENDER end)
+        self:registerOption("main", "Hotswap", "Swap out code from the files. Might be unstable.",
+                            function ()
+                                Hotswapper.scan(); self:refresh()
+                            end)
+        self:registerOption("main", "Reload", "Reload the mod. Hold shift to\nnot temporarily save.", function ()
+            if Kristal.getModOption("hardReset") then
+                love.event.quit("restart")
+            else
+                if Mod then
+                    Kristal.quickReload(Input.shift() and "save" or "temp")
+                else
+                    Kristal.returnToMenu()
+                end
+            end
+        end)
+
+        self:registerOption("main", "Noclip",
+                            function () return self:appendBool("Toggle interaction with solids.", NOCLIP) end,
+                            function () NOCLIP = not NOCLIP end,
+                            in_game
+        )
+
+        self:registerOption("main", "Give Item", "Give an item.", function ()
+                                self:enterMenu("give_item", 0)
+                            end, in_game)
+
+        self:registerOption("main", "Portrait Viewer", "Enter the portrait viewer menu.", function ()
+                                self:setState("FACES")
+                            end, in_game)
+
+        self:registerOption("main", "Flag Editor", "Enter the flag editor menu.", function ()
+                                self:setState("FLAGS")
+                            end, in_game)
+
+        self:registerOption("main", "Sound Test", "Enter the sound test menu.", function ()
+                                self:fadeMusicOut()
+                                self:enterMenu("sound_test", 0)
+                            end, in_game)
+
+        self:registerOption("main", "Change Party", "Enter the party change menu.", function ()
+                                self:enterMenu("change_party", 0)
+                            end, in_game)
+
+        -- World specific
+        self:registerOption("main", "Select Map", "Switch to a new map.", function ()
+                                self:enterMenu("select_map", 0)
+                            end, in_overworld)
+
+        self:registerOption("main", "Start Encounter", "Start an encounter.", function ()
+                                self:enterMenu("encounter_select", 0)
+                            end, in_overworld)
+
+        self:registerOption("main", "Enter Shop", "Enter a shop.", function ()
+                                self:enterMenu("select_shop", 0)
+                            end, in_overworld)
+
+        self:registerOption("main", "Play Cutscene", "Play a cutscene.", function ()
+                                self:enterMenu("cutscene_select", 0)
+                            end, in_overworld)
+
+        -- Battle specific
+        self:registerOption("main", "Start Wave", "Start a wave.", function ()
+                                self:enterMenu("wave_select", 0)
+                            end, in_battle)
+
+        self:registerOption("main", "End Battle", "Instantly complete a battle.", function ()
+                                if Game.battle.state == "DEFENDING" and Game:isLight() then
+                                    Game.battle:setState("DEFENDINGEND", "NONE")
+                                end
+                                Game.battle:setState("VICTORY")
+                            end, in_battle)
+                            
+        self:registerOption("main", "Start Wave", "Start a wave.", function ()
+                                self:enterMenu("light_wave_select", 0)
+                            end, in_light_battle)
+
+        self:registerOption("main", "End Battle", "Instantly complete a battle.", function ()
+                                Game.battle.forced_victory = true
+                                if Game.battle.state == "DEFENDING" then
+                                    Game.battle.encounter:onWavesDone()
+                                end
+                                Game.battle:setState("VICTORY")
+                            end, in_light_battle)
+    end)
 
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
 
@@ -2679,6 +2716,22 @@ function lib:createLightEnemy(id, ...)
     end
 end
 
+function lib:registerLightWave(id, class)
+    self.light_waves[id] = class
+end
+
+function lib:getLightWave(id)
+    return self.light_waves[id]
+end
+
+function lib:createLightWave(id, ...)
+    if self.light_waves[id] then
+        return self.light_waves[id](...)
+    else
+        error("Attempt to create non existent light wave \"" .. tostring(id) .. "\"")
+    end
+end
+
 function lib:registerLightShop(id, class)
     self.light_shops[id] = class
 end
@@ -2726,10 +2779,10 @@ function lib:registerDebugOptions(debug)
         end
     end
 
-    debug:registerMenu("wave_select", "Wave Select", "search")
+    debug:registerMenu("light_wave_select", "Wave Select", "search")
 
     local waves_list = {}
-    for id,_ in pairs(Registry.waves) do
+    for id,_ in pairs(self.light_waves) do
         if id ~= "_none" and id ~= "_story" then
             table.insert(waves_list, id)
         end
@@ -2740,13 +2793,9 @@ function lib:registerDebugOptions(debug)
     end)
 
     for _,id in ipairs(waves_list) do
-        debug:registerOption("wave_select", id, "Start this wave.", function ()
-            if Game.battle.light then
-                Game.battle.debug_wave = true
-                Game.battle:setState("ENEMYDIALOGUE", {id})
-            else
-                Game.battle:setState("DEFENDINGBEGIN", {id})
-            end
+        debug:registerOption("light_wave_select", id, "Start this wave.", function ()
+            Game.battle.debug_wave = true
+            Game.battle:setState("ENEMYDIALOGUE", {id})
             debug:closeMenu()
         end)
     end

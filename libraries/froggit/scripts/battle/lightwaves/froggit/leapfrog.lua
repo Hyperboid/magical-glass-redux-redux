@@ -1,4 +1,4 @@
-local wave, super = Class(Wave)
+local wave, super = Class(LightWave)
 
 function wave:onStart()
     self.time = 0

@@ -2495,7 +2495,7 @@ function LightBattle:setWaves(waves)
     for _,wave in ipairs(waves) do
         local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
         if type(wave) == "string" then
-            wave = Registry.createWave(wave)
+            wave = MagicalGlassLib:createLightWave(wave)
         end
         if wave:getAllowDuplicates() or not exists then
             wave.encounter = self.encounter
@@ -2517,7 +2517,7 @@ function LightBattle:setMenuWaves(waves)
     for _,wave in ipairs(waves) do
         local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
         if type(wave) == "string" then
-            wave = Registry.createWave(wave)
+            wave = MagicalGlassLib:createLightWave(wave)
         end
         if wave:getAllowDuplicates() or not exists then
             wave.encounter = self.encounter

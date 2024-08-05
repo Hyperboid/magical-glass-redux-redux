@@ -1,4 +1,4 @@
-local ScudStorm, super = Class(Wave)
+local ScudStorm, super = Class(LightWave)
 
 function ScudStorm:init()
     super.init(self)

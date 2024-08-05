@@ -1,10 +1,14 @@
-local MovingArena, super = Class(Wave)
+local MovingArena, super = Class(LightWave)
 
 function MovingArena:init()
-    super.init(self)
+    super:init(self)
 
     -- Initialize timer
     self.siner = 0
+
+    self.darken = true
+    self:setArenaSize(142, Game.battle.arena.height)
+    self:setArenaPosition(SCREEN_WIDTH/2, 300)
 end
 
 function MovingArena:onStart()
@@ -16,7 +20,7 @@ function MovingArena:onStart()
 
     -- Spawn spikes on bottom of arena (rotated 180 degrees)
     self:spawnBulletTo(Game.battle.arena, "arenahazard", arena.width/2, arena.height, math.rad(180))
-
+    
     -- Store starting arena position
     self.arena_start_x = arena.x
     self.arena_start_y = arena.y
@@ -32,7 +36,7 @@ function MovingArena:update()
     -- Move the arena
     Game.battle.arena:setPosition(self.arena_start_x, self.arena_start_y + offset)
 
-    super.update(self)
+    super:update(self)
 end
 
 return MovingArena
