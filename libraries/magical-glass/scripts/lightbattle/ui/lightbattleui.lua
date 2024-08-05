@@ -67,6 +67,27 @@ function LightBattleUI:init()
     self.sparestar = Assets.getTexture("ui/battle/sparestar")
     self.tiredmark = Assets.getTexture("ui/battle/tiredmark")
     
+    self.menu_text = {}
+    for i = 1, 6 do
+        self.menu_text[i] = Text("", 62, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
+        Game.battle.arena:addChild(self.menu_text[i])
+    end
+    
+    self.page_text = Text("", 350, 15 + 64, nil, nil, {["font"] = "main_mono"})
+    Game.battle.arena:addChild(self.page_text)
+    
+    self.enemies_text = {}
+    for i = 1, 3 do
+        self.enemies_text[i] = DynamicGradientText("", 62, 15 + 32 * (i-1), nil, nil, nil, {["font"] = "main_mono"})
+        Game.battle.arena:addChild(self.enemies_text[i])
+    end
+    
+    self.xact_text = {}
+    for i = 1, 3 do
+        self.xact_text[i] = Text("", 284, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
+        Game.battle.arena:addChild(self.xact_text[i])
+    end
+    
 end
 
 function LightBattleUI:clearEncounterText()
@@ -115,8 +136,20 @@ function LightBattleUI:drawActionArea()
 end
 
 function LightBattleUI:drawState()
+    for _,text in ipairs(self.menu_text) do
+        text:setText("")
+    end
+    self.page_text:setText("")
+    for _,text in ipairs(self.enemies_text) do
+        text:setText("")
+    end
+    for _,text in ipairs(self.xact_text) do
+        text:setText("")
+    end
+        
     local state = Game.battle.state
     if state == "MENUSELECT" then
+    
         local page = Game.battle:isPagerMenu() and math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1 or math.ceil(Game.battle.current_menu_y / Game.battle.current_menu_rows) - 1
         local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
 
@@ -161,6 +194,7 @@ function LightBattleUI:drawState()
             local item = Game.battle.menu_items[i]
 
             Draw.setColor(1, 1, 1, 1)
+            
             local text_offset = 0
             local able = Game.battle:canSelectMenuItem(item)
             
@@ -216,16 +250,18 @@ function LightBattleUI:drawState()
                     end
                 end
             end
+            
+            local menu_text = self.menu_text[i - page_offset]
 
             if able then
-                Draw.setColor(item.color or {1, 1, 1, 1})
+                menu_text:setColor(item.color or {1, 1, 1, 1})
             else
-                Draw.setColor(COLORS.gray)
+                menu_text:setColor(COLORS.gray)
             end
 
             for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
                 if enemy.mercy >= 100 and item.special == "spare" then
-                    love.graphics.setColor(MagicalGlassLib.name_color)
+                    menu_text:setColor(MagicalGlassLib.name_color)
                 end
             end
 
@@ -237,13 +273,11 @@ function LightBattleUI:drawState()
             end
 
             if heads > 0 then
---[[                 self.menuselect_options[i]:setText(name)
-                self.menuselect_options[i]:setPosition(text_offset + 67 + (x * (240 + extra_offset[2])), 15 + (y * 32)) ]]
-                love.graphics.print(name, text_offset + 95 + (x * (240 + extra_offset[2])), (y * 32))
+                menu_text:setPosition(text_offset + 57 + (x * (240 + extra_offset[2])), 15 + (y * 32))
+                menu_text:setText(name)
             else
---[[                 self.menuselect_options[i]:setText("* " .. name)
-                self.menuselect_options[i]:setPosition(text_offset + 62 + (x * (240 + extra_offset[2])), 15 + (y * 32)) ]]
-                love.graphics.print("* " .. name, text_offset + 100 + (x * (240 + extra_offset[2])), (y * 32))
+                menu_text:setPosition(text_offset + 62 + (x * (240 + extra_offset[2])), 15 + (y * 32))
+                menu_text:setText("* " .. name)
             end
 
             text_offset = text_offset + font:getWidth(item.name)
@@ -300,7 +334,7 @@ function LightBattleUI:drawState()
         Draw.setColor(1, 1, 1, 1)
 
         if Game.battle:isPagerMenu() then
-            love.graphics.print("PAGE " .. page + 1, 388, 64)
+            self.page_text:setText("PAGE " .. page + 1)
         else
             if page < max_page then
                 Draw.draw(self.arrow_sprite, 45, 90 + (math.sin(Kristal.getTime()*6) * 2))
@@ -385,31 +419,16 @@ function LightBattleUI:drawState()
                     name = name .. " " .. enemy.index
                 end
 
+                local enemy_text = self.enemies_text[index - page_offset]
+                local xact_text = self.xact_text[index - page_offset]
+
                 if #name_colors <= 1 then
-                    Draw.setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
-                    love.graphics.print(name, 100, 0 + y_offset)
+                    enemy_text:setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
+                    enemy_text:setText(name)
                 else
-                    local canvas = Draw.pushCanvas(font_mono:getWidth(name), font_mono:getHeight())
-                    Draw.setColor(1, 1, 1)
-                    love.graphics.print(name)
-                    Draw.popCanvas()
-
-                    local color_canvas = Draw.pushCanvas(#name_colors, 1)
-                    for i = 1, #name_colors do
-                        -- Draw a pixel for the color
-                        Draw.setColor(name_colors[i])
-                        love.graphics.rectangle("fill", i-1, 0, 1, 1)
-                    end
-                    Draw.popCanvas()
-
-                    Draw.setColor(1, 1, 1)
-
-                    local shader = Kristal.Shaders["DynGradient"]
-                    love.graphics.setShader(shader)
-                    shader:send("colors", color_canvas)
-                    shader:send("colorSize", {#name_colors, 1})
-                    Draw.draw(canvas, 100, 0 + y_offset)
-                    love.graphics.setShader()
+                    enemy_text:setColor(1, 1, 1)
+                    enemy_text:setGradientColors(name_colors)
+                    enemy_text:setText(name)
                 end
                 
                 Draw.setColor(1, 1, 1)
@@ -445,11 +464,11 @@ function LightBattleUI:drawState()
                 end
                 
                 if Game.battle.state_reason == "XACT" then
-                    Draw.setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
+                    xact_text:setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
                     if Game.battle.selected_xaction.id == 0 then
-                        love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 322, y_offset)
+                        xact_text:setText(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]))
                     else
-                        love.graphics.print(Game.battle.selected_xaction.name, 322, y_offset)
+                        xact_text:setText(Game.battle.selected_xaction.name)
                     end
                 elseif self.style ~= "undertale" then
                     local namewidth = font_mono:getWidth(enemy.name)
@@ -749,6 +768,34 @@ function LightBattleUI:update()
             self.help_window.visible = true
         else
             self.help_window.visible = false
+        end
+    end
+    local state = Game.battle.state
+    for _,text in ipairs(self.menu_text) do
+        if state == "MENUSELECT" and #text.text > 0 then
+            text.visible = true
+        else
+            text.visible = false
+        end
+    end
+    local text = self.page_text
+    if state == "MENUSELECT" and #text.text > 0 then
+        text.visible = true
+    else
+        text.visible = false
+    end
+    for _,text in ipairs(self.enemies_text) do
+        if state == "ENEMYSELECT" and #text.text > 0 then
+            text.visible = true
+        else
+            text.visible = false
+        end
+    end
+    for _,text in ipairs(self.xact_text) do
+        if state == "ENEMYSELECT" and Game.battle.state_reason == "XACT" and #text.text > 0 then
+            text.visible = true
+        else
+            text.visible = false
         end
     end
 end
