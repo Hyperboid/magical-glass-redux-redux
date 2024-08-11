@@ -229,7 +229,7 @@ function LightBattle:postInit(state, encounter)
         self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
     end
 
-    self.arena = LightArena(SCREEN_WIDTH/2, 385)
+    self.arena = LightArena(SCREEN_WIDTH/2, 320)
     self.arena.layer = BATTLE_LAYERS["ui"] - 1
     self:addChild(self.arena)
 
@@ -1269,6 +1269,7 @@ function LightBattle:onStateChange(old,new)
         end
         
     elseif new == "DEFENDINGEND" then
+        self.arena.rotation = 0
         if self.arena.height >= self.arena.init_height then
             self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
             function()

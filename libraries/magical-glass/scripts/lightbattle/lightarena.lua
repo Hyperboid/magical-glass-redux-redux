@@ -3,7 +3,7 @@ local LightArena, super = Class(Object)
 function LightArena:init(x, y, shape)
     super.init(self, x, y)
 
-    self:setOrigin(0.5, 1)
+    self:setOrigin(0.5, 0.5)
 
     self.x = math.floor(self.x)
     self.y = math.floor(self.y)
@@ -27,7 +27,7 @@ function LightArena:init(x, y, shape)
     self:addChild(self.sprite)
 
     self.sprite_border = ArenaSprite(self)
-    self.sprite_border:setOrigin(0.5, 1)
+    self.sprite_border:setOrigin(0.5, 0.5)
     self.sprite_border.background = false
     self.sprite_border.layer = BATTLE_LAYERS["above_bullets"]
     Game.battle:addChild(self.sprite_border)
@@ -129,6 +129,7 @@ function LightArena:isNotTransitioning()
 end
 
 function LightArena:update()
+    self.sprite_border.rotation = self.rotation
     if #self.target_shape > 0 then
         if not Utils.equal(self.width, self.target_shape[1], true) then
             self.width = Utils.approach(self.width, self.target_shape[1], DTMULT * 30)
