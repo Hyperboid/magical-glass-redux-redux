@@ -230,7 +230,7 @@ function LightArena:preDraw()
     super.preDraw(self)
     self.sprite_border.x = self.x
     self.sprite_border.y = self.y
-    self.sprite_border.width = self.sprite.width-1
+    self.sprite_border.width = self.sprite.width + 1
 end
 
 function LightArena:draw()

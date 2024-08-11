@@ -34,6 +34,9 @@ function Dummy:drawBackground()
         love.graphics.rectangle("line", 18 + offset, sine + 118, 101, 118)
         offset = offset + 101
     end
+    
+    -- Draw.setColor(0,1,0,1)
+    -- love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 end
 
 return Dummy
