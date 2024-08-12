@@ -67,9 +67,9 @@ function LightAttackBox:createBolts()
                 end
             else
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or 24 + 40 * (i - 2)), 319, battler, scale_y)
+                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or 74 + 90 * (i - 2)), 319, battler, scale_y)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or 24 + 40 * (i - 2)), 319, battler, scale_y)
+                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or 74 + 90 * (i - 2)), 319, battler, scale_y)
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
@@ -98,14 +98,14 @@ end
 
 function LightAttackBox:getClose(battler)
     if battler.attack_type == "shoe" then
-        return math.floor(battler.bolts[1].x / battler.speed) - math.floor(self.bolt_target / battler.speed)
+        return battler.bolts[1].x / battler.speed - self.bolt_target / battler.speed
     elseif battler.attack_type == "slice" then
-        return Utils.round(battler.bolts[1].x - self.bolt_target)
+        return battler.bolts[1].x - self.bolt_target
     end
 end
 
 function LightAttackBox:getFirstBolt(battler)
-    return Utils.round(battler.bolts[1].x - self.bolt_target)
+    return battler.bolts[1].x - self.bolt_target
 end
 
 function LightAttackBox:evaluateHit(battler, close)
