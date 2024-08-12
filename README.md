@@ -1,7 +1,4 @@
-# THIS LIBRARY HAS BEEN DEPRECATED!
-# CHECK OUT THE REWRITE, [MAGICAL GLASS 2!](https://github.com/Idunno1/magical-glass-2)
-
-# Magical Glass v1.1.0 for [Kristal](https://github.com/KristalTeam/Kristal)
+# Magical Glass for [Kristal](https://github.com/KristalTeam/Kristal)
 
 <p align="center" width="100%">
 <img src="magicalglass.png" alt="Magical Glass" width="50%" />
@@ -16,19 +13,11 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * A Froggit encounter!
 * ...And (hopefully) more!
 
-## Planned features/extensions:
-* Multiple party members in battles
-* Deltatraveler battle system (we have permission, don't worry)
-  * Mini party members
-* EN and other stuff from GAMETEST_7 (maybe)
-* UNDERTALE enemy recreations
-* UNDERTALE movement
-* UNDERTALE shops
-
 ## Credits:
 
 ### Lead:
 * Sam Deluxe
+* FireRainV
 
 ### Programmers:
 * Sam Deluxe (like, everything)
@@ -72,10 +61,3 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 ### Sound Effects and Music:
 * UNDERTALE Team
 * deltarune Team
-
-## Releases:
-https://github.com/Idunno1/magical-glass/releases<br>
-(I recommend cloning the repo but y'know)
-
-## Docs:
-I'll make these eventually lmao
