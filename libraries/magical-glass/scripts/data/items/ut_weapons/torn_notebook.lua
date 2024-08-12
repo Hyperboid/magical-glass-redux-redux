@@ -48,6 +48,9 @@ function item:init()
     self.light_bolt_direction = "left"
     self.light_multibolt_variance = {{0, 25, 50}}
     self.inv_bonus = 15/30
+    
+    self.bolt_count = 2
+    self.multibolt_variance = {{50, 75}}
 
     self.attack_sound = "bookspin"
     self.attack_pitch = 0.9

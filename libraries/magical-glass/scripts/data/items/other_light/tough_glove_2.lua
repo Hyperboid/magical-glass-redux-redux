@@ -43,6 +43,10 @@ function item:init()
     self.light_bolt_direction = "random"
     self.light_bolt_miss_threshold = 22
     self.light_multibolt_variance = {{15}, {50}, {85}}
+    
+    self.bolt_count = 4
+    self.bolt_speed = 4
+    self.multibolt_variance = 30
 
     self.attack_sound = "punchstrong"
 

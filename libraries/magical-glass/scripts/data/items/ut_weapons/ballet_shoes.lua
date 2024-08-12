@@ -40,6 +40,9 @@ function item:init()
     self.light_bolt_miss_threshold = 2
     self.light_bolt_direction = "right"
     self.light_multibolt_variance = {{0, 25, 50}, {100, 125, 150}}
+    
+    self.bolt_count = 3
+    self.multibolt_variance = {{50, 75}}
 
     self.attack_sound = "punchstrong"
 end
