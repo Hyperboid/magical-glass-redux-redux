@@ -25,7 +25,9 @@ end
 
 function LightAttackBox:createBolts()
     self.shoe_finished = 0
-    for i,battler in ipairs(self.attackers) do
+    local offset = 0
+    local last_offset = 0
+    for i,battler in ipairs(Utils.shuffle(self.attackers)) do
         local lane = {}
         lane.battler = battler
         lane.bolts = {}
@@ -42,12 +44,14 @@ function LightAttackBox:createBolts()
             lane.attack_type = "slice"
         end
 
-        local randomizer = #self.attackers == 1 and 0 or Utils.random(0,3,1) * 40
+        offset = offset + last_offset
+        local randomizer = #self.attackers == 1 and 120 or 120 - offset
+        last_offset = Utils.pick{0, 10, 15} * 5
         local start_x
         if lane.direction == "left" then
-            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) - randomizer
+            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) - (Game.battle.multi_mode and randomizer or 0)
         elseif lane.direction == "right" then
-            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) + randomizer
+            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) + (Game.battle.multi_mode and randomizer or 0)
         else
             error("Invalid attack direction")
         end

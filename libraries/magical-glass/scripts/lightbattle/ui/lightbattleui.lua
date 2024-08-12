@@ -110,11 +110,6 @@ end
 function LightBattleUI:beginAttack()
     Game.battle.current_selecting = 0
 
-    local attack_order = Utils.pickMultiple(Game.battle.normal_attackers, #Game.battle.normal_attackers)
-
-    local last_offset = -1
-    local offset = 0
-
     self.attack_box = LightAttackBox(self.arena.width / 2, self.arena.height / 2)
     self.arena:addChild(self.attack_box)
 
