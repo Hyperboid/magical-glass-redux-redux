@@ -68,8 +68,8 @@ function LightArena:setShape(shape)
 
     self.left = math.floor(self.x - self.width / 2)
     self.right = math.floor(self.x + self.width / 2)
-    self.top = math.floor(self.y - self.height)
-    self.bottom = math.floor(self.y)
+    self.top = math.floor(self.y - self.height / 2)
+    self.bottom = math.floor(self.y + self.height / 2)
 
     self.triangles = love.math.triangulate(Utils.unpackPolygon(self.shape))
 

@@ -54,6 +54,7 @@ function lib:save(data)
     data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1] and Game.party[1]:getLightLV() or 0
     data.magical_glass["in_light_shop"] = lib.in_light_shop
+    data.magical_glass["random_encounter"] = lib.random_encounter
 end
 
 function lib:load(data, new_file)
@@ -79,6 +80,7 @@ function lib:load(data, new_file)
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.in_light_shop = data.magical_glass["in_light_shop"] or false
+        lib.random_encounter = data.magical_glass["random_encounter"] or lib.random_encounter or nil
     end
 end
 
@@ -1742,6 +1744,15 @@ function lib:init()
         end
         orig(self)
     end)
+    
+    Utils.hook(EnemyBattler, "defeat", function(orig, self, reason, violent)
+        orig(self, reason, violent)
+        if violent then
+            if MagicalGlassLib.random_encounter then
+                MagicalGlassLib:getRandomEncounter(MagicalGlassLib.random_encounter):addFlag("violent", 1)
+            end
+        end
+    end)
 
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)
@@ -2895,12 +2906,18 @@ function lib:onFootstep(char, num)
     end
 end
 
-function lib:preUpdate()
+function lib:postUpdate()
     lib.is_light_menu_partyselect = nil
     Game.lw_xp = nil
     for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP
         if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then  
             Game.lw_xp = party:getLightEXP()
+        end
+    end
+    if not Game.battle then
+        if lib.random_encounter then
+            lib:createRandomEncounter(lib.random_encounter):resetSteps()
+            lib.random_encounter = nil
         end
     end
 end

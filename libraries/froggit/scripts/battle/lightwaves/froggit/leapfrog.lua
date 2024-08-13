@@ -3,7 +3,7 @@ local wave, super = Class(LightWave)
 function wave:onStart()
     self.time = 0
     local arena = Game.battle.arena
-    self.frog = self:spawnBullet("leapfrog", arena.x + 60, arena.y)
+    self.frog = self:spawnBullet("leapfrog", arena.x + 60, arena.bottom)
 
     local time = (1 + Utils.random(1))
     self.timer:after(time, function()
