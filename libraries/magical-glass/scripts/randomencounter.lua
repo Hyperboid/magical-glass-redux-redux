@@ -6,13 +6,13 @@ function RandomEncounter:init()
     -- The amount of enemies that can be encountered
     self.population = nil
     
-    -- The amount of steps it takes to start a random encounter
-    self.initial_steps = 30
+    -- The minimum amount of steps it takes to start a random encounter
+    self.minimum_steps = 30
     -- The amount of steps it takes to start a nobody encounter
     self.nobody_steps = 20
     
     -- Whether the steps amount will increase when not that many monsters left
-    self.use_population_factor = false
+    self.use_population_factor = true
     
     -- The bubble that should appear when a random encounter is triggered
     -- If this is nil, the battle starts instantly
@@ -29,12 +29,15 @@ function RandomEncounter:init()
 end
 
 function RandomEncounter:resetSteps()
-    if not self:nobodyCame() and self.use_population_factor and self.population and self.population >= 0 then
-        local pop_factor = 15 / (15 - math.max(0, self:getFlag("violent", 0) - self.population + 5)) - 1
-        local steps = math.ceil(self.initial_steps + 100 * pop_factor)
-        MagicalGlassLib.steps_until_encounter = steps
-    elseif not self:nobodyCame() then
-        MagicalGlassLib.steps_until_encounter = self.initial_steps
+    if not self:nobodyCame() then
+        if self.use_population_factor and self.population and self.population >= 0 then
+            local divided = self.minimum_steps / 2
+            local pop_factor = math.min(divided / (divided - self:getFlag("violent", 0)), 8)
+            local steps = math.ceil(self.minimum_steps + (Utils.round(Utils.random(divided))) * pop_factor)
+            MagicalGlassLib.steps_until_encounter = steps
+        else
+            MagicalGlassLib.steps_until_encounter = self.minimum_steps
+        end
     else
         MagicalGlassLib.steps_until_encounter = self.nobody_steps
     end
