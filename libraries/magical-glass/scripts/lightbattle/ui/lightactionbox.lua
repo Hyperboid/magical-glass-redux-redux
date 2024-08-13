@@ -149,15 +149,15 @@ function LightActionBox:drawStatusStripStory()
         end
         
         if karma_mode then
-            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 110 + size * 1.25 + 9 - karma_mode_offset, y + 5)
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 110 + size * 1.2 + 1 + 9 - karma_mode_offset, y + 5)
         end
 
-        love.graphics.setColor(karma_mode and {192/255, 0, 0} or COLORS["red"])
-        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, size * 1.25, 21)
-        love.graphics.setColor({1,0,1})
-        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
-        love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + 10) * 1.25) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.setColor(karma_mode and MagicalGlassLib.PALETTE["player_karma_health_bg"] or MagicalGlassLib.PALETTE["player_health_bg"])
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, size * 1.2 + 1, 21)
+        love.graphics.setColor(MagicalGlassLib.PALETTE["player_karma_health"])
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0) - (current <= 0 and 1 or 0), 21)
+        love.graphics.setColor(MagicalGlassLib.PALETTE["player_health"])
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + 10) * 1.2 + 1) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0) - (current <= 0 and 1 or 0), 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -170,15 +170,15 @@ function LightActionBox:drawStatusStripStory()
         local color = COLORS.white
         if not self.battler.is_down and not Game.battle.forced_victory then
             if self.battler.sleeping then
-                color = {0,0,1}
+                color = MagicalGlassLib.PALETTE["player_sleeping_text"]
             elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
-                color = COLORS.aqua
+                color = MagicalGlassLib.PALETTE["player_defending_text"]
             elseif karma > 0 then
-                color = {1,0,1}
+                color = MagicalGlassLib.PALETTE["player_karma_text"]
             end
         end
         love.graphics.setColor(color)
-        love.graphics.print(current .. " / " .. max, x + 115 + size * 1.25 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
+        love.graphics.print(current .. " / " .. max, x + 115 + size * 1.2 + 1 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
     end
 end
 
@@ -213,15 +213,15 @@ function LightActionBox:drawStatusStrip()
         end
         
         if karma_mode then
-            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 245 + size * 1.25 + 9 - karma_mode_offset, y + 5)
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 245 + size * 1.2 + 1 + 9 - karma_mode_offset, y + 5)
         end
 
-        love.graphics.setColor(karma_mode and {192/255, 0, 0} or COLORS["red"])
-        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, size * 1.25, 21)
-        love.graphics.setColor({1,0,1})
-        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
-        love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.25) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.setColor(karma_mode and MagicalGlassLib.PALETTE["player_karma_health_bg"] or MagicalGlassLib.PALETTE["player_health_bg"])
+        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, size * 1.2 + 1, 21)
+        love.graphics.setColor(MagicalGlassLib.PALETTE["player_karma_health"])
+        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0) - (current <= 0 and 1 or 0), 21)
+        love.graphics.setColor(MagicalGlassLib.PALETTE["player_health"])
+        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0) - (current <= 0 and 1 or 0), 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -234,15 +234,15 @@ function LightActionBox:drawStatusStrip()
         local color = COLORS.white
         if not self.battler.is_down and not Game.battle.forced_victory then
             if self.battler.sleeping then
-                color = {0,0,1}
+                color = MagicalGlassLib.PALETTE["player_sleeping_text"]
             elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
-                color = COLORS.aqua
+                color = MagicalGlassLib.PALETTE["player_defending_text"]
             elseif karma > 0 then
-                color = {1,0,1}
+                color = MagicalGlassLib.PALETTE["player_karma_text"]
             end
         end
         love.graphics.setColor(color)
-        love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
+        love.graphics.print(current .. " / " .. max, x + 245 + size * 1.2 + 1 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
     else
         local x, y = 2 + (3 - #Game.battle.party - (#Game.battle.party == 2 and 0.4 or 0)) * 102 + (self.index - 1) * 102 * 2 * (#Game.battle.party == 2 and (1 + 0.4) or 1), 130
         
@@ -272,15 +272,15 @@ function LightActionBox:drawStatusStrip()
         
         local karma_mode = Game.battle.encounter.karma_mode
         if karma_mode and not Kristal.getLibConfig("magical-glass", "multi_neat_ui") then
-            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 95 + (small and 20 or 32) * 1.25, y + 15)
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 95 + (small and 20 or 32) * 1.2 + 1, y + 15)
         end
         
-        love.graphics.setColor(karma_mode and {192/255, 0, 0} or COLORS["red"])
-        love.graphics.rectangle("fill", x + 92, y, (small and 20 or 32) * 1.25, 21)
-        love.graphics.setColor({1,0,1})
-        love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.25 + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
-        love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current - karma, 0, max) / max) * (small and 20 or 32)) * 1.25 - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.setColor(karma_mode and MagicalGlassLib.PALETTE["player_karma_health_bg"] or MagicalGlassLib.PALETTE["player_health_bg"])
+        love.graphics.rectangle("fill", x + 92, y, (small and 20 or 32) * 1.2 + 1, 21)
+        love.graphics.setColor(MagicalGlassLib.PALETTE["player_karma_health"])
+        love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.2 + 1 + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0) - (current <= 0 and 1 or 0), 21)
+        love.graphics.setColor(MagicalGlassLib.PALETTE["player_health"])
+        love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current - karma, 0, max) / max) * (small and 20 or 32)) * 1.2 + 1 - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0) - (current <= 0 and 1 or 0), 21)
         
         love.graphics.setFont(Assets.getFont("namelv", 16))
         if max < 10 and max >= 0 then
@@ -294,15 +294,15 @@ function LightActionBox:drawStatusStrip()
         local color = COLORS.white
         if not Game.battle.forced_victory then
             if self.battler.is_down then 
-                color = {1,0,0}
+                color = MagicalGlassLib.PALETTE["player_down_text"]
             elseif self.battler.sleeping then
-                color = {0,0,1}
+                color = MagicalGlassLib.PALETTE["player_sleeping_text"]
             elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
-                color = COLORS.aqua
+                color = MagicalGlassLib.PALETTE["player_defending_text"]
             elseif Game.battle:getActionBy(self.battler) and Utils.containsValue({"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT"}, Game.battle:getState()) then
-                color = COLORS.yellow
+                color = MagicalGlassLib.PALETTE["player_action_text"]
             elseif karma > 0 then
-                color = {1,0,1}
+                color = MagicalGlassLib.PALETTE["player_karma_text"]
             end
         end
         love.graphics.setColor(color)

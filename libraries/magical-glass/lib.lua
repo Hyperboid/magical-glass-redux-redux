@@ -162,6 +162,32 @@ function lib:clearGlobalSave()
 end
 
 function lib:preInit()
+    self.PALETTE = {
+        ["pink_spare"] = {1, 167/255, 212/255, 1},
+        
+        ["tension_maxtext"] = PALETTE["tension_maxtext"],
+        ["tension_back"] = PALETTE["tension_back"],
+        ["tension_decrease"] = PALETTE["tension_decrease"],
+        ["tension_fill"] = PALETTE["tension_fill"],
+        ["tension_max"] = PALETTE["tension_max"],
+        
+        ["action_health_bg"] = COLORS.red,
+        ["action_health"] = COLORS.lime,
+        ["action_health_text"] = PALETTE["action_health_text"],
+        ["battle_mercy_bg"] = PALETTE["battle_mercy_bg"],
+        ["battle_mercy_text"] = PALETTE["battle_mercy_text"],
+        
+        ["player_health_bg"] = COLORS.red,
+        ["player_health"] = COLORS.yellow,
+        ["player_karma_health_bg"] = {192/255, 0, 0, 1},
+        ["player_karma_health"] = COLORS.fuchsia,
+        
+        ["player_defending_text"] = COLORS.aqua,
+        ["player_action_text"] = COLORS.yellow,
+        ["player_down_text"] = COLORS.red,
+        ["player_sleeping_text"] = COLORS.blue,
+        ["player_karma_text"] = COLORS.fuchsia,
+    }
     
     self.random_encounters = {}
     self.light_encounters = {}
@@ -2648,13 +2674,6 @@ function lib:init()
                                 Game.battle:setState("VICTORY")
                             end, in_light_battle)
     end)
-
-    PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
-
-    PALETTE["energy_back"] = {53/255, 181/255, 89/255, 1}
-    PALETTE["energy_fill"] = {186/255, 213/255, 60/255, 1}
-    
-    PALETTE["action_health_bg_ut"] = {1, 0, 0, 1}
 end
 
 function lib:registerRandomEncounter(id, class)
@@ -2862,7 +2881,7 @@ function lib:changeSpareColor(color)
     if color == "yellow" then
         lib.name_color = COLORS.yellow
     elseif color == "pink" then
-        lib.name_color = PALETTE["pink_spare"]
+        lib.name_color = lib.PALETTE["pink_spare"]
     elseif color == "white" then
         lib.name_color = COLORS.white
     elseif type(color) == "table" then

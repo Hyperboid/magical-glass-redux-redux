@@ -198,13 +198,13 @@ function LightTensionBar:drawText()
 
         love.graphics.setColor(0, 0, 0, 1)
         love.graphics.print("MAX", 29 - 36, self.height - 4)
-        Draw.setColor(PALETTE["tension_maxtext"])
+        Draw.setColor(MagicalGlassLib.PALETTE["tension_maxtext"])
         love.graphics.print("MAX", 29 - 37, self.height - 5)
     end
 end
 
 function LightTensionBar:drawBack()
-    Draw.setColor(PALETTE["tension_back"])
+    Draw.setColor(MagicalGlassLib.PALETTE["tension_back"])
     Draw.pushScissor()
     Draw.scissorPoints(0, 0, 25, 156 - (self:getPercentageFor250(self.current) * 156) + 1)
     Draw.draw(self.tp_bar_fill, 0, 0)
@@ -213,13 +213,13 @@ end
 --todo: make apparent tension current tension
 function LightTensionBar:drawFill()
     if (self.apparent < self.current) then
-        Draw.setColor(PALETTE["tension_decrease"])
+        Draw.setColor(MagicalGlassLib.PALETTE["tension_decrease"])
         Draw.pushScissor()
         Draw.scissorPoints(0, 156 - (self:getPercentageFor250(self.current) * 156) + 1, 25, 156)
         Draw.draw(self.tp_bar_fill, 0, 0)
         Draw.popScissor()
 
-        Draw.setColor(PALETTE["tension_fill"])
+        Draw.setColor(MagicalGlassLib.PALETTE["tension_fill"])
         Draw.pushScissor()
         Draw.scissorPoints(0, 156 - (self:getPercentageFor250(self.apparent) * 156) + 1 + (self:getPercentageFor(self.tension_preview) * 156), 25, 156)
         Draw.draw(self.tp_bar_fill, 0, 0)
@@ -231,18 +231,18 @@ function LightTensionBar:drawFill()
         Draw.draw(self.tp_bar_fill, 0, 0)
         Draw.popScissor()
 
-        Draw.setColor(PALETTE["tension_fill"])
+        Draw.setColor(MagicalGlassLib.PALETTE["tension_fill"])
         if (self.maxed) then
-            Draw.setColor(PALETTE["tension_max"])
+            Draw.setColor(MagicalGlassLib.PALETTE["tension_max"])
         end
         Draw.pushScissor()
         Draw.scissorPoints(0, 156 - (self:getPercentageFor250(self.current) * 156) + 1 + (self:getPercentageFor(self.tension_preview) * 156), 25, 156)
         Draw.draw(self.tp_bar_fill, 0, 0)
         Draw.popScissor()
     elseif (self.apparent == self.current) then
-        Draw.setColor(PALETTE["tension_fill"])
+        Draw.setColor(MagicalGlassLib.PALETTE["tension_fill"])
         if (self.maxed) then
-            Draw.setColor(PALETTE["tension_max"])
+            Draw.setColor(MagicalGlassLib.PALETTE["tension_max"])
         end
         Draw.pushScissor()
         Draw.scissorPoints(0, 156 - (self:getPercentageFor250(self.current) * 156) + 1 + (self:getPercentageFor(self.tension_preview) * 156), 25, 156)
