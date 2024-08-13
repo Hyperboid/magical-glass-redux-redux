@@ -1749,7 +1749,7 @@ function lib:init()
         orig(self, reason, violent)
         if violent then
             if MagicalGlassLib.random_encounter then
-                MagicalGlassLib:getRandomEncounter(MagicalGlassLib.random_encounter):addFlag("violent", 1)
+                MagicalGlassLib:createRandomEncounter(MagicalGlassLib.random_encounter):addFlag("violent", 1)
             end
         end
     end)

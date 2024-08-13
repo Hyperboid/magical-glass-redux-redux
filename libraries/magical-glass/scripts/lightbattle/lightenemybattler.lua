@@ -858,7 +858,7 @@ function LightEnemyBattler:defeat(reason, violent)
         end
         Game.battle.xp = Game.battle.xp + self.experience
         if MagicalGlassLib.random_encounter then
-            MagicalGlassLib:getRandomEncounter(MagicalGlassLib.random_encounter):addFlag("violent", 1)
+            MagicalGlassLib:createRandomEncounter(MagicalGlassLib.random_encounter):addFlag("violent", 1)
         end
     end
     
