@@ -12,7 +12,7 @@ function EncounterZone:init(data)
 
     self.group = MagicalGlassLib:createRandomEncounter(data.properties["encgroup"])
 
-    if MagicalGlassLib.steps_until_encounter == nil or MagicalGlassLib.steps_until_encounter < 0 then
+    if MagicalGlassLib.steps_until_encounter == nil or MagicalGlassLib.steps_until_encounter and MagicalGlassLib.steps_until_encounter < 0 then
         self.group:resetSteps()
     end
 
@@ -38,7 +38,7 @@ function EncounterZone:update()
         end
     end
 
-    if MagicalGlassLib.steps_until_encounter <= 0 and self.accepting then
+    if MagicalGlassLib.steps_until_encounter and MagicalGlassLib.steps_until_encounter <= 0 and self.accepting then
         self.group:resetSteps()
         self.group:start()
     end
@@ -61,7 +61,7 @@ function EncounterZone:draw()
         love.graphics.push()
         love.graphics.origin()
 
-        love.graphics.print({{1,0,0},"Encounter Zone!",{1,1,0},"\nSteps Until Encounter: ",{1,1,1},not MagicalGlassLib.initiating_random_encounter and MagicalGlassLib.steps_until_encounter or 0}, 8, 0, 0, 1.25)
+        love.graphics.print({{1,0,0},"Encounter Zone!",{1,1,0},"\nSteps Until Encounter: ",{1,1,1},not MagicalGlassLib.initiating_random_encounter and (MagicalGlassLib.steps_until_encounter or "N\\A") or 0}, 8, 0, 0, 1.25)
 
         love.graphics.pop()
     end

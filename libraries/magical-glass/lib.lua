@@ -244,6 +244,7 @@ function lib:init()
     
     Utils.hook(World, "mapTransition", function(orig, self, ...)
         orig(self, ...)
+        lib.steps_until_encounter = nil
         if lib.initiating_random_encounter then
             Game.lock_movement = false
             lib.initiating_random_encounter = nil
@@ -1748,7 +1749,7 @@ function lib:init()
     Utils.hook(EnemyBattler, "defeat", function(orig, self, reason, violent)
         orig(self, reason, violent)
         if violent then
-            if MagicalGlassLib.random_encounter then
+            if MagicalGlassLib.random_encounter and MagicalGlassLib:createRandomEncounter(MagicalGlassLib.random_encounter).population then
                 MagicalGlassLib:createRandomEncounter(MagicalGlassLib.random_encounter):addFlag("violent", 1)
             end
         end

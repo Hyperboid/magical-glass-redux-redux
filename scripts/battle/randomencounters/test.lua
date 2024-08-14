@@ -3,7 +3,7 @@ local EncGroup, super = Class(RandomEncounter, "test")
 function EncGroup:init()
     super.init(self)
     
-    self.population = 5
+    self.population = nil
     self.use_population_factor = true
     
     -- Table with the encounters that can be triggered by this random encounter

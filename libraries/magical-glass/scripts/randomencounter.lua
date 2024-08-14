@@ -30,11 +30,10 @@ end
 
 function RandomEncounter:resetSteps()
     if not self:nobodyCame() then
-        if self.use_population_factor and self.population and self.population >= 0 then
-            local divided = self.minimum_steps / 2
-            local pop_factor = math.min(divided / math.max(0, divided - self:getFlag("violent", 0)), 8)
-            local steps = math.ceil(self.minimum_steps + (Utils.round(Utils.random(divided))) * pop_factor)
-            MagicalGlassLib.steps_until_encounter = steps
+        if self.use_population_factor and self.population then
+            local steps = self.minimum_steps / 2
+            local pop_factor = math.min(steps / math.max(0, steps - self:getFlag("violent", 0)), 8)
+            MagicalGlassLib.steps_until_encounter = math.ceil(self.minimum_steps + (Utils.round(Utils.random(steps))) * pop_factor)
         else
             MagicalGlassLib.steps_until_encounter = self.minimum_steps
         end
