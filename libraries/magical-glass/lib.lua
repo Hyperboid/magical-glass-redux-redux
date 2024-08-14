@@ -1593,6 +1593,10 @@ function lib:init()
             orig(self, target, amount, text, item)
         end
     end)
+    
+    Utils.hook(BattleCutscene, "text", function(orig, self, text, portrait, actor, options)
+        orig(self, Game.battle.light and ("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text) or text, portrait, actor, options)
+    end)
 
     if not Mod.libs["widescreen"] then
         Utils.hook(WorldCutscene, "text", function(orig, self, text, portrait, actor, options)
