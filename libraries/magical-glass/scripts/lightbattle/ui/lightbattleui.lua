@@ -282,10 +282,10 @@ function LightBattleUI:drawState()
 
             if heads > 0 then
                 menu_text:setPosition(text_offset + 57 + (x * (240 + extra_offset[2])), 15 + (y * 32))
-                menu_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. name)
+                menu_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. name)
             else
                 menu_text:setPosition(text_offset + 62 + (x * (240 + extra_offset[2])), 15 + (y * 32))
-                menu_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "* " .. name)
+                menu_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "* " .. name)
             end
 
             text_offset = text_offset + font:getWidth(item.name)
@@ -342,7 +342,7 @@ function LightBattleUI:drawState()
         Draw.setColor(1, 1, 1, 1)
 
         if Game.battle:isPagerMenu() then
-            self.page_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "PAGE " .. page + 1)
+            self.page_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "PAGE " .. page + 1)
         else
             if page < max_page then
                 Draw.draw(self.arrow_sprite, 45, 90 + (math.sin(Kristal.getTime()*6) * 2))
@@ -432,11 +432,11 @@ function LightBattleUI:drawState()
 
                 if #name_colors <= 1 then
                     enemy_text:setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
-                    enemy_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. name)
+                    enemy_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. name)
                 else
                     enemy_text:setColor(1, 1, 1)
                     enemy_text:setGradientColors(name_colors)
-                    enemy_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. name)
+                    enemy_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. name)
                 end
                 
                 Draw.setColor(1, 1, 1)
@@ -474,9 +474,9 @@ function LightBattleUI:drawState()
                 if Game.battle.state_reason == "XACT" then
                     xact_text:setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
                     if Game.battle.selected_xaction.id == 0 then
-                        xact_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. enemy:getXAction(Game.battle.party[Game.battle.current_selecting]))
+                        xact_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. enemy:getXAction(Game.battle.party[Game.battle.current_selecting]))
                     else
-                        xact_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. Game.battle.selected_xaction.name)
+                        xact_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. Game.battle.selected_xaction.name)
                     end
                 elseif self.style ~= "undertale" then
                     local namewidth = font_mono:getWidth(enemy.name)
@@ -732,7 +732,7 @@ function LightBattleUI:drawState()
         for index = page_offset + 1, math.min(page_offset + 3, #Game.battle.party) do
             local party_text = self.party_text[index - page_offset]
             Draw.setColor(1, 1, 1, 1)
-            party_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "* " .. Game.battle.party[index].chara:getName())
+            party_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "* " .. Game.battle.party[index].chara:getName())
 
             if self.style ~= "deltarune" then
                 Draw.setColor(MagicalGlassLib.PALETTE["action_health_bg"])

@@ -87,18 +87,16 @@ function lib:load(data, new_file)
     end
 end
 
-function lib:registerTextCommands(text)
-    text:registerCommand("ut_shake", function(text, node, dry)
-        text.state.ut_shake = tonumber(node.arguments[1]) or 1
-        text.draw_every_frame = true
+function lib:registerTextCommands(self)
+    self:registerCommand("ut_shake", function(self, node, dry)
+        local str = node.arguments[1]
+        if str == "true" then
+            str = true
+        elseif str == "false" then
+            str = false
+        end
+        self.state.ut_shake = str ~= false
     end)
-end
-
-function lib:onDrawText(text, node, state, x, y, scale, font, use_color)
-    if state.ut_shake and state.ut_shake > 0 then
-        state.offset_x = Utils.random(state.ut_shake) - state.ut_shake / 2
-        state.offset_y = Utils.random(state.ut_shake) - state.ut_shake / 2
-    end
 end
 
 -- GLOBAL SAVE
@@ -238,6 +236,126 @@ function lib:init()
 
     self.encounters_enabled = false
     self.steps_until_encounter = nil
+    
+    Utils.hook(Text, "drawChar", function(orig, self, node, state, use_color)
+        local font = Assets.getFont(state.font, state.font_size)
+        local scale = Assets.getFontScale(state.font, state.font_size)
+
+        if state.shake > 0 then
+            if self.timer - state.last_shake >= (1 * DTMULT) then
+                state.last_shake = self.timer
+                if state.ut_shake then
+                    state.offset_x = Utils.random(state.shake) - state.shake / 2
+                    state.offset_y = Utils.random(state.shake) - state.shake / 2
+                else
+                    state.offset_x = Utils.round(Utils.random(-state.shake, state.shake))
+                    state.offset_y = Utils.round(Utils.random(-state.shake, state.shake))
+                end
+            end
+        end
+
+        if state.wave_distance > 0 then
+            local direction = self.state.wave_direction + (state.wave_offset * state.typed_characters)
+            local speed = state.wave_distance
+
+            local xspeed = math.cos(math.rad(-direction)) * speed
+            local yspeed = math.sin(math.rad(-direction)) * speed
+
+            state.offset_x = xspeed * 0.7 + 10
+            state.offset_y = yspeed * 0.7
+        end
+
+        local x, y = state.current_x + state.offset_x, state.current_y + state.offset_y
+        love.graphics.setFont(font)
+
+
+        -- The base color, either the draw color or (1,1,1,1) depending on
+        -- if the text is drawing to a canvas
+        local cr, cg, cb, ca
+        if use_color then
+            cr, cg, cb, ca = self:getDrawColor()
+        else
+            cr, cg, cb, ca = 1, 1, 1, 1
+        end
+        -- The current color multiplied by the base color
+        local mr, mg, mb, ma = self:getTextColor(state, use_color)
+
+        Draw.setColor(mr, mg, mb, ma)
+
+        if Kristal.callEvent(KRISTAL_EVENT.onDrawText, self, node, state, x, y, scale, font, use_color) then
+            -- Empty because I don't like logic
+        elseif self:processStyle(state.style) then
+            -- Empty because I don't like logic
+        elseif state.style == nil or state.style == "none" then
+            Draw.setColor(mr, mg, mb, ma)
+            love.graphics.print(node.character, x, y, 0, scale, scale)
+        elseif state.style == "menu" then
+            Draw.setColor(0, 0, 0)
+            love.graphics.print(node.character, x + 2, y + 2, 0, scale, scale)
+            Draw.setColor(mr, mg, mb, ma)
+            love.graphics.print(node.character, x, y, 0, scale, scale)
+        elseif state.style == "dark" then
+            local w, h = self:getNodeSize(node, state)
+            local canvas = Draw.pushCanvas(w, h, { stencil = false })
+            Draw.setColor(1, 1, 1)
+            love.graphics.print(node.character, 0, 0, 0, scale, scale)
+            Draw.popCanvas()
+
+            local shader = Kristal.Shaders["GradientV"]
+
+            local last_shader = love.graphics.getShader()
+
+            local white = state.color[1] == 1 and state.color[2] == 1 and state.color[3] == 1
+
+            if white then
+                love.graphics.setShader(shader)
+                shader:sendColor("from", white and COLORS.dkgray or state.color)
+                shader:sendColor("to", white and COLORS.navy or state.color)
+                --Draw.setColor(cr, cg, cb, ca * (white and 1 or 0.3))
+                local mult = white and 1 or 0.3
+                Draw.setColor(cr * mult, cg * mult, cb * mult, ca)
+            else
+                --Draw.setColor(mr, mg, mb, ma * 0.3)
+                Draw.setColor(mr * 0.3, mg * 0.3, mb * 0.3, ma)
+            end
+            Draw.draw(canvas, x + 1, y + 1)
+
+            if not white then
+                love.graphics.setShader(shader)
+                shader:sendColor("from", COLORS.white)
+                shader:sendColor("to", white and COLORS.white or state.color)
+            else
+                love.graphics.setShader(last_shader)
+            end
+            Draw.setColor(cr, cg, cb, ca)
+            Draw.draw(canvas, x, y)
+
+            if not white then
+                love.graphics.setShader(last_shader)
+            end
+        elseif state.style == "dark_menu" then
+            Draw.setColor(0.25, 0.125, 0.25)
+            love.graphics.print(node.character, x + 2, y + 2, 0, scale, scale)
+            Draw.setColor(mr, mg, mb, ma)
+            love.graphics.print(node.character, x, y, 0, scale, scale)
+        elseif state.style == "GONER" then
+            local specfade = 1 -- This is unused for now!
+            -- It's used in chapter 1, though... so let's keep it around.
+            Draw.setColor(mr, mg, mb, ma * specfade)
+            love.graphics.print(node.character, x, y, 0, scale, scale)
+            Draw.setColor(mr, mg, mb, ma * ((0.3 + (math.sin((self.timer / 14)) * 0.1)) * specfade))
+            love.graphics.print(node.character, x + 2, y, 0, scale, scale)
+            love.graphics.print(node.character, x - 2, y, 0, scale, scale)
+            love.graphics.print(node.character, x, y + 2, 0, scale, scale)
+            love.graphics.print(node.character, x, y - 2, 0, scale, scale)
+            Draw.setColor(mr, mg, mb, ma * ((0.08 + (math.sin((self.timer / 14)) * 0.04)) * specfade))
+            love.graphics.print(node.character, x + 2, y, 0, scale, scale)
+            love.graphics.print(node.character, x - 2, y, 0, scale, scale)
+            love.graphics.print(node.character, x, y + 2, 0, scale, scale)
+            love.graphics.print(node.character, x, y - 2, 0, scale, scale)
+            Draw.setColor(mr, mg, mb, ma)
+        end
+    end)
     
     Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
         if self.music.current ~= "toomuch" then
@@ -1595,7 +1713,7 @@ function lib:init()
     end)
     
     Utils.hook(BattleCutscene, "text", function(orig, self, text, portrait, actor, options)
-        orig(self, Game.battle.light and ("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text) or text, portrait, actor, options)
+        orig(self, Game.battle.light and ("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text) or text, portrait, actor, options)
     end)
 
     if not Mod.libs["widescreen"] then
@@ -2905,6 +3023,16 @@ function lib:changeSpareColor(color)
         lib.name_color = COLORS.white
     elseif type(color) == "table" then
         lib.name_color = color
+    end
+end
+
+function lib:setLightBattleShakingText(v)
+    if v == true then
+        lib.light_battle_shake_text = 1
+    elseif v == false then
+        lib.light_battle_shake_text = 0
+    elseif type(v) == "number" then
+        lib.light_battle_shake_text = v
     end
 end
 

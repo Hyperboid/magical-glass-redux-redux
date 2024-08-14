@@ -72,12 +72,12 @@ end
 
 function HelpWindow:setDescription(text)
     local str = text:gsub('\n', ' ')
-    self.description_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. str)
+    self.description_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. str)
 end
 
 function HelpWindow:setTension(tension)
     if tension ~= 0 then
-        self.cost_text:setText("[ut_shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. tostring(tension).."% TP")
+        self.cost_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. tostring(tension).."% TP")
     else
         self.cost_text:setText("")
     end
