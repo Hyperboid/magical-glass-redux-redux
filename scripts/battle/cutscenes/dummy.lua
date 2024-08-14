@@ -14,12 +14,11 @@ return {
 
         if cutscene:getCharacter("ralsei") then
             -- Ralsei text, if he's in the party
-            cutscene:text("* Aww,[wait:5] Susie![talk:false][react:1][wait:5][react:2][wait:5][react:3][wait:5][react:4][wait:5][react:5]", "blush_pleased", "ralsei", {reactions={
+            cutscene:text("* Aww,[wait:5] Susie![talk:false][react:1][wait:5][react:2][wait:5][react:3][wait:5][react:4]", "blush_pleased", "ralsei", {reactions={
             {"BottomLeft", "left", "bottom", "surprise", "susie"},
             {"RightTop", "right", "top", "blush", "ralsei"},
             {"MidMid", "mid", "mid", "smile", "noelle"},
             {"Right BottomMid", "right", "bottommid", "surprise", "susie"},
-            {"Custom", 350, 38, "smile", "noelle"},
         }})
         end
     end
