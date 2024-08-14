@@ -55,6 +55,7 @@ function lib:save(data)
     data.magical_glass["lw_save_lv"] = Game.party[1] and Game.party[1]:getLightLV() or 0
     data.magical_glass["in_light_shop"] = lib.in_light_shop
     data.magical_glass["random_encounter"] = lib.random_encounter
+    data.magical_glass["light_battle_shake_text"] = lib.light_battle_shake_text
 end
 
 function lib:load(data, new_file)
@@ -72,6 +73,7 @@ function lib:load(data, new_file)
         lib.lw_save_lv = 0
         lib.in_light_shop = false
         self:setGameOvers(0)
+        lib.light_battle_shake_text = 0
     else
         data.magical_glass = data.magical_glass or {}
         lib.kills = data.magical_glass["kills"] or 0
@@ -81,6 +83,7 @@ function lib:load(data, new_file)
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.in_light_shop = data.magical_glass["in_light_shop"] or false
         lib.random_encounter = data.magical_glass["random_encounter"] or lib.random_encounter or nil
+        lib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
     end
 end
 

@@ -6,7 +6,7 @@ function spell:onLightCast(user, target)
         Assets.playSound("rudebuster_swing")
         local x, y = (SCREEN_WIDTH/2), SCREEN_HEIGHT
         local tx, ty = target:getRelativePos(target.width/2, target.height/2, Game.battle)
-        local blast = LightRudeBusterBeam(true, x, y, tx, ty, function(pressed)
+        local blast = RudeBusterBeam(true, x, y, tx, ty, function(pressed)
             local damage = self:getDamage(user, target, pressed)
             if pressed then
                 Assets.playSound("scytheburst")
