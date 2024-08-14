@@ -3036,6 +3036,10 @@ function lib:setLightBattleShakingText(v)
     end
 end
 
+function lib:setSeriousMode(v)
+    lib.serious_mode = v
+end
+
 function lib:onFootstep(char, num)
     if self.encounters_enabled and Game.world.player and char == Game.world.player then
         self.steps_until_encounter = self.steps_until_encounter - 1

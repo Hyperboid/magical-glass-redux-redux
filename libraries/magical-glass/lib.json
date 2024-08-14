@@ -3,11 +3,11 @@
     "authors": [
         "Nyakorita",                    // original author
         "Sam Deluxe",                   // current author and lead programmer
+        "FireRainV",                    // second in command
         "Bor",                          // contributor
         "Just Another Random User",     // contributor
-        "FireRainV"                     // second in command
     ],
-    "version": "v1.2.0-dev",
+    "version": "v2.0.0",
     "engineVer": "v0.9.0-dev",
 
     "config": {

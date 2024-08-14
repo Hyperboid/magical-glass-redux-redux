@@ -1,9 +1,9 @@
 {
     "id": "magical-glass",
     "name": "Magical Glass",
-    "subtitle": "...What game am I playing again?",
+    "subtitle": "The Undertale Library!",
 
-    "version": "v1.1.1",
+    "version": "v2.0.0",
     "engineVer": "v0.9.0-dev",
 
     "chapter": 2,
