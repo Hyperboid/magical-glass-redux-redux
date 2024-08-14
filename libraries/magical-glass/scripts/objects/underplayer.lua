@@ -10,7 +10,7 @@ function UnderPlayer:init(chara, x, y)
     
     -- Related to holding up and down at the same time (also known as the Frisk Dance or Murder Dance)
     self.dance = nil
-    self.fix_movement = nil
+    self.fix_movement = false
     
     -- If 'false', if you run into an Event with collisions while walking diagonally, the player will stop moving, like in Undertale
 	self.event_diagonal_walk = false
@@ -20,6 +20,8 @@ function UnderPlayer:init(chara, x, y)
     self.can_move_y = true
 	self.event_collision_diagonal = false
     self.event_collide = {}
+    self.gone_direction = {}
+    self.fix_movement2 = false
 end
 
 function UnderPlayer:handleMovement()
@@ -43,6 +45,9 @@ function UnderPlayer:handleMovement()
                 self.facing = "down"
             end
         end
+        if self.event_collide["x"] then
+            self.gone_direction["left"] = true
+        end
     elseif Input.down("right") then
         walk_x = walk_x + 1
         if not (Input.down("up") and self.facing == "up" or Input.down("down") and self.facing == "down") then
@@ -54,6 +59,9 @@ function UnderPlayer:handleMovement()
             elseif Input.down("down") then
                 self.facing = "down"
             end
+        end
+        if self.event_collide["x"] then
+            self.gone_direction["right"] = true
         end
     end
 
@@ -69,6 +77,9 @@ function UnderPlayer:handleMovement()
                 self.facing = "right"
             end
         end
+        if self.event_collide["y"] then
+            self.gone_direction["up"] = true
+        end
     elseif Input.down("down") then
         walk_y = walk_y + 1
         if not (Input.down("left") and self.facing == "left" or Input.down("right") and self.facing == "right") then
@@ -80,6 +91,9 @@ function UnderPlayer:handleMovement()
             elseif Input.down("right") then
                 self.facing = "right"
             end
+        end
+        if self.event_collide["y"] then
+            self.gone_direction["down"] = true
         end
     end
    
@@ -110,12 +124,30 @@ function UnderPlayer:handleMovement()
     else
         self.dance = nil
     end
+    
+    if self.gone_direction["left"] and not Input.down("left") then
+        self.gone_direction["left"] = false
+        self.fix_movement2 = true
+    end
+    if self.gone_direction["right"] and not Input.down("right") then
+        self.gone_direction["right"] = false
+        self.fix_movement2 = true
+    end
+    if self.gone_direction["up"] and not Input.down("up") then
+        self.gone_direction["up"] = false
+        self.fix_movement2 = true
+    end
+    if self.gone_direction["down"] and not Input.down("down") then
+        self.gone_direction["down"] = false
+        self.fix_movement2 = true
+    end
 
-    if event_collide and self.moving_x ~= 0 and self.moving_y ~= 0 then
+    if not self.fix_movement2 and event_collide and self.moving_x ~= 0 and self.moving_y ~= 0 then
         self.facing = self.sprite.facing
     elseif not (Input.down("up") and Input.down("down") and not can_move_x and self.moving_x ~= 0) or self.fix_movement and self.fix_movement ~= self.moving_x then
         self:move(walk_x, walk_y, speed * DTMULT)
-        self.fix_movement = nil
+        self.fix_movement = false
+        self.fix_movement2 = false
     else
         self.facing = "down"
         self.fix_movement = self.moving_x
