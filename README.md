@@ -24,10 +24,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * Nyako (made the basics and dust code)
 * bor (assistant, map recreations)
 * Just Another Random User (assistant)
-
-## Contributors:
-* FireRainV
-
+<!-- ## Contributors: -->
 ## Moldsmal Recreation:
 * BrendaK2700
 
