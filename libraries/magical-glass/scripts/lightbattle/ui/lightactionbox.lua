@@ -259,9 +259,7 @@ function LightActionBox:drawStatusStrip()
         love.graphics.setFont(Assets.getFont("namelv", 16))
         love.graphics.print("LV " .. level, x, y + 13)
         
-        if not Kristal.getLibConfig("magical-glass", "multi_neat_ui") then
-            love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 66, y + 15)
-        end
+        love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 66, y + 15)
         
         local small = false
         for _,party in ipairs(Game.battle.party) do
@@ -271,7 +269,7 @@ function LightActionBox:drawStatusStrip()
         end
         
         local karma_mode = Game.battle.encounter.karma_mode
-        if karma_mode and not Kristal.getLibConfig("magical-glass", "multi_neat_ui") then
+        if karma_mode then
             love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 95 + (small and 20 or 32) * 1.2 + 1, y + 15)
         end
         
@@ -306,7 +304,7 @@ function LightActionBox:drawStatusStrip()
             end
         end
         love.graphics.setColor(color)
-        Draw.printAlign(current .. "/" .. max, x + 197, y + 3 - (karma_mode and not Kristal.getLibConfig("magical-glass", "multi_neat_ui") and 2 or 0), "right")
+        Draw.printAlign(current .. "/" .. max, x + 197, y + 3 - (karma_mode and 2 or 0), "right")
         
         if Game.battle.current_selecting == self.index or DEBUG_RENDER and Input.alt() then
             love.graphics.setColor(self.battler.chara:getLightColor())

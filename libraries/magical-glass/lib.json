@@ -131,11 +131,6 @@
         /////
         "expanded_light_save_menu": true,
         
-        ///// Multi-Party Neat UI
-        // Whether certain unimportant light battle UI objects in multi-party battles like the HP and KR sprites are visible.
-        /////
-        "multi_neat_ui": true,
-        
         ///// Multi-Party Mode in Solo-Party
         // Whether Multi-Party light battle style will also be enabled when playing with just a single party member.
         /////
