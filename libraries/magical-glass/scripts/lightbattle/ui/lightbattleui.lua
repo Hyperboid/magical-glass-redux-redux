@@ -94,6 +94,10 @@ function LightBattleUI:init()
         Game.battle.arena:addChild(self.party_text[i])
     end
     
+    self.flee_text = Text("", 62, 15, nil, nil, {["font"] = "main_mono"})
+    self.flee_text.line_offset = 4
+    Game.battle.arena:addChild(self.flee_text)
+    
 end
 
 function LightBattleUI:clearEncounterText()
@@ -150,6 +154,7 @@ function LightBattleUI:drawState()
     for _,text in ipairs(self.party_text) do
         text:setText("")
     end
+    self.flee_text:setText("")
         
     local state = Game.battle.state
     if state == "MENUSELECT" then
@@ -760,57 +765,18 @@ function LightBattleUI:drawState()
             Draw.draw(self.arrow_sprite, 45, 10 - (math.sin(Kristal.getTime()*6) * 2), 0, 1, -1)
         end
     elseif state == "FLEEING" or state == "TRANSITIONOUT" then
-        local font = Assets.getFont("main_mono")
-        love.graphics.setFont(font, 32)
         local message = Game.battle.encounter:getUsedFleeMessage() or ""
-
-        Draw.setColor(1, 1, 1, 1)
-        love.graphics.print(message, 100, 0)
+        self.flee_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. message)
     end
 
 end
 
-function LightBattleUI:postUpdate()
+function LightBattleUI:update()
     if self.help_window then
         if math.ceil(self.help_window.y) < 280 then
             self.help_window.visible = true
         else
             self.help_window.visible = false
-        end
-    end
-    local state = Game.battle.state
-    for _,text in ipairs(self.menu_text) do
-        if state == "MENUSELECT" and #text.text > 0 then
-            text.visible = true
-        else
-            text.visible = false
-        end
-    end
-    local text = self.page_text
-    if state == "MENUSELECT" and #text.text > 0 then
-        text.visible = true
-    else
-        text.visible = false
-    end
-    for _,text in ipairs(self.enemies_text) do
-        if state == "ENEMYSELECT" and Game.battle.state_reason ~= "XACT" and #text.text > 0 then
-            text.visible = true
-        else
-            text.visible = false
-        end
-    end
-    for _,text in ipairs(self.xact_text) do
-        if state == "ENEMYSELECT" and Game.battle.state_reason == "XACT" and #text.text > 0 then
-            text.visible = true
-        else
-            text.visible = false
-        end
-    end
-    for _,text in ipairs(self.party_text) do
-        if state == "PARTYSELECT" and #text.text > 0 then
-            text.visible = true
-        else
-            text.visible = false
         end
     end
 end

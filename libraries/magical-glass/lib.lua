@@ -238,9 +238,6 @@ function lib:init()
     self.steps_until_encounter = nil
     
     Utils.hook(Text, "drawChar", function(orig, self, node, state, use_color)
-        local font = Assets.getFont(state.font, state.font_size)
-        local scale = Assets.getFontScale(state.font, state.font_size)
-
         if state.shake > 0 then
             if self.timer - state.last_shake >= (1 * DTMULT) then
                 state.last_shake = self.timer
@@ -254,107 +251,7 @@ function lib:init()
             end
         end
 
-        if state.wave_distance > 0 then
-            local direction = self.state.wave_direction + (state.wave_offset * state.typed_characters)
-            local speed = state.wave_distance
-
-            local xspeed = math.cos(math.rad(-direction)) * speed
-            local yspeed = math.sin(math.rad(-direction)) * speed
-
-            state.offset_x = xspeed * 0.7 + 10
-            state.offset_y = yspeed * 0.7
-        end
-
-        local x, y = state.current_x + state.offset_x, state.current_y + state.offset_y
-        love.graphics.setFont(font)
-
-
-        -- The base color, either the draw color or (1,1,1,1) depending on
-        -- if the text is drawing to a canvas
-        local cr, cg, cb, ca
-        if use_color then
-            cr, cg, cb, ca = self:getDrawColor()
-        else
-            cr, cg, cb, ca = 1, 1, 1, 1
-        end
-        -- The current color multiplied by the base color
-        local mr, mg, mb, ma = self:getTextColor(state, use_color)
-
-        Draw.setColor(mr, mg, mb, ma)
-
-        if Kristal.callEvent(KRISTAL_EVENT.onDrawText, self, node, state, x, y, scale, font, use_color) then
-            -- Empty because I don't like logic
-        elseif self:processStyle(state.style) then
-            -- Empty because I don't like logic
-        elseif state.style == nil or state.style == "none" then
-            Draw.setColor(mr, mg, mb, ma)
-            love.graphics.print(node.character, x, y, 0, scale, scale)
-        elseif state.style == "menu" then
-            Draw.setColor(0, 0, 0)
-            love.graphics.print(node.character, x + 2, y + 2, 0, scale, scale)
-            Draw.setColor(mr, mg, mb, ma)
-            love.graphics.print(node.character, x, y, 0, scale, scale)
-        elseif state.style == "dark" then
-            local w, h = self:getNodeSize(node, state)
-            local canvas = Draw.pushCanvas(w, h, { stencil = false })
-            Draw.setColor(1, 1, 1)
-            love.graphics.print(node.character, 0, 0, 0, scale, scale)
-            Draw.popCanvas()
-
-            local shader = Kristal.Shaders["GradientV"]
-
-            local last_shader = love.graphics.getShader()
-
-            local white = state.color[1] == 1 and state.color[2] == 1 and state.color[3] == 1
-
-            if white then
-                love.graphics.setShader(shader)
-                shader:sendColor("from", white and COLORS.dkgray or state.color)
-                shader:sendColor("to", white and COLORS.navy or state.color)
-                --Draw.setColor(cr, cg, cb, ca * (white and 1 or 0.3))
-                local mult = white and 1 or 0.3
-                Draw.setColor(cr * mult, cg * mult, cb * mult, ca)
-            else
-                --Draw.setColor(mr, mg, mb, ma * 0.3)
-                Draw.setColor(mr * 0.3, mg * 0.3, mb * 0.3, ma)
-            end
-            Draw.draw(canvas, x + 1, y + 1)
-
-            if not white then
-                love.graphics.setShader(shader)
-                shader:sendColor("from", COLORS.white)
-                shader:sendColor("to", white and COLORS.white or state.color)
-            else
-                love.graphics.setShader(last_shader)
-            end
-            Draw.setColor(cr, cg, cb, ca)
-            Draw.draw(canvas, x, y)
-
-            if not white then
-                love.graphics.setShader(last_shader)
-            end
-        elseif state.style == "dark_menu" then
-            Draw.setColor(0.25, 0.125, 0.25)
-            love.graphics.print(node.character, x + 2, y + 2, 0, scale, scale)
-            Draw.setColor(mr, mg, mb, ma)
-            love.graphics.print(node.character, x, y, 0, scale, scale)
-        elseif state.style == "GONER" then
-            local specfade = 1 -- This is unused for now!
-            -- It's used in chapter 1, though... so let's keep it around.
-            Draw.setColor(mr, mg, mb, ma * specfade)
-            love.graphics.print(node.character, x, y, 0, scale, scale)
-            Draw.setColor(mr, mg, mb, ma * ((0.3 + (math.sin((self.timer / 14)) * 0.1)) * specfade))
-            love.graphics.print(node.character, x + 2, y, 0, scale, scale)
-            love.graphics.print(node.character, x - 2, y, 0, scale, scale)
-            love.graphics.print(node.character, x, y + 2, 0, scale, scale)
-            love.graphics.print(node.character, x, y - 2, 0, scale, scale)
-            Draw.setColor(mr, mg, mb, ma * ((0.08 + (math.sin((self.timer / 14)) * 0.04)) * specfade))
-            love.graphics.print(node.character, x + 2, y, 0, scale, scale)
-            love.graphics.print(node.character, x - 2, y, 0, scale, scale)
-            love.graphics.print(node.character, x, y + 2, 0, scale, scale)
-            love.graphics.print(node.character, x, y - 2, 0, scale, scale)
-            Draw.setColor(mr, mg, mb, ma)
-        end
+        orig(self, node, state, use_color)
     end)
     
     Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
