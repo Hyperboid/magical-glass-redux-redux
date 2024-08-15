@@ -1173,7 +1173,7 @@ function LightBattle:onStateChange(old,new)
             -- if (in_dojo) then
             --     win_text == "* You won the battle!"
             -- end
-            if self.become_stronger and Game:getConfig("growStronger") then
+            if (self.become_stronger or self.used_violence --[[temp]]) and Game:getConfig("growStronger") then
                 local stronger = "You"
 
                 for _,battler in ipairs(self.party) do
