@@ -28,6 +28,9 @@ function actor:init()
         ["battle/transition"]   = {"knife_jump_down", 0.2, true},
         ["battle/intro"]        = {"battle/attack", 1/15, true},
         ["battle/victory"]      = {"battle/victory", 1/10, false},
+        
+        -- Cutscene animations
+        ["jump_ball"]           = {"ball", 1/15, true},
     }, false)
 
     if Game.chapter == 1 then
