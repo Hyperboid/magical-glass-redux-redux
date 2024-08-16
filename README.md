@@ -7,11 +7,12 @@
 Adds **UNDERTALE** battles (and more!) to Kristal!
 
 ## This library adds...
-* UNDERTALE battles (obviously) in the light (and optionally dark) world!
+* UNDERTALE battles in the light and dark world!
 * All of UNDERTALE's weapons and armors!
 * Functionality for Spells and TP!
 * A Froggit encounter!
 * Expands the light world!
+* Deltarune battles in the light world!
 * ...And (hopefully) more!
 
 ## Credits:
@@ -22,6 +23,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 
 ### Programmers:
 * Sam Deluxe (like, everything)
+* FireRainV (post support)
 * Nyako (made the basics and dust code)
 * bor (assistant, map recreations)
 * Just Another Random User (assistant)
@@ -31,6 +33,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 
 ### Testers:
 * Racckoon
+* FireRainV
 
 ### Resources:
 * UNDERTALE Team
