@@ -33,6 +33,8 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * Racckoon
 
 ### Resources:
+* UNDERTALE Team
+* DELTATRAVELER Team
 * AccurateJaney (Kris and Noelle Light World Sprites)
 * Discarded_Vessel (Susie Light World Sprites)
 
