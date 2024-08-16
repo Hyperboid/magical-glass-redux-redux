@@ -8,6 +8,8 @@ function Noelle:init()
 
     -- Battle music ("battleut" is undertale)
     self.music = "battleut"
+    
+    self.fast_transition = true
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("noelle")
