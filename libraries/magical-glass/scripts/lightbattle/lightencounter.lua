@@ -4,9 +4,6 @@ function LightEncounter:init()
     -- Text that will be displayed when the battle starts
     self.text = "* A skirmish breaks out!"
 
-    -- Is a "But Nobody Came"/"Genocide" Encounter
-    self.nobody_came = false
-
     -- Is a "story" encounter (can't attack, only hp and lv are shown. a wave is started as soon as the battle starts)
     self.story = false
     
@@ -193,9 +190,7 @@ function LightEncounter:storyWave()
 end
 
 function LightEncounter:setBattleState()
-    if self.nobody_came then
-        Game.battle:setState("BUTNOBODYCAME")
-    elseif self.story then
+    if self.story then
         Game.battle:setState("ENEMYDIALOGUE")
         Game.battle.soul.can_move = true
     else

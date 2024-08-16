@@ -825,6 +825,7 @@ function LightBattle:onStateChange(old,new)
             self.battle_ui.help_window:toggleVisibility(true)
         end
     elseif new == "BUTNOBODYCAME" then
+        self.current_selecting = 0
         if not self.soul then
             self:spawnSoul()
         end
