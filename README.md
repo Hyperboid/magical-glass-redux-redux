@@ -1,4 +1,4 @@
-# Magical Glass for [Kristal](https://github.com/KristalTeam/Kristal)
+# Magical Glass: Redux for [Kristal](https://github.com/KristalTeam/Kristal)
 
 <p align="center" width="100%">
 <img src="magicalglass.png" alt="Magical Glass" width="50%" />
