@@ -11,6 +11,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * All of UNDERTALE's weapons and armors!
 * Functionality for Spells and TP!
 * A Froggit encounter!
+* Expands the light world!
 * ...And (hopefully) more!
 
 ## Credits:
