@@ -25,7 +25,7 @@ function actor:init()
         ["battle/hurt"]         = {"battle/hurt", 1/15, false, temp=true, duration=0.5},
         ["battle/defeat"]       = {"battle/defeat", 1/15, false},
 
-        ["battle/transition"]   = {"sword_jump_down", 0.2, true},
+        ["battle/transition"]   = {"knife_jump_down", 0.2, true},
         ["battle/intro"]        = {"battle/attack", 1/15, true},
         ["battle/victory"]      = {"battle/victory", 1/10, false},
     }, false)
@@ -36,6 +36,9 @@ function actor:init()
 
     -- Table of sprite offsets (indexed by sprite name)
     Utils.merge(self.offsets, {
+        -- Movement offsets
+        ["walk_blush/down"] = {0, 0},
+    
         -- Battle offsets
         ["battle/idle"] = {-5, -1},
 
@@ -55,7 +58,26 @@ function actor:init()
         ["battle/victory"] = {-3, 0},
         
         -- Cutscene offsets
-        ["sword_jump_down"] = {-19, -5},
+        ["pose"] = {-4, -2},
+
+        ["ball"] = {1, 8},
+        ["landed"] = {-4, -2},
+
+        ["fell"] = {-14, 1},
+
+        ["knife_jump_down"] = {-19, -5},
+
+        ["hug_left"] = {-4, -1},
+        ["hug_right"] = {-2, -1},
+
+        ["peace"] = {0, 0},
+        ["rude_gesture"] = {0, 0},
+
+        ["reach"] = {-3, -1},
+
+        ["sit_alt"] = {-3, 0},
+
+        ["t_pose"] = {-4, 0},
     }, false)
 end
 
