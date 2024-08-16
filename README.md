@@ -6,14 +6,22 @@
 
 Adds **UNDERTALE** battles (and more!) to Kristal!
 
-## This library adds...
+* This is the continuation from the point where Magical-Glass by Sam Deluxe was archived.
+* For Magical-Glass 2 by Sam Deluxe, [click here](https://github.com/Idunno1/magical-glass-2)!
+
+## This library adds:
 * UNDERTALE battles in the light and dark world!
+* UNDERTALE shops!
 * All of UNDERTALE's weapons and armors!
 * Functionality for Spells and TP!
 * A Froggit encounter!
 * Expands the light world!
 * Deltarune battles in the light world!
 * ...And (hopefully) more!
+
+## Supported Libraries:
+* [MoreParty](https://gamebanana.com/mods/436685)
+* [ExpandedAttackLib](https://github.com/FireRainV/ExpandedAttackLib)
 
 ## Credits:
 
