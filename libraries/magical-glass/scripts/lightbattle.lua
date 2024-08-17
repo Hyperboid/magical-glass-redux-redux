@@ -145,6 +145,22 @@ function LightBattle:init()
     self.darkify_fader = Fader()
     self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
     self:addChild(self.darkify_fader)
+    
+    Textbox.REACTION_X_BATTLE = {
+            ["left"] = 70  -38,
+         ["leftmid"] = 160 -38,
+             ["mid"] = 260 -38,
+          ["middle"] = 260 -38,
+        ["rightmid"] = 360 -38,
+           ["right"] = 400 -38,
+    }
+    Textbox.REACTION_Y_BATTLE = {
+              ["top"] = -10 -4,
+              ["mid"] =  30 -4,
+           ["middle"] =  30 -4,
+        ["bottommid"] =  50 -4,
+           ["bottom"] =  68 -4,
+    }
 end
 
 function LightBattle:isPagerMenu()
@@ -1498,6 +1514,22 @@ function LightBattle:returnToWorld()
     self.encounter.defeated_enemies = self.defeated_enemies
     Game.battle = nil
     Game.state = "OVERWORLD"
+    
+    Textbox.REACTION_X_BATTLE = {
+            ["left"] = 60  -40,
+         ["leftmid"] = 160 -40,
+             ["mid"] = 260 -40,
+          ["middle"] = 260 -40,
+        ["rightmid"] = 360 -40,
+           ["right"] = 460 -40,
+    }
+    Textbox.REACTION_Y_BATTLE = {
+              ["top"] = -10 -2,
+              ["mid"] =  30 -2,
+           ["middle"] =  30 -2,
+        ["bottommid"] =  45 -2,
+           ["bottom"] =  56 -2,
+    }
 
     Game:setFlag("current_battle_system#", nil)
 end
