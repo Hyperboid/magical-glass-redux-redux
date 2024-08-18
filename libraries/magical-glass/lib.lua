@@ -2696,6 +2696,7 @@ function lib:init()
                                     Game.battle:setState("DEFENDINGEND", "NONE")
                                 end
                                 Game.battle:setState("VICTORY")
+                                self:closeMenu()
                             end, in_battle)
                             
         self:registerOption("main", "Start Wave", "Start a wave.", function ()
@@ -2708,6 +2709,7 @@ function lib:init()
                                     Game.battle.encounter:onWavesDone()
                                 end
                                 Game.battle:setState("VICTORY")
+                                self:closeMenu()
                             end, in_light_battle)
     end)
 end
