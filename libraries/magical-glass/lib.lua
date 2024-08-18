@@ -2877,10 +2877,7 @@ function lib:registerDebugOptions(debug)
         end)
     end
     
-    debug:addToExclusiveMenu("OVERWORLD", "dark_encounter_select")
-    debug:addToExclusiveMenu("OVERWORLD", "light_encounter_select")
-    debug:addToExclusiveMenu("OVERWORLD", "dark_select_shop")
-    debug:addToExclusiveMenu("OVERWORLD", "light_select_shop")
+    debug:addToExclusiveMenu("OVERWORLD", {"dark_encounter_select", "light_encounter_select", "dark_select_shop", "light_select_shop"})
     debug:addToExclusiveMenu("BATTLE", "light_wave_select")
 end
 
