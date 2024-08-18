@@ -1531,7 +1531,7 @@ function LightBattle:returnToWorld()
            ["bottom"] =  56 -2,
     }
 
-    Game:setFlag("current_battle_system#", nil)
+    MagicalGlassLib.current_battle_system = nil
 end
 
 function LightBattle:setActText(text, dont_finish)

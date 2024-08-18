@@ -1,8 +1,3 @@
-kristalbound.pdn
-*.code-workspace
-obsolete
-libraries/magical-glass/scripts/data/items/ut_weapons/test.lua
-fuck.txt
-libraries/ExpandedAttackLib/
+/libraries/ExpandedAttackLib
 /libraries/MoreParty
 /libraries/Bonus Characters

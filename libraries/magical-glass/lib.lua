@@ -54,6 +54,7 @@ function lib:save(data)
     data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1] and Game.party[1]:getLightLV() or 0
     data.magical_glass["in_light_shop"] = lib.in_light_shop
+    data.magical_glass["current_battle_system"] = lib.current_battle_system
     data.magical_glass["random_encounter"] = lib.random_encounter
     data.magical_glass["light_battle_shake_text"] = lib.light_battle_shake_text
 end
@@ -82,6 +83,7 @@ function lib:load(data, new_file)
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.in_light_shop = data.magical_glass["in_light_shop"] or false
+        lib.current_battle_system = data.magical_glass["current_battle_system"] or nil
         lib.random_encounter = data.magical_glass["random_encounter"] or lib.random_encounter or nil
         lib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
     end
@@ -515,34 +517,34 @@ function lib:init()
     end)
 
     Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context, light)
-        if Game:getFlag("current_battle_system#") then
-            if Game:getFlag("current_battle_system#") == "undertale" then
+        if lib.current_battle_system then
+            if lib.current_battle_system == "undertale" then
                 Game:encounterLight(encounter, transition, enemy, context)
             else
                 orig(self, encounter, transition, enemy, context)
             end
         elseif context and isClass(context) and context:includes(ChaserEnemy) then
             if context.light_encounter then
-                Game:setFlag("current_battle_system#", "undertale")
+                lib.current_battle_system = "undertale"
                 Game:encounterLight(encounter, transition, enemy, context)
             else
-                Game:setFlag("current_battle_system#", "deltarune")
+                lib.current_battle_system = "deltarune"
                 orig(self, encounter, transition, enemy, context)
             end
         elseif light ~= nil then
             if light then
-                Game:setFlag("current_battle_system#", "undertale")
+                lib.current_battle_system = "undertale"
                 Game:encounterLight(encounter, transition, enemy, context)
             else
-                Game:setFlag("current_battle_system#", "deltarune")
+                lib.current_battle_system = "deltarune"
                 orig(self, encounter, transition, enemy, context)
             end
         else
             if Kristal.getLibConfig("magical-glass", "default_battle_system")[1] == "undertale" then
-                Game:setFlag("current_battle_system#", "undertale")
+                lib.current_battle_system = "undertale"
                 Game:encounterLight(encounter, transition, enemy, context)
             else
-                Game:setFlag("current_battle_system#", "deltarune")
+                lib.current_battle_system = "deltarune"
                 orig(self, encounter, transition, enemy, context)
             end
         end
@@ -761,7 +763,7 @@ function lib:init()
 
     Utils.hook(Battle, "returnToWorld", function(orig, self)
         orig(self)
-        Game:setFlag("current_battle_system#", nil)
+        lib.current_battle_system = nil
     end)
 
     Utils.hook(Item, "init", function(orig, self)
