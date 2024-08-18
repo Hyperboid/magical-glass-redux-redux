@@ -2824,6 +2824,13 @@ function lib:registerDebugOptions(debug)
     end
 
     debug:registerMenu("light_wave_select", "Wave Select", "search")
+    
+    self:registerOption("light_wave_select", "[Stop Current Wave]", "Stop the current playing wave.", function ()
+        if Game.battle:getState() == "DEFENDING" then
+            Game.battle.encounter:onWavesDone()
+        end
+        self:closeMenu()
+    end)
 
     local waves_list = {}
     for id,_ in pairs(self.light_waves) do

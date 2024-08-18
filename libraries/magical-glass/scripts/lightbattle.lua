@@ -2747,7 +2747,6 @@ function LightBattle:onKeyPressed(key)
         if self.soul and self.soul.visible and self.state == "DEFENDING" and key == "j" then
             self.soul:shatter(6)
             self:toggleSoul(false)
-            self:getPartyBattler(Game:getSoulPartyMember().id):hurt(math.huge)
         end
         if key == "b" then
             for _,battler in ipairs(self.party) do
