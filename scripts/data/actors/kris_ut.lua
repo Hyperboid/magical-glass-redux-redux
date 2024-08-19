@@ -46,11 +46,11 @@ function actor:init()
         -- path, function that returns a path, or a function that returns a sprite object
         -- if one's not defined, get the default animation
         ["create_sprite"] = function()
-            self.head_sprite = Sprite(self.path.."/head")
-            self.head_sprite.layer = 500
+            local sprite = Sprite(self.path.."/head")
+            sprite.layer = 500
             local path =    {{0, 0}, {-1, 1}, {-1, 2}, {-1, 3}, {0, 1}, {1, 3}, {1, 2}, {1, 1}, {0, 0}}
-            self.head_sprite:slidePath(path, {speed = 0.2, loop = true, relative = true})
-            return self.head_sprite
+            sprite:slidePath(path, {speed = 0.2, loop = true, relative = true})
+            return sprite
         end,
     })
 
