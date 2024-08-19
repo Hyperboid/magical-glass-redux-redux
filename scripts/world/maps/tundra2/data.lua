@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 14,
-  nextobjectid = 181,
+  nextobjectid = 182,
   properties = {
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
@@ -338,6 +338,19 @@ return {
           y = 380,
           width = 0,
           height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 181,
+          name = "shooter",
+          type = "",
+          shape = "rectangle",
+          x = 5239.33,
+          y = 160.333,
+          width = 39.6667,
+          height = 38.3333,
           rotation = 0,
           visible = true,
           properties = {}

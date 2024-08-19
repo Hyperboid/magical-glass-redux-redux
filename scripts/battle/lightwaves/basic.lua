@@ -16,6 +16,9 @@ function Basic:onStart()
 
         -- Spawn smallbullet going left with speed 8 (see scripts/battle/bullets/smallbullet.lua)
         local bullet = self:spawnBullet("smallbullet", x, y, math.rad(180), 8)
+        if not bullet.attacker then
+            bullet.damage = 30
+        end
 
         -- Dont remove the bullet offscreen, because we spawn it offscreen
         bullet.remove_offscreen = false

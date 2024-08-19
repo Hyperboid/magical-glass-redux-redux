@@ -2691,6 +2691,21 @@ function lib:init()
                                 self:closeMenu()
                             end, in_light_battle)
     end)
+    
+    Utils.hook(WorldBullet, "onCollide", function(orig, self, soul)
+        if self.light_hazard_encounter then
+            if soul.inv_timer == 0 then
+                soul.inv_timer = self.inv_timer
+                Game:encounter(self.light_hazard_encounter, true, nil, nil, true)
+            end
+            
+            if self.destroy_on_hit then
+                self:remove()
+            end
+        else
+            return orig(self, soul)
+        end
+    end)
 end
 
 function lib:registerRandomEncounter(id, class)

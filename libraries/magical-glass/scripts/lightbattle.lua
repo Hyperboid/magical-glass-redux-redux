@@ -962,12 +962,12 @@ function LightBattle:onStateChange(old,new)
         end
 
         self.current_selecting = 0
-        self:toggleSoul(false)
+        self:toggleSoul(self.encounter.story)
         self.battle_ui:clearEncounterText()
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
         local active_enemies = self:getActiveEnemies()
-        if #active_enemies == 0 then
+        if #active_enemies == 0 and not self.encounter.story then
             self:setState("VICTORY")
         else
 
@@ -1032,7 +1032,7 @@ function LightBattle:onStateChange(old,new)
                 center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 --+ 10
             end
     
-            if has_soul then
+            if has_soul and not self.encounter.story then
                 self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
                     soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
                     soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
@@ -1223,6 +1223,9 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "TRANSITIONOUT" then
+        if self.encounter.story then
+            self:toggleSoul(true)
+        end
         self.ended = true
         self.current_selecting = 0
         if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
@@ -1286,23 +1289,28 @@ function LightBattle:onStateChange(old,new)
         end
         
     elseif new == "DEFENDINGEND" then
-        self.arena.rotation = 0
-        if self.arena.height >= self.arena.init_height then
-            self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
-            function()
-                self.arena:changeShape({self.arena.width, self.arena.init_height},
-                function()
-                    self.arena:changeShape({self.arena.init_width, self.arena.height})
-                end)
-            end)
+        if self.encounter.story then
+            self:setState("TRANSITIONOUT")
+            self.encounter:onBattleEnd()
         else
-            self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
-            function()
-                self.arena:changeShape({self.arena.init_width, self.arena.height},
+            self.arena.rotation = 0
+            if self.arena.height >= self.arena.init_height then
+                self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
                 function()
-                    self.arena:changeShape({self.arena.width, self.arena.init_height})
+                    self.arena:changeShape({self.arena.width, self.arena.init_height},
+                    function()
+                        self.arena:changeShape({self.arena.init_width, self.arena.height})
+                    end)
                 end)
-            end)
+            else
+                self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
+                function()
+                    self.arena:changeShape({self.arena.init_width, self.arena.height},
+                    function()
+                        self.arena:changeShape({self.arena.width, self.arena.init_height})
+                    end)
+                end)
+            end
         end
     end
 

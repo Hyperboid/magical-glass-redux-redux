@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="136" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="14" nextobjectid="181">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="136" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="14" nextobjectid="182">
  <editorsettings>
   <export target="data.lua" format="lua"/>
  </editorsettings>
@@ -81,6 +81,7 @@
   <object id="168" name="spawn" x="4120" y="380">
    <point/>
   </object>
+  <object id="181" name="shooter" x="5239.33" y="160.333" width="39.6667" height="38.3333"/>
  </objectgroup>
  <objectgroup color="#ff00ff" id="4" name="objects">
   <object id="119" name="transition" x="0" y="320" width="40" height="120">
