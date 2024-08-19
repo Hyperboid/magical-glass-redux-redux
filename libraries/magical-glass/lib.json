@@ -46,7 +46,7 @@
         ///// UNDERTALE Movement Can Run
         // Enables the ability to run when using the Undertale player movement.
         /////
-        "undertale_movement_can_run": false,
+        "undertale_movement_can_run": true,
         
         ///// Light Battles HP Gauge Length Cap
         // Limits the length of the HP bar in light battles.
@@ -72,7 +72,7 @@
         ///// Hide CELL in The Light World Menu
         // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.
         /////
-        "hide_cell": true,
+        "hide_cell": false,
 
         ///// UNDERTALE Stat Display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
