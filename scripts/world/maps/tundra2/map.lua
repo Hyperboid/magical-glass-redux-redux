@@ -9,7 +9,7 @@ function room:load()
         tree.x = (tree.x * 1.6) + 50
     end
     
-    self.timer:every(2, function()
+    self.timer:every(1, function()
         local marker1 = self.markers["shooter"]
         self.world:spawnBullet("testbullet", marker1.center_x, Utils.random(marker1.y, marker1.y+marker1.height), false)
     end)
