@@ -482,7 +482,11 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "addLightBattlerPart", function(orig, self, id, data)
-        self.light_battler_parts[id] = data
+        if type(data) == "string" then
+            self.light_battler_parts[id] = {["create_sprite"] = self.path.."/"..data}
+        else
+            self.light_battler_parts[id] = data
+        end
     end)
 
     Utils.hook(Actor, "getLightBattlerPart", function(orig, self, part)

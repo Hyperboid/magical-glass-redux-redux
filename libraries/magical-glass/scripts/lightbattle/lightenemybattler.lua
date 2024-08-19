@@ -676,6 +676,11 @@ function LightEnemyBattler:onDefeat(damage, battler)
         Game.battle.timer:after(self.hurt_timer, function()
             if self.actor.use_light_battler_sprite then
                 self:toggleOverlay(true)
+                if self.actor:getAnimation("lightbattle_defeat") then
+                    self.overlay_sprite:setAnimation("lightbattle_defeat")
+                else
+                    self.overlay_sprite:setAnimation("lightbattle_hurt")
+                end
             end
             if self.can_die then
                 if self.ut_death then
