@@ -243,7 +243,11 @@ function LightEncounter:onFlee()
 
             for _,member in ipairs(Game.battle.party) do
                 local lv = member.chara:getLightLV()
-                member.chara:gainLightEXP(xp, true)
+                member.chara:addLightEXP(self.xp)
+
+                if lv ~= member.chara:getLightLV() then
+                    Assets.stopAndPlaySound("levelup")
+                end
             end
         else
             for _,battler in ipairs(Game.battle.party) do
