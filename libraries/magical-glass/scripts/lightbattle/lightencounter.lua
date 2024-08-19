@@ -239,11 +239,11 @@ function LightEncounter:onFlee()
                 Game.lw_money = 0
             end
 
-            self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+            self.used_flee_message = "* Ran away with " .. xp .. " EXP\nand " .. money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
 
             for _,member in ipairs(Game.battle.party) do
                 local lv = member.chara:getLightLV()
-                member.chara:addLightEXP(self.xp)
+                member.chara:addLightEXP(xp)
 
                 if lv ~= member.chara:getLightLV() then
                     Assets.stopAndPlaySound("levelup")
@@ -280,7 +280,7 @@ function LightEncounter:onFlee()
                 Assets.playSound("dtrans_lw", 0.7, 2)
                 --scr_levelup()
             else
-                self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("darkCurrencyShort") .. "."
+                self.used_flee_message = "* Ran away with " .. xp .. " EXP\nand " .. money .. " " .. Game:getConfig("darkCurrencyShort") .. "."
             end
         end
     else
