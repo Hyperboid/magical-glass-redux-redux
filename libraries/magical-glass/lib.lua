@@ -2696,11 +2696,10 @@ function lib:init()
         if self.light_hazard_encounter then
             if soul.inv_timer == 0 then
                 soul.inv_timer = self.inv_timer
+                if self.destroy_on_hit then
+                    self:remove()
+                end
                 Game:encounter(self.light_hazard_encounter, true, nil, nil, true)
-            end
-            
-            if self.destroy_on_hit then
-                self:remove()
             end
         else
             return orig(self, soul)
