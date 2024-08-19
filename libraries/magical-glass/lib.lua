@@ -16,6 +16,7 @@ LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbox")
 LightAttackBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbox")
 LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbar")
+LightStatusDisplay       = libRequire("magical-glass", "scripts/lightbattle/ui/lightstatusdisplay")
 LightShop                = libRequire("magical-glass", "scripts/lightshop")
 RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter")
 
@@ -43,6 +44,7 @@ function lib:unload()
     LightActionBox           = nil
     LightAttackBox           = nil
     LightAttackBar           = nil
+    LightStatusDisplay       = nil
     RandomEncounter          = nil
     LightShop                = nil
 end

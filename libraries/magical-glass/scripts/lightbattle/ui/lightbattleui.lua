@@ -98,6 +98,11 @@ function LightBattleUI:init()
     self.flee_text.line_offset = 4
     Game.battle.arena:addChild(self.flee_text)
     
+    if Game.battle.encounter.story and not Game.battle.multi_mode then
+        Game.battle:addChild(LightStatusDisplay(0, 390, true))
+    else
+        Game.battle:addChild(LightStatusDisplay(0, 390, false))
+    end
 end
 
 function LightBattleUI:clearEncounterText()

@@ -146,6 +146,8 @@ function LightBattle:init()
     self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
     self:addChild(self.darkify_fader)
     
+    self.multi_mode = Kristal.getLibConfig("magical-glass", "multi_always_on") or #self.party > 1
+    
     Textbox.REACTION_X_BATTLE = {
             ["left"] = 70  -38,
          ["leftmid"] = 160 -38,
@@ -250,8 +252,6 @@ function LightBattle:postInit(state, encounter)
 
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
-
-    self.multi_mode = Kristal.getLibConfig("magical-glass", "multi_always_on") or #self.party > 1
 
     self.tension_bar = LightTensionBar(29, 53, true)
     if self.tension then
