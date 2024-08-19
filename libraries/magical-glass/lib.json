@@ -27,6 +27,11 @@
         // false = Dark
         /////
         "default_battle_system": ["deltarune", false],
+        
+        ///// Shared Light EXP and LV
+        // Whether EXP is global to all party members or local to each
+        /////
+        "shared_light_exp": false,
 
         ///// Light Battle TP
         // Enables tension and grazing in Light Battles.

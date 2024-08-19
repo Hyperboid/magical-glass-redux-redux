@@ -1151,10 +1151,11 @@ function LightBattle:onStateChange(old,new)
 
             for _,member in ipairs(self.party) do
                 local lv = member.chara:getLightLV()
-                member.chara:gainLightEXP(self.xp, true)
+                member.chara:addLightEXP(self.xp)
 
                 if lv ~= member.chara:getLightLV() then
                     win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. ".\n* Your LOVE increased."
+                    Assets.stopAndPlaySound("levelup")
                 end
             end
 

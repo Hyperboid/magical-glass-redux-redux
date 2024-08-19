@@ -88,6 +88,12 @@ function lib:load(data, new_file)
         lib.current_battle_system = data.magical_glass["current_battle_system"] or nil
         lib.random_encounter = data.magical_glass["random_encounter"] or lib.random_encounter or nil
         lib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
+        
+        for _,party in pairs(Game.party_data) do -- Fixes a crash with existing saves
+            if not party.lw_stats["magic"] then
+                party:lightLVStats()
+            end
+        end
     end
 end
 
@@ -236,7 +242,7 @@ end
 
 function lib:init()
 
-    print("Loaded Magical Glass " .. self.info.version .. "!")
+    print("Loaded Magical Glass: Redux " .. self.info.version .. "!")
 
     self.encounters_enabled = false
     self.steps_until_encounter = nil
@@ -398,10 +404,11 @@ function lib:init()
             
             for _,member in ipairs(self.party) do
                 local lv = member.chara:getLightLV()
-                member.chara:gainLightEXP(self.xp, true)
+                member.chara:addLightEXP(self.xp)
 
                 if lv ~= member.chara:getLightLV() then
                     win_text = "* You won!\n* Got " .. self.xp .. " EXP and " .. self.money .. " "..Game:getConfig("lightCurrency"):lower()..".\n* Your LOVE increased."
+                    Assets.stopAndPlaySound("levelup")
                 end
             end
 
@@ -1900,53 +1907,51 @@ function lib:init()
         end
     end)
 
-    Utils.hook(PartyMember, "onLightLevelUp", function(orig, self)
-        if self:getLightLV() < #self.lw_exp_needed then
+    Utils.hook(PartyMember, "onLightLevelUp", function(orig, self, playsound)
+        if self:getLightLV() < #self.lw_exp_needed or self:getLightEXPNeeded(#self.lw_exp_needed) >= self.lw_exp then
             local old_lv = self:getLightLV()
 
-            local new_lv
+            local new_lv = 1
             for lv, exp in pairs(self.lw_exp_needed) do
-                if self.lw_exp >= exp then
+                if self:getLightEXP() >= exp then
                     new_lv = lv
                 end
             end
+            if old_lv < 1 and self:getLightEXP() < self.lw_exp_needed[1] then
+                new_lv = old_lv
+            end
 
             if old_lv ~= new_lv and new_lv <= #self.lw_exp_needed then
-                Assets.stopAndPlaySound("levelup")
-                self:setLightLV(new_lv)
-                self:lightLVStats()
+                self:setLightLV(new_lv, false)
             end
         end
     end)
 
-    Utils.hook(PartyMember, "setLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = Utils.clamp(exp, self.lw_exp_needed[1], self.lw_exp_needed[#self.lw_exp_needed])
+    Utils.hook(PartyMember, "setLightEXP", function(orig, self, exp)
+        self.lw_exp = exp
 
-        if level_up then
-            self:onLightLevelUp()
-        end
+        self:onLightLevelUp()
     end)
 
-    Utils.hook(PartyMember, "gainLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = Utils.clamp(self.lw_exp + exp, self.lw_exp_needed[1], self.lw_exp_needed[#self.lw_exp_needed])
-
-        if level_up then
-            self:onLightLevelUp()
-        end
-    end)
-
-    Utils.hook(PartyMember, "setLightLV", function(orig, self, level)
-        self.lw_lv = level
-        self:onLightLevelUp(level)
-    end)
-
-    Utils.hook(PartyMember, "forceLightLV", function(orig, self, level)
-        self.lw_lv = level
-
-        if self.lw_lv >= #self.lw_exp_needed then
-            self.lw_exp = self.lw_exp_needed[#self.lw_exp_needed]
+    Utils.hook(PartyMember, "addLightEXP", function(orig, self, exp)
+        if self:getLightEXP() >= self.lw_exp_needed[1] and self:getLightEXP() <= self.lw_exp_needed[#self.lw_exp_needed] then
+            self:setLightEXP(Utils.clamp(self:getLightEXP() + exp, self.lw_exp_needed[1], self.lw_exp_needed[#self.lw_exp_needed]))
         else
-            self.lw_exp = self:getLightEXPNeeded(level)
+            self:setLightEXP(self:getLightEXP() + exp)
+        end
+    end)
+
+    Utils.hook(PartyMember, "setLightLV", function(orig, self, level, force_exp)
+        self.lw_lv = level
+
+        if force_exp ~= false then
+            if self.lw_lv >= #self.lw_exp_needed then
+                self.lw_exp = self.lw_exp_needed[#self.lw_exp_needed]
+            elseif self.lw_exp_needed[level] then
+                self.lw_exp = self:getLightEXPNeeded(level)
+            else
+                self.lw_exp = 0
+            end
         end
         self:lightLVStats()
     end)
@@ -2860,12 +2865,31 @@ function lib:onFootstep(char, num)
     end
 end
 
+function lib:setLightEXP(exp)
+    for _,party in pairs(Game.party_data) do
+        party:setLightEXP(exp)
+    end
+end
+
+function lib:setLightLV(level)
+    for _,party in pairs(Game.party_data) do
+        party:setLightLV(level)
+    end
+end
+
 function lib:postUpdate()
     lib.is_light_menu_partyselect = nil
     Game.lw_xp = nil
     for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP
-        if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then  
+        if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then
             Game.lw_xp = party:getLightEXP()
+        end
+    end
+    if Kristal.getLibConfig("magical-glass", "shared_light_exp") then
+        for _,party in pairs(Game.party_data) do
+            if party:getLightEXP() ~= Game.lw_xp then
+                party:setLightEXP(Game.lw_xp)
+            end
         end
     end
     if not Game.battle then
