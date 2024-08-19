@@ -99,9 +99,13 @@ function LightBattleUI:init()
     Game.battle.arena:addChild(self.flee_text)
     
     if Game.battle.encounter.story and not Game.battle.multi_mode then
-        Game.battle:addChild(LightStatusDisplay(0, 390, true))
+        self.status_display = LightStatusDisplay(0, 390, true)
+        self.status_display.layer = BATTLE_LAYERS["below_ui"] + 1
+        Game.battle:addChild(self.status_display)
     else
-        Game.battle:addChild(LightStatusDisplay(0, 390, false))
+        self.status_display = LightStatusDisplay(0, 390, false)
+        self.status_display.layer = BATTLE_LAYERS["below_ui"] + 1
+        Game.battle:addChild(self.status_display)
     end
 end
 
