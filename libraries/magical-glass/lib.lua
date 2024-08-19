@@ -2516,7 +2516,14 @@ function lib:init()
     end)
     
     Utils.hook(ActionBoxDisplay, "draw", function(orig, self) -- Fixes an issue with HP higher than normal
-        if Game:isLight() and #Game.battle.party <= 3 then
+        local overwrite = false
+        for _,battler in ipairs(Game.battle.party) do
+            if battler.chara:getHealth() > battler.chara:getStat("health") then
+                overwrite = true
+                break
+            end
+        end
+        if overwrite and Game:isLight() and #Game.battle.party <= 3 then
             if Game.battle.current_selecting == self.actbox.index then
                 Draw.setColor(self.actbox.battler.chara:getColor())
             else
