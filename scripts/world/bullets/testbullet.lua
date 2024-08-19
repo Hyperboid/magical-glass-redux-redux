@@ -17,6 +17,7 @@ function TestBullet:init(x, y, flip)
     self.start_x = x
     
     self.battle_fade = false
+    self.destroy_on_hit = true
     
     self.light_hazard_encounter = "hazardtest"
 end
