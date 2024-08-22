@@ -2690,6 +2690,19 @@ function lib:init()
             return orig(self, soul)
         end
     end)
+    
+    Utils.hook(WorldBullet, "getDebugInfo", function(orig, self)
+        if self.light_hazard_encounter then
+            local info = Object.getDebugInfo(self)
+            table.insert(info, "Light Encounter: " .. self.light_hazard_encounter)
+            table.insert(info, "Destroy on hit: " .. (self.destroy_on_hit and "True" or "False"))
+            table.insert(info, "Fade with battles: " .. (self.battle_fade and "True" or "False"))
+            table.insert(info, "Remove when offscreen: " .. (self.remove_offscreen and "True" or "False"))
+            return info
+        else
+            return orig(self)
+        end
+    end)
 end
 
 function lib:registerRandomEncounter(id, class)
