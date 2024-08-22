@@ -1592,8 +1592,16 @@ end
 function LightBattle:battleText(text,post_func)
     local target_state = self:getState()
     self.battle_ui.encounter_text.text.line_offset = 4 -- toby jesus christ
+    
+    if type(text) == "table" then
+        for key,line in ipairs(text) do
+            text[key] = "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. line
+        end
+    else
+        text = "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text
+    end
 
-    self.battle_ui.encounter_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text, function()
+    self.battle_ui.encounter_text:setText(text, function()
         self.battle_ui:clearEncounterText()
         if type(post_func) == "string" then
             target_state = post_func

@@ -67,6 +67,10 @@ function Dummy:init()
     self.damage_offset = {5, -70}
 end
 
+function Dummy:onDodge(battler, attacked)
+    print(battler.chara.id, attacked)
+end
+
 function Dummy:onAct(battler, name)
     if name == "DualHeal" then
         Game.battle:powerAct("dual_heal", battler, "noelle")

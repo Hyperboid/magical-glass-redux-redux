@@ -1000,6 +1000,9 @@ function lib:init()
     end)
     
     Utils.hook(Item, "onLightAttack", function(orig, self, battler, enemy, damage, stretch)
+        if damage <= 0 then
+            enemy:onDodge(battler, true)
+        end
         local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
         src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
 
@@ -1033,7 +1036,7 @@ function lib:init()
 
     Utils.hook(Item, "onCheck", function(orig, self)
         if type(self.check) == "string" then
-            Game.world:showText("* \""..self:getName().."\" - "..self:getCheck())
+            orig(self)
         elseif type(self.check) == "table" then
             local text = {}
             for i, check in ipairs(self:getCheck()) do
@@ -1043,24 +1046,6 @@ function lib:init()
             end
             Game.world:showText({{"* \""..self:getName().."\" - "..self:getCheck()[1]}, text})
         end
-    end)
-        
-    Utils.hook(Item, "onToss", function(orig, self)
-        if Game:isLight() then
-            local choice = love.math.random(30)
-            if choice == 1 then
-                Game.world:showText("* You bid a quiet farewell\n to the " .. self:getName() .. ".")
-            elseif choice == 2 then
-                Game.world:showText("* You put the " .. self:getName() .. "\non the ground and gave it a\nlittle pat.")
-            elseif choice == 3 then
-                Game.world:showText("* You threw the " .. self:getName() .. "\non the ground like the piece\nof trash it is.")
-            elseif choice == 4 then
-                Game.world:showText("* You abandoned the\n" .. self:getName() .. ".")
-            else
-                Game.world:showText("* The " .. self:getName() .. " was\nthrown away.")
-            end
-        end
-        return true
     end)
 
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)

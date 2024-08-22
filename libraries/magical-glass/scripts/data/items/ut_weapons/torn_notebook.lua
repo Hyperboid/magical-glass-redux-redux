@@ -58,6 +58,9 @@ function item:init()
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch, crit)
+    if damage <= 0 then
+        enemy:onDodge(battler, true)
+    end
     local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
     src:setPitch(self:getLightAttackPitch() or 1)
 

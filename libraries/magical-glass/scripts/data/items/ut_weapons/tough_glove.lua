@@ -107,10 +107,15 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             local new_damage = math.ceil(damage * (punches / self.attack_punches))
             enemy:hurt(new_damage, battler)
     
+            if punches < self.attack_punches and damage <= 0 then
+                enemy:onDodge(battler, true)
+            end
+            
             battler.chara:onLightAttackHit(enemy, damage)
             Game.battle:finishActionBy(battler)
         else
-            self:onLightMiss(battler, enemy, false, punches)
+            enemy:hurt(0, battler, nil, nil, true, false)
+            Game.battle:finishActionBy(battler)
         end
 
     end
@@ -157,6 +162,9 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     enemy.parent:addChild(small_punch)
                     small_punch:play(2/30, false, function(s) s:remove() end)
                 else
+                    if damage <= 0 then
+                        enemy:onDodge(battler, true)
+                    end
                     state = "DONE"
                     local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
                     src:setPitch(self:getLightAttackPitch() or 1)
@@ -180,11 +188,6 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         end
     end)
     return false
-end
-
-function item:onLightMiss(battler, enemy)
-    enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, true)
-    Game.battle:finishActionBy(battler)
 end
 
 return item

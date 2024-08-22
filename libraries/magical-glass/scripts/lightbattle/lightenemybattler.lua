@@ -516,9 +516,10 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacke
         end
         if attacked then
             self.hurt_timer = 1
+        else
+            self:onDodge(battler, attacked) -- if attacked gets called in item:onLightAttack()
         end
-
-        self:onDodge(battler, attacked)
+        
         return
     end
 
