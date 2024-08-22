@@ -72,7 +72,7 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.dialogue_offset = {0, 0}
 
     -- Whether the speech bubble should be flipped horizontally.
-    self.dialogue_right = true
+    self.dialogue_flip = true
 
     self.dialogue = {}
 
@@ -825,7 +825,7 @@ end
 
 function LightEnemyBattler:spawnSpeechBubble(text, options)
     options = options or {}
-    options["right"] = self.dialogue_right or options["right"]
+    options["right"] = options["right"] or self.dialogue_flip
 
     local bubble
     if not options["style"] and self.dialogue_bubble then
