@@ -47,7 +47,7 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.waves = {}
     self.menu_waves = {}
 
-    self.check = "Wake up and taste the [color:red]\npain"
+    self.check = "Remember to change\nyour check text!"
 
     self.text = {}
 
