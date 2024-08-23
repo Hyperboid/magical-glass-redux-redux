@@ -1008,8 +1008,8 @@ function lib:init()
 
         local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
         local scale = (stretch * 2) - 0.5
-        sprite:setScale(scale, scale)
-        sprite:setOrigin(0.5, 0.5)
+        sprite:setScale(scale)
+        sprite:setOrigin(0.5)
         sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5 - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 5))
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
         sprite.color = {battler.chara:getLightAttackColor()}
@@ -1148,7 +1148,7 @@ function lib:init()
         self.font_size = self.default_font_size
     
         self.face = Sprite(nil, self.face_x, self.face_y, nil, nil, "face")
-        self.face:setScale(2, 2)
+        self.face:setScale(2)
         self.face.getDebugOptions = function(self2, context)
             context = Object.getDebugOptions(self2, context)
             if Kristal.DebugSystem then
