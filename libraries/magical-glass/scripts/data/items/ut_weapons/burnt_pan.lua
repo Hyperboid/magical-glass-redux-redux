@@ -60,8 +60,8 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     local angle = 6 * Utils.pick({1, -1})
     local form = 0
     local size = 2
-    sprite:setScale(2, 2)
-    sprite:setOrigin(0.5, 0.5)
+    sprite:setScale(2)
+    sprite:setOrigin(0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}

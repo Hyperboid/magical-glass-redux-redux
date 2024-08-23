@@ -73,8 +73,8 @@ function item:onLightBoltHit(lane)
     if Game.battle:enemyExists(enemy) then
         Assets.playSound("punchweak")
         local small_punch = Sprite("effects/attack/hyperfist")
-        small_punch:setOrigin(0.5, 0.5)
-        small_punch:setScale(0.5, 0.5)
+        small_punch:setOrigin(0.5)
+        small_punch:setScale(0.5)
         small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
         small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
         small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
@@ -84,11 +84,14 @@ function item:onLightBoltHit(lane)
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch, crit)
+    if damage <= 0 then
+        enemy:onDodge(battler, true)
+    end
     local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/hyperfist")
-    sprite:setOrigin(0.5, 0.5)
+    sprite:setOrigin(0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}

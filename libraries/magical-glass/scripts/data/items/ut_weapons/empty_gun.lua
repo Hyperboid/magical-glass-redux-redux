@@ -60,8 +60,8 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/gunshot_stab")
-    sprite:setScale(2, 2)
-    sprite:setOrigin(0.5, 0.5)
+    sprite:setScale(2)
+    sprite:setOrigin(0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}
@@ -78,7 +78,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         local stars = {}
         for i = 0, 7 do
             local star = Sprite("effects/attack/gunshot_stab")
-            star:setOrigin(0.5, 0.5)
+            star:setOrigin(0.5)
             star.siner = 45 * i
             star.star_sine_amt = 0
             star.star_speed = 16
@@ -134,8 +134,8 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             local ring_form = false
             local ring_size = 1
             local ring_shots = 0
-            ring:setScale(1, 1)
-            ring:setOrigin(0.5, 0.5)
+            ring:setScale(1)
+            ring:setOrigin(0.5)
             ring:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
             ring.layer = BATTLE_LAYERS["above_ui"] + 5
             ring.color = {battler.chara:getLightMultiboltAttackColor()}

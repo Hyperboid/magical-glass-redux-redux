@@ -73,7 +73,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     if Input.usingGamepad() then
         confirm_button = Sprite(Input.getTexture("confirm"))
         confirm_button:setScale(2)
-        confirm_button:setOrigin(0.5, 0.5)
+        confirm_button:setOrigin(0.5)
         confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2) + 6))
     elseif confirm_key ~= "Z" then
         confirm_button = Text(confirm_key)
@@ -82,11 +82,11 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2) - 3 - (#confirm_key - 1) * 3.5, (enemy.height / 2) - 3))
     else
         confirm_button = Sprite("ui/lightbattle/pressz_z")
-        confirm_button:setOrigin(0.5, 0.5)
+        confirm_button:setOrigin(0.5)
         confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
     end
     local press_timer = 3
-    press:setOrigin(0.5, 0.5)
+    press:setOrigin(0.5)
     press:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
     press:setLayer(BATTLE_LAYERS["above_ui"] + 5)
     confirm_button:setLayer(BATTLE_LAYERS["above_ui"] + 5)
@@ -155,7 +155,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
                     Assets.playSound("punchweak")
                     local small_punch = Sprite("effects/attack/regfist")
-                    small_punch:setOrigin(0.5, 0.5)
+                    small_punch:setOrigin(0.5)
                     small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
                     small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
                     small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
@@ -170,7 +170,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     src:setPitch(self:getLightAttackPitch() or 1)
                     
                     local punch = Sprite("effects/attack/hyperfist")
-                    punch:setOrigin(0.5, 0.5)
+                    punch:setOrigin(0.5)
                     punch.layer = BATTLE_LAYERS["above_ui"] + 5
                     punch.color = {battler.chara:getLightMultiboltAttackColor()}
                     punch:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
