@@ -525,7 +525,7 @@ function LightBattle:processAction(action)
             enemy:onMercy(battler)
             self:finishAction(action)
 
-            self:battleText("* " .. battler.chara:getNameOrYou() .. " spared " .. enemy.name .. ".")
+            self:battleText(enemy:getSpareText(battler, enemy:canSpare()))
         else
             self:toggleSoul(false)
 

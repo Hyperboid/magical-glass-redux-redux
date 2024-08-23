@@ -53,7 +53,6 @@ function lib:save(data)
     data.magical_glass = {}
     data.magical_glass["kills"] = lib.kills
     data.magical_glass["serious_mode"] = lib.serious_mode
-    data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1] and Game.party[1]:getLightLV() or 0
     data.magical_glass["in_light_shop"] = lib.in_light_shop
     data.magical_glass["current_battle_system"] = lib.current_battle_system
@@ -72,7 +71,6 @@ function lib:load(data, new_file)
         lib.kills = 0
         lib.game_overs = lib.game_overs or 0
         lib.serious_mode = false
-        lib.name_color = COLORS.yellow
         lib.lw_save_lv = 0
         lib.in_light_shop = false
         self:setGameOvers(0)
@@ -82,7 +80,6 @@ function lib:load(data, new_file)
         lib.kills = data.magical_glass["kills"] or 0
         self:setGameOvers(self:getGameOvers() or 0)
         lib.serious_mode = data.magical_glass["serious_mode"] or false
-        lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.in_light_shop = data.magical_glass["in_light_shop"] or false
         lib.current_battle_system = data.magical_glass["current_battle_system"] or nil
@@ -176,8 +173,6 @@ end
 
 function lib:preInit()
     self.PALETTE = {
-        ["pink_spare"] = {1, 167/255, 212/255, 1},
-        
         ["tension_maxtext"] = PALETTE["tension_maxtext"],
         ["tension_back"] = PALETTE["tension_back"],
         ["tension_decrease"] = PALETTE["tension_decrease"],
@@ -2886,18 +2881,6 @@ function lib:enterLightShop(shop, options)
 
     Game.stage:addChild(Game.shop)
     Game.shop:onEnter()
-end
-
-function lib:changeSpareColor(color)
-    if color == "yellow" then
-        lib.name_color = COLORS.yellow
-    elseif color == "pink" then
-        lib.name_color = lib.PALETTE["pink_spare"]
-    elseif color == "white" then
-        lib.name_color = COLORS.white
-    elseif type(color) == "table" then
-        lib.name_color = color
-    end
 end
 
 function lib:setLightBattleShakingText(v)
