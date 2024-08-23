@@ -68,7 +68,7 @@ function LightStatusDisplay:drawStatusStripStory()
     end
 
     local color = COLORS.white
-    if not Game.battle.party[1].is_down and not Game.battle.forced_victory then
+    if not Game.battle.party[1].is_down then
         if Game.battle.party[1].sleeping then
             color = MagicalGlassLib.PALETTE["player_sleeping_text"]
         elseif Game.battle:getActionBy(Game.battle.party[1]) and Game.battle:getActionBy(Game.battle.party[1]).action == "DEFEND" then
@@ -134,7 +134,7 @@ function LightStatusDisplay:drawStatusStrip()
             end
 
             local color = COLORS.white
-            if not battler.is_down and not Game.battle.forced_victory then
+            if not battler.is_down then
                 if battler.sleeping then
                     color = MagicalGlassLib.PALETTE["player_sleeping_text"]
                 elseif Game.battle:getActionBy(battler) and Game.battle:getActionBy(battler).action == "DEFEND" then
@@ -194,18 +194,16 @@ function LightStatusDisplay:drawStatusStrip()
             end
             
             local color = COLORS.white
-            if not Game.battle.forced_victory then
-                if battler.is_down then 
-                    color = MagicalGlassLib.PALETTE["player_down_text"]
-                elseif battler.sleeping then
-                    color = MagicalGlassLib.PALETTE["player_sleeping_text"]
-                elseif Game.battle:getActionBy(battler) and Game.battle:getActionBy(battler).action == "DEFEND" then
-                    color = MagicalGlassLib.PALETTE["player_defending_text"]
-                elseif Game.battle:getActionBy(battler) and Utils.containsValue({"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT"}, Game.battle:getState()) then
-                    color = MagicalGlassLib.PALETTE["player_action_text"]
-                elseif karma > 0 then
-                    color = MagicalGlassLib.PALETTE["player_karma_text"]
-                end
+            if battler.is_down then
+                color = MagicalGlassLib.PALETTE["player_down_text"]
+            elseif battler.sleeping then
+                color = MagicalGlassLib.PALETTE["player_sleeping_text"]
+            elseif Game.battle:getActionBy(battler) and Game.battle:getActionBy(battler).action == "DEFEND" then
+                color = MagicalGlassLib.PALETTE["player_defending_text"]
+            elseif Game.battle:getActionBy(battler) and Utils.containsValue({"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT"}, Game.battle:getState()) then
+                color = MagicalGlassLib.PALETTE["player_action_text"]
+            elseif karma > 0 then
+                color = MagicalGlassLib.PALETTE["player_karma_text"]
             end
             love.graphics.setColor(color)
             Draw.printAlign(current .. "/" .. max, x + 197, y + 3 - (karma_mode and 2 or 0), "right")
