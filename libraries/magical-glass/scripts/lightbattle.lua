@@ -822,8 +822,6 @@ function LightBattle:onStateChange(old,new)
         self.battle_ui:clearEncounterText()
         self.battle_ui.encounter_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "[noskip][wait:1][noskip:false]" ..self.battle_ui.current_encounter_text)
 
-        self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
-
         local had_started = self.started
         if not self.started then
             self.started = true
@@ -853,8 +851,6 @@ function LightBattle:onStateChange(old,new)
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
         self.battle_ui.encounter_text:setText("[noskip][wait:1][noskip:false]"..self.battle_ui.current_encounter_text)
-
-        self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
         local had_started = self.started
         if not self.started then

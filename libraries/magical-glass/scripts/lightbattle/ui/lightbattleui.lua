@@ -13,13 +13,13 @@ function LightBattleUI:init()
     self.draw_mercy = Kristal.getLibConfig("magical-glass", "mercy_bar")
     self.draw_percents = Kristal.getLibConfig("magical-glass", "enemy_bar_percentages")
 
-    self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
+    self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, "main_mono", nil, true)
     self.encounter_text.text.default_sound = "ut"
     self.encounter_text.text.hold_skip = false
     self.encounter_text.text.line_offset = 5
     self.encounter_text.text.style = "none"
     self.encounter_text:setText("")
-    self.encounter_text.debug_rect = {-30, -12, SCREEN_WIDTH+1, 124}
+    self.encounter_text.debug_rect = {-30, -12, SCREEN_WIDTH - 45, 121}
     Game.battle.arena:addChild(self.encounter_text)
 
     self.choice_box = Choicebox(56, 49, 529, 103, true)
@@ -27,15 +27,15 @@ function LightBattleUI:init()
     self.choice_box.visible = false
     Game.battle.arena:addChild(self.choice_box)
 
-    self.text_choice_box = TextChoicebox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, default_font, default_font_size, true)
+    self.text_choice_box = TextChoicebox(14, 17, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, default_font, default_font_size, true)
     self.text_choice_box:setText("")
     self.text_choice_box.active = false
     self.text_choice_box.visible = false
     Game.battle.arena:addChild(self.text_choice_box)
 
-    self.short_act_text_1 = DialogueText("", 14, 15, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
-    self.short_act_text_2 = DialogueText("", 14, 15 + 30, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
-    self.short_act_text_3 = DialogueText("", 14, 15 + 30 + 30, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
+    self.short_act_text_1 = DialogueText("", 14, 15, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
+    self.short_act_text_2 = DialogueText("", 14, 15 + 30, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
+    self.short_act_text_3 = DialogueText("", 14, 15 + 30 + 30, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
     Game.battle.arena:addChild(self.short_act_text_1)
     Game.battle.arena:addChild(self.short_act_text_2)
     Game.battle.arena:addChild(self.short_act_text_3)
