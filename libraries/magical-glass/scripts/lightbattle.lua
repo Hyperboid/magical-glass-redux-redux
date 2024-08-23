@@ -217,7 +217,7 @@ function LightBattle:postInit(state, encounter)
         self.encounter = encounter
     end
 
-    if self.encounter.includes(Encounter) then
+    if self.encounter:includes(Encounter) then
         error("Attempted to use Encounter in a LightBattle. Convert the encounter file to a LightEncounter.")
     end
 
