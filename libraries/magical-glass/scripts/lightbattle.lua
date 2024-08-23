@@ -2081,7 +2081,7 @@ function LightBattle:powerAct(spell, battler, user, target)
         end
     end
 
-    local name = user_battler.chara:getName()
+    local name = user_battler.chara:getNameOrYou(true)
     self:setActText("* Your soul shined its power on\n" .. name .. ".", true)
 
     self.timer:after(7/30, function()
