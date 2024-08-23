@@ -18,7 +18,6 @@ function item:init()
     self.description = "Its bark is worse than its bite."
 
     -- Light world check text
-    -- self.check = "Weapon AT 0\n* Whoa-oh-oh-oh-oh-oh-oh-oh story of undertale"
     self.check = "Weapon AT 0\n* Its bark is worse than\nits bite."
 
     -- Where this item can be used (world, battle, all, or none)
