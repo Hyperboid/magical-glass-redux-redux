@@ -242,6 +242,22 @@ function lib:init()
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
+    Utils.hook(DebugSystem, "update", function(orig, self)
+        orig(self)
+        if self:isMenuOpen() then
+            for state,menus in pairs(self.exclusive_battle_menus) do
+                if state == "DARKBATTLE" then
+                    state = false
+                elseif state == "LIGHTBATTLE" then
+                    state = true
+                end
+                if Utils.containsValue(menus, self.current_menu) and type(state) == "boolean" and Game.battle and Game.battle.light ~= state then
+                    self:refresh()
+                end
+            end
+        end
+    end)
+    
     Utils.hook(Text, "drawChar", function(orig, self, node, state, use_color)
         if state.shake > 0 then
             if self.timer - state.last_shake >= (1 * DTMULT) then
@@ -2661,6 +2677,9 @@ function lib:createLightShop(id, ...)
 end
 
 function lib:registerDebugOptions(debug)
+    debug.exclusive_battle_menus = {}
+    debug.exclusive_battle_menus["LIGHTBATTLE"] = {"light_wave_select"}
+    debug.exclusive_battle_menus["DARKBATTLE"] = {"wave_select"}
 
     debug:registerMenu("encounter_select", "Encounter Select")
     
