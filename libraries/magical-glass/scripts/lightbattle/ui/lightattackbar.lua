@@ -28,6 +28,7 @@ function LightAttackBar:init(x, y, battler, scale_y)
 
     self.flash_speed = 1/15
     self.burst_speed = 0.1
+    self.timer = 0
 end
 
 function LightAttackBar:flash(flash_speed)
@@ -63,10 +64,13 @@ function LightAttackBar:update()
     end
 
     if self.perfect then
-        local count = self.perfect_counter
-        self.perfect_counter = self.perfect_counter + 1
-        if self.perfect_counter > 3 then
-            self.perfect_counter = 1
+        self.timer = self.timer + DTMULT
+        if self.timer >= 1 then
+            self.perfect_counter = self.perfect_counter + 1
+            if self.perfect_counter > 3 then
+                self.perfect_counter = 1
+            end
+            self.timer = 0
         end
 
         if self.perfect_counter == 1 then
