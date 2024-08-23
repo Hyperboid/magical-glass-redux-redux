@@ -529,8 +529,43 @@ function LightBattle:processAction(action)
         else
             self:toggleSoul(false)
 
+            local success = false
+            local tired = false
             for _,act_enemy in ipairs(self:getActiveEnemies()) do
+                if act_enemy:canSpare() then
+                    success = true
+                end
+                if act_enemy.tired then
+                    tired = true
+                end
                 act_enemy:onMercy(battler)
+            end
+            
+            if Game.battle.multi_mode then
+                if success then
+                    self:battleText("* " .. battler.chara:getNameOrYou() .. " spared the enemies.")
+                else
+                    local text = "* " .. battler.chara:getNameOrYou() .. " spared the enemies.\n* But none of the enemies' names were [color:yellow]YELLOW[color:reset]..."
+                    if tired then
+                        local found_spell = nil
+                        for _,party in ipairs(Game.battle.party) do
+                            for _,spell in ipairs(party.chara:getSpells()) do
+                                if spell:hasTag("spare_tired") then
+                                    found_spell = spell
+                                    break
+                                end
+                            end
+                            if found_spell then
+                                text = {text, "* (Try using "..party.chara:getName().."'s [color:blue]"..found_spell:getCastName().."[color:reset].)"}
+                                break
+                            end
+                        end
+                        if not found_spell then
+                            text = {text, "* (Try using [color:blue]ACTs[color:reset].)"}
+                        end
+                    end
+                    self:battleText(text)
+                end
             end
 
             self:finishAction(action)

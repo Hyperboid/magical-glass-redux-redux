@@ -125,11 +125,6 @@
         // Whether enemies in the light world will also have auras.
         /////
         "light_enemy_auras": false,
-
-        ///// Action Button Flash
-        // Whether the Spell and Mercy buttons should flash in Light Battles if an enemy is pacifyable or sparable.
-        /////
-        "action_button_flash": false,
         
         ///// Expanded Light Save Menu
         // Allows having 3 save slots in the light world save points.
