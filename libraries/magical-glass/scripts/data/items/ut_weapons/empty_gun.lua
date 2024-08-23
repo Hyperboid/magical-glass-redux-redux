@@ -72,7 +72,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         sprite:setColor(1, 1, 130/255)
     end
 
-    Game.battle.timer:after(3/30, function()
+    Game.battle.timer:after(6/30, function()
         sprite:remove()
 
         local stars = {}
@@ -108,7 +108,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                 star.star_speed = star.star_speed + star.star_grav * DTMULT
 
                 local a = math.rad(star.siner)
-                star.rotation = star.rotation + math.rad(star.star_ang)
+                star.rotation = star.rotation + math.rad(star.star_ang * DTMULT)
                 star.x = star.init_x + math.sin(a) * star.star_sine_amt
                 star.y = star.init_y + math.cos(a) * star.star_sine_amt
                 if star.star_speed < 0 then
@@ -169,7 +169,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         end, 4)
     end)
 
-    Game.battle.timer:after(22/30, function()
+    Game.battle.timer:after(24/30, function()
         local sound = enemy:getDamageSound() or "damage"
         if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
             Assets.stopAndPlaySound(sound)
