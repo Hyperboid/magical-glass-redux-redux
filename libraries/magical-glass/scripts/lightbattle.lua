@@ -302,7 +302,7 @@ function LightBattle:spawnSoul(x, y)
     local bx, by = self:getSoulLocation()
     x = x or bx
     y = y or by
-    local color = {Game:getSoulColor()}
+    local color = {self.encounter:getSoulColor()}
     if not self.soul then
         self.soul = self.encounter:createSoul(x, y, color)
         self.soul.alpha = 1
