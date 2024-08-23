@@ -2502,9 +2502,9 @@ function lib:init()
             self:enterMenu("engine_options", 1)
         end)
 
-        self:registerOption("main", "Fast Forward", function () return self:appendBool("Speed up the engine.", FAST_FORWARD) end,
-                                                    function () self:enterMenu("fast_forward", 1)
-        end)
+        self:registerOption("main", "Fast Forward",
+                            function () return self:appendBool("Speed up the engine.", FAST_FORWARD) end,
+                            function () FAST_FORWARD = not FAST_FORWARD end)
         self:registerOption("main", "Debug Rendering",
                             function () return self:appendBool("Draw debug information.", DEBUG_RENDER) end,
                             function () DEBUG_RENDER = not DEBUG_RENDER end)

@@ -1923,12 +1923,12 @@ function LightBattle:updateAttacking()
         for _,attacker in ipairs(self.battle_ui.attack_box.lanes) do
             if not attacker.attacked then
                 local box = self.battle_ui.attack_box
-                if (box:checkMiss(attacker) or #Utils.filter(self.enemies, function(enemy) return not enemy.done_state end) == 0) and #attacker.bolts > 1 then
+                if box:checkMiss(attacker) and #attacker.bolts > 1 then
 
                     all_done = false
                     box:miss(attacker)
 
-                elseif box:checkMiss(attacker) or #Utils.filter(self.enemies, function(enemy) return not enemy.done_state end) == 0 then
+                elseif box:checkMiss(attacker) then
                     local points = box:miss(attacker)
                     local stretch = 2
 
