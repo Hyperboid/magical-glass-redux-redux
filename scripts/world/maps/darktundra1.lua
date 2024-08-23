@@ -9,8 +9,8 @@ return {
   height = 12,
   tilewidth = 40,
   tileheight = 40,
-  nextlayerid = 12,
-  nextobjectid = 88,
+  nextlayerid = 13,
+  nextobjectid = 89,
   properties = {
     ["name"] = "Snowdin - Dark Zone"
   },
@@ -708,6 +708,35 @@ return {
           y = -41,
           width = 125,
           height = 41,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 12,
+      name = "battleareas",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 88,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 719.971,
+          y = 279.434,
+          width = 78.888,
+          height = 160.627,
           rotation = 0,
           visible = true,
           properties = {}

@@ -1953,9 +1953,7 @@ function lib:init()
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
 
     Utils.hook(PartyMember, "getLightColor", function(orig, self)
-        if Game.battle and not Game.battle.multi_mode then
-            return Utils.unpackColor({1, 1, 1})
-        elseif self.light_color and type(self.light_color) == "table" then
+        if self.light_color and type(self.light_color) == "table" then
             return Utils.unpackColor(self.light_color)
         else
             return self:getColor()
@@ -2335,6 +2333,17 @@ function lib:init()
 
         self.soul = OverworldSoul(self.player:getRelativePos(self.player.actor:getSoulOffset()))
         self.soul:setColor(Game:getSoulColor())
+        if Mod.libs["multiplayer"] and Game.party[1] then
+            if Game:isLight() then
+                self.soul:setColor(Game.party[1]:getLightColor())
+            else
+                self.soul:setColor(Game.party[1]:getColor())
+            end
+            if Game.party[1].soul_priority < 2 then
+                self.soul.rotation = math.pi
+            end
+        end
+        
         self.soul.layer = WORLD_LAYERS["soul"]
         self:addChild(self.soul)
 

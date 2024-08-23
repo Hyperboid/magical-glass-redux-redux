@@ -9,8 +9,8 @@ return {
   height = 12,
   tilewidth = 40,
   tileheight = 40,
-  nextlayerid = 14,
-  nextobjectid = 182,
+  nextlayerid = 15,
+  nextobjectid = 183,
   properties = {
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
@@ -651,6 +651,35 @@ return {
           height = 500,
           rotation = 0,
           gid = 687,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 14,
+      name = "battleareas",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 182,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 4919.67,
+          y = 160.333,
+          width = 80.3333,
+          height = 39.3333,
+          rotation = 0,
           visible = true,
           properties = {}
         }

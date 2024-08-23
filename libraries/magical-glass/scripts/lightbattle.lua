@@ -1254,9 +1254,6 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "TRANSITIONOUT" then
-        if self.encounter.story then
-            self:toggleSoul(true)
-        end
         self.ended = true
         self.current_selecting = 0
         if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then

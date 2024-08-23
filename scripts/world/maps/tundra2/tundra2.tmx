@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="136" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="14" nextobjectid="182">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="136" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="15" nextobjectid="183">
  <editorsettings>
   <export target="data.lua" format="lua"/>
  </editorsettings>
@@ -140,6 +140,9 @@ sitting inside...</property>
   <object id="163" name="tree" gid="687" x="3480" y="500" width="180" height="500"/>
   <object id="164" name="tree" gid="687" x="2600" y="500" width="180" height="500"/>
   <object id="165" name="tree" gid="687" x="1190" y="500" width="180" height="500"/>
+ </objectgroup>
+ <objectgroup color="#00ff00" id="14" name="battleareas">
+  <object id="182" x="4919.67" y="160.333" width="80.3333" height="39.3333"/>
  </objectgroup>
  <layer id="6" name="tiles4" width="136" height="12">
   <data encoding="csv">
