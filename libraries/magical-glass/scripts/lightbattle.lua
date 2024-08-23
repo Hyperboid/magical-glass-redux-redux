@@ -3281,7 +3281,6 @@ function LightBattle:drawDebug()
     Draw.setColor(1, 1, 1, 1)
     self:debugPrintOutline("State: "    .. self.state   , 4, 0)
     self:debugPrintOutline("Substate: " .. self.substate, 4, 0 + 16)
-    self:debugPrintOutline("current actions: " .. #self.current_actions, 4, 32)
 end
 
 function LightBattle:canDeepCopy() -- what
