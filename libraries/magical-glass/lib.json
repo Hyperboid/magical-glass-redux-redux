@@ -35,13 +35,9 @@
 
         ///// Light Battle TP
         // Enables tension and grazing in Light Battles.
+        // In addition, adds the Defend command to the mercy action button in Light Battles.
         /////
         "light_battle_tp": false,
-        
-        ///// Light Battle Defend Command
-        // Adds the Defend command to the mercy action button in Light Battles.
-        /////
-        "light_battle_defend_btn": false,
 
         ///// UNDERTALE Text Skipping
         // Disables skipping text in ANY textbox when holding down confirm or menu.

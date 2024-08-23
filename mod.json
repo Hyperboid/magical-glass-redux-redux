@@ -33,8 +33,6 @@
         "magical-glass": {
             //"default_battle_system": ["undertale", true],
             "light_battle_tp": true,
-            "undertale_movement_can_run": true,
-            "light_battle_defend_btn": true,
             "mercy_messages": true,
             "mercy_bar": true,
             "enemy_bar_percentages": true,

@@ -176,7 +176,7 @@ function LightActionButton:select()
                 end
             end
         })
-        local battler_can_defend = Kristal.getLibConfig("magical-glass", "light_battle_defend_btn") or not Game:isLight()
+        local battler_can_defend = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
         if self.battler.chara.light_can_defend ~= nil then
             battler_can_defend = self.battler.chara.light_can_defend
         end
