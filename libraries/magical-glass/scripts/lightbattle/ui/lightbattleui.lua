@@ -562,18 +562,18 @@ function LightBattleUI:drawState()
                     local hp_x = self.draw_mercy and 400 or 500
                     if enemy.selectable and Game.battle.state_reason ~= "XACT" then
                         if enemy:getHPVisibility() then
-                            Draw.setColor(PALETTE["action_health_bg"])
+                            Draw.setColor(MagicalGlassLib.PALETTE["action_health_bg"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 16)
         
-                            Draw.setColor(PALETTE["action_health"])
+                            Draw.setColor(MagicalGlassLib.PALETTE["action_health"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 81)), 16)
                         else
-                            Draw.setColor(PALETTE["action_health"])
+                            Draw.setColor(MagicalGlassLib.PALETTE["action_health"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 16)
                         end
                         
                         if self.draw_percents then
-                            Draw.setColor(PALETTE["action_health_text"])
+                            Draw.setColor(MagicalGlassLib.PALETTE["action_health_text"])
                             if enemy:getHPVisibility() then
                                 love.graphics.print(math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             else
@@ -584,7 +584,7 @@ function LightBattleUI:drawState()
                     
                     if self.draw_mercy then
                         if enemy.selectable then
-                            Draw.setColor(PALETTE["battle_mercy_bg"])
+                            Draw.setColor(MagicalGlassLib.PALETTE["battle_mercy_bg"])
                         else
                             Draw.setColor(127/255, 127/255, 127/255, 1)
                         end
@@ -592,7 +592,7 @@ function LightBattleUI:drawState()
                         love.graphics.rectangle("fill", 500, 10 + y_offset, 81, 16)
                         
                         if enemy.disable_mercy then
-                            Draw.setColor(PALETTE["battle_mercy_text"])
+                            Draw.setColor(MagicalGlassLib.PALETTE["battle_mercy_text"])
                             love.graphics.setLineWidth(2)
                             love.graphics.line(500, 11 + y_offset, 500 + 81, 10 + y_offset + 16 - 1)
                             love.graphics.line(500, 10 + y_offset + 16 - 1, 500 + 81, 11 + y_offset)
@@ -603,7 +603,7 @@ function LightBattleUI:drawState()
                             end
                             
                             if self.draw_percents and enemy.selectable then
-                                Draw.setColor(PALETTE["battle_mercy_text"])
+                                Draw.setColor(MagicalGlassLib.PALETTE["battle_mercy_text"])
                                 if enemy:getMercyVisibility() then
                                     love.graphics.print(math.floor(enemy.mercy) .. "%", 500 + 4, 10 + y_offset, 0, 1, 0.5)
                                 else
@@ -750,11 +750,11 @@ function LightBattleUI:drawState()
                 Draw.setColor(MagicalGlassLib.PALETTE["action_health"])
                 love.graphics.rectangle("fill", hp_x, 10 + ((index - page_offset - 1) * 32), math.max(0,math.ceil(percentage),math.floor(percentage * 101)), 17)
             else
-                Draw.setColor(PALETTE["action_health_bg"])
+                Draw.setColor(MagicalGlassLib.PALETTE["action_health_bg"])
                 love.graphics.rectangle("fill", 420, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")
-                Draw.setColor(PALETTE["action_health"])
+                Draw.setColor(MagicalGlassLib.PALETTE["action_health"])
                 love.graphics.rectangle("fill", 420, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
             end
         end
