@@ -610,66 +610,46 @@ function lib:init()
     end)
 
     Utils.hook(ChaserEnemy, "onCollide", function(orig, self, player)
-
-        if self:isActive() and player:includes(Player) then
-            self.encountered = true
-            local encounter
-            local enemy
-            
-            if self.encounter and self.light_encounter then
-                if Game:isLight() then
-                    encounter = self.light_encounter
-                    enemy = self.light_enemy
-                else
-                    encounter = self.encounter
-                    enemy = self.enemy
-                end
-            elseif self.encounter then
-                encounter = self.encounter
-                enemy = self.enemy
-            elseif self.light_encounter then
-                encounter = self.light_encounter
-                enemy = self.light_enemy
-            end
-
-            if not encounter then
-                if Game:isLight() and MagicalGlassLib:getLightEnemy(self.enemy or self.actor.id) then
+        if self.encounter and self.light_encounter then
+            error("ChaserEnemy cannot have both encounter and lightencounter.")
+        elseif not self.light_encounter then
+            orig(self, player)
+        else
+            if self:isActive() and player:includes(Player) then
+                self.encountered = true
+                local encounter = self.light_encounter
+                if not encounter and MagicalGlassLib:getLightEnemy(self.enemy or self.actor.id) then
                     encounter = LightEncounter()
                     encounter:addEnemy(self.actor.id)
-                elseif not Game:isLight() and Registry.getEnemy(self.light_enemy or self.actor.id) then
-                    encounter = Encounter()
-                    encounter:addEnemy(self.actor.id)
+                end
+                if encounter then
+                    self.world.encountering_enemy = true
+                    self.sprite:setAnimation("hurt")
+                    self.sprite.aura = false
+                    Game.lock_movement = true
+                    self.world.timer:script(function(wait)
+                        Assets.playSound("tensionhorn")
+                        wait(8/30)
+                        local src = Assets.playSound("tensionhorn")
+                        src:setPitch(1.1)
+                        wait(12/30)
+                        self.world.encountering_enemy = false
+                        Game.lock_movement = false
+                        local enemy_target = self
+                        if self.enemy then
+                            enemy_target = {{self.enemy, self}}
+                        end
+                        Game:encounter(encounter, true, enemy_target, self)
+                    end)
                 end
             end
-
-            if encounter then
-                self.world.encountering_enemy = true
-                self.sprite:setAnimation("hurt")
-                self.sprite.aura = false
-                Game.lock_movement = true
-                self.world.timer:script(function(wait)
-                    Assets.playSound("tensionhorn")
-                    wait(8/30)
-                    local src = Assets.playSound("tensionhorn")
-                    src:setPitch(1.1)
-                    wait(12/30)
-                    self.world.encountering_enemy = false
-                    Game.lock_movement = false
-                    local enemy_target = self
-                    if enemy then
-                        enemy_target = {{enemy, self}}
-                    end
-                    Game:encounter(encounter, true, enemy_target, self)
-                end)
-            end
-
         end
     end)
 
     Utils.hook(Battle, "postInit", function(orig, self, state, encounter)
         local local_encounter
         if type(encounter) == "string" then
-            local_encounter = Registry.createEncounter(encounter)
+            local_encounter = Registry.getEncounter(encounter)
         else
             local_encounter = encounter
         end
@@ -679,6 +659,18 @@ function lib:init()
         end
         
         orig(self, state, encounter)
+    end)
+    
+    Utils.hook(Battle, "setWaves", function(orig, self, waves, allow_duplicates)
+        for i,wave in ipairs(waves) do
+            if type(wave) == "string" then
+                wave = Registry.getWave(wave)
+            end
+            if wave:includes(LightWave) then
+                error("Attempted to use LightWave in a DarkBattle. Convert '"..waves[i].."' to a Wave.")
+            end
+        end
+        return orig(self, waves, allow_duplicates)
     end)
 
     Utils.hook(Battle, "returnToWorld", function(orig, self)

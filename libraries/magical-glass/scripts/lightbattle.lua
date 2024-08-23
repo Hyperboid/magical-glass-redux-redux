@@ -2573,10 +2573,13 @@ function LightBattle:setWaves(waves)
     self:clearMenuWaves()
     self.finished_waves = false
     local added_wave = {}
-    for _,wave in ipairs(waves) do
+    for i,wave in ipairs(waves) do
         local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
         if type(wave) == "string" then
             wave = MagicalGlassLib:createLightWave(wave)
+        end
+        if not wave:includes(LightWave) then
+            error("Attempted to use Wave in a LightBattle. Convert '"..waves[i].."' to a LightWave.")
         end
         if wave:getAllowDuplicates() or not exists then
             wave.encounter = self.encounter
@@ -2595,10 +2598,13 @@ function LightBattle:setMenuWaves(waves)
     self:clearMenuWaves()
     self.finished_menu_waves = false
     local added_wave = {}
-    for _,wave in ipairs(waves) do
+    for i,wave in ipairs(waves) do
         local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
         if type(wave) == "string" then
             wave = MagicalGlassLib:createLightWave(wave)
+        end
+        if not wave:includes(LightWave) then
+            error("Attempted to use Wave in a LightBattle. Convert '"..waves[i].."' to a LightWave.")
         end
         if wave:getAllowDuplicates() or not exists then
             wave.encounter = self.encounter
