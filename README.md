@@ -17,11 +17,13 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * A Froggit encounter!
 * Expands the light world!
 * Deltarune battles in the light world!
-* ...And (hopefully) more!
+* And some other stuff!
 
 ## Supported Libraries:
 * [MoreParty](https://gamebanana.com/mods/436685)
 * [ExpandedAttackLib](https://github.com/FireRainV/ExpandedAttackLib)
+* [Multiplayer](https://gamebanana.com/mods/522814)
+* And probably more!
 
 ## Credits:
 
