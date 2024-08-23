@@ -165,7 +165,7 @@ function HealItem:getLightBattleHealingText(user, target, amount)
     end
     local message = ""
     if self.target == "ally" then
-        if target.chara.id == Game.battle.party[1].chara.id and maxed then
+        if select(2, target.chara:getNameOrYou()) and maxed then
             message = "* Your HP was maxed out."
         elseif maxed then
             message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
@@ -199,7 +199,7 @@ function HealItem:getLightWorldHealingText(target, amount)
 
     local message
     if self.target == "ally" then
-        if target.id == Game.party[1].id and maxed then
+        if select(2, target:getNameOrYou()) and maxed then
             message = "* Your HP was maxed out."
         elseif maxed then
             message = "* " .. target:getName() .. "'s HP was maxed out."

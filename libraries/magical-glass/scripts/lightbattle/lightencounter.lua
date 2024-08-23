@@ -271,7 +271,7 @@ function LightEncounter:onFlee()
                     battler.chara:onLevelUp(Game.level_up_count)
 
                     if battler.chara.id == Game:getConfig("growStrongerChara") then
-                        stronger = battler.chara:getName()
+                        stronger = battler.chara:getNameOrYou()
                     end
                 end
 

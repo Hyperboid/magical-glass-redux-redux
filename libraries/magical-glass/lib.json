@@ -137,6 +137,11 @@
         /////
         "multi_deltarune_spare": false,
         
+        ///// Multi-Party Deltarune Spare Style
+        // Whether when playing with multiple party members, the leader name will be mentioned as 'You'.
+        /////
+        "multi_leader_mentioned_as_you": false,
+        
         ///// Debug Mode
         // Determines whether the library is in its debug mode state.
         /////

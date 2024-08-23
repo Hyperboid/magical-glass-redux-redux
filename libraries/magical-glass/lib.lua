@@ -904,7 +904,7 @@ function lib:init()
 
         local message
         if self.target == "ally" then
-            if target.chara.id == Game.battle.party[1].chara.id and maxed then
+            if select(2, target.chara:getNameOrYou()) and maxed then
                 message = "* Your HP was maxed out."
             elseif maxed then
                 message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
@@ -1584,20 +1584,14 @@ function lib:init()
             local message
             if item and item.getLightWorldHealingText then
                 message = item:getLightWorldHealingText(target, amount, maxed)
-            else
-                if maxed then
-                    message = "* Your HP was maxed out."
-                else
-                    message = "* You recovered " .. amount .. " HP!"
-                end
             end
 
-            if text then
-                message = text .. " \n" .. message
+            if text and message then
+                message = text .. "\n" .. message
             end
             
             if not Game.world:hasCutscene() then
-                Game.world:showText(message)
+                Game.world:showText(message or text or "")
             end
         else
             orig(self, target, amount, text, item)
@@ -1880,14 +1874,14 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getNameOrYou", function(orig, self, lower)
-        if self.id == Game.party[1].id then
+        if Game.party[1] and self.id == Game.party[1].id and not (not Kristal.getLibConfig("magical-glass", "multi_leader_mentioned_as_you") and (Game.battle and Game.battle.multi_mode or not Game.battle and #Game.party > 1)) then
             if lower then
-                return "you"
+                return "you", true
             else
-                return "You"
+                return "You", true
             end
         else
-            return self:getName()
+            return self:getName(), false
         end
     end)
 
@@ -2456,7 +2450,7 @@ function lib:init()
         end
         local message = ""
         if self.target == "ally" then
-            if target.chara.id == Game.battle.party[1].chara.id and maxed then
+            if select(2, target.chara:getNameOrYou()) and maxed then
                 message = "* Your HP was maxed out."
             elseif maxed then
                 message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
