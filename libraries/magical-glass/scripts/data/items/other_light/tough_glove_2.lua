@@ -41,7 +41,7 @@ function item:init()
     self.light_bolt_speed = 8
     self.light_bolt_speed_variance = nil
     self.light_bolt_direction = "random"
-    self.light_bolt_miss_threshold = 22
+    self.light_bolt_miss_threshold = 4
     self.light_multibolt_variance = {{15}, {50}, {85}}
     
     self.bolt_count = 4
@@ -70,7 +70,7 @@ function item:onLightBoltHit(lane)
     local battler = lane.battler
     local enemy = Game.battle:getActionBy(battler).target
 
-    if Game.battle:enemyExists(enemy) then
+    if Game.battle:enemyExists(enemy) and lane.bolts[2] then
         Assets.playSound("punchweak")
         local small_punch = Sprite("effects/attack/hyperfist")
         small_punch:setOrigin(0.5)
