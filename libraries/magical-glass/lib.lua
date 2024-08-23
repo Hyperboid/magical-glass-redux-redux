@@ -2815,8 +2815,10 @@ function lib:registerDebugOptions(debug)
 
     for _,id in ipairs(waves_list) do
         debug:registerOption("light_wave_select", id, "Start this wave.", function ()
-            Game.battle.debug_wave = true
-            Game.battle:setState("ENEMYDIALOGUE", {id})
+            if Game.battle:getState() == "ACTIONSELECT" then
+                Game.battle.debug_wave = true
+                Game.battle:setState("ENEMYDIALOGUE", {id})
+            end
             debug:closeMenu()
         end)
     end
