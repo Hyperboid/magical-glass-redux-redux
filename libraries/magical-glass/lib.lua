@@ -1511,7 +1511,7 @@ function lib:init()
             end
             
             if not Game.world:hasCutscene() then
-                Game.world:showText(message or text or "")
+                Game.world:showText(message or text or "ERROR")
             end
         else
             orig(self, target, amount, text, item)
