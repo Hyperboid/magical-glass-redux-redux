@@ -1843,8 +1843,8 @@ function lib:init()
         self.lw_lv = level
 
         if force_exp ~= false then
-            if self.lw_lv >= #self.lw_exp_needed then
-                self.lw_exp = self.lw_exp_needed[#self.lw_exp_needed]
+            if self.lw_lv > #self.lw_exp_needed then
+                self.lw_exp = self.lw_exp_needed[#self.lw_exp_needed] + 1
             elseif self.lw_exp_needed[level] then
                 self.lw_exp = self:getLightEXPNeeded(level)
             else
