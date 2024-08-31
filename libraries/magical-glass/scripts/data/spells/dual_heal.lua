@@ -7,4 +7,14 @@ function spell:onLightCast(user, target)
     end
 end
 
+function spell:onCast(user, target)
+    if Game:isLight() then
+        for _,battler in ipairs(Game.battle.party) do
+            battler:heal(math.ceil(user.chara:getStat("magic") * 3))
+        end
+    else
+        super.onCast(self, user, target)
+    end
+end
+
 return spell
