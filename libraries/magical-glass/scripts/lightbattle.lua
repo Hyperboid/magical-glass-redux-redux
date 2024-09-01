@@ -1862,9 +1862,7 @@ function LightBattle:update()
         self.encounter:update()
     end
 
-    local update_menu_waves = {"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT", "FLEEING", "FLEEFAIL"}
-
-    if Utils.containsValue(update_menu_waves, self.state) then
+    if Utils.containsValue({"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT", "FLEEING", "FLEEFAIL"}, self.state) then
         self:updateMenuWaves()
     end
     
