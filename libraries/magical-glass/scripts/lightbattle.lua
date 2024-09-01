@@ -1254,6 +1254,9 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "TRANSITIONOUT" then
+        if self.encounter.story then
+            self:toggleSoul(true)
+        end
         self.ended = true
         self.current_selecting = 0
         if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
@@ -1268,7 +1271,7 @@ function LightBattle:onStateChange(old,new)
         end
         self.encounter:onReturnToWorld(enemies)
 
-        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 10/30})
+        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = (self.encounter.fast_transition and 5 or 10)/30})
     elseif new == "DEFENDINGBEGIN" then
         self.battle_ui:clearEncounterText()
     elseif new == "FLEEING" then
@@ -1342,7 +1345,7 @@ function LightBattle:onStateChange(old,new)
         end
     end
 
-    local should_end = true
+    local should_end = not self.encounter.story
     for _,wave in ipairs(self.waves) do
         if wave:beforeEnd() then
             should_end = false
