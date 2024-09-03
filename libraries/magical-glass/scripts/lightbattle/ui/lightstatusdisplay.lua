@@ -200,7 +200,7 @@ function LightStatusDisplay:drawStatusStrip()
                 color = MagicalGlassLib.PALETTE["player_sleeping_text"]
             elseif Game.battle:getActionBy(battler) and Game.battle:getActionBy(battler).action == "DEFEND" then
                 color = MagicalGlassLib.PALETTE["player_defending_text"]
-            elseif Game.battle:getActionBy(battler) and Utils.containsValue({"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT"}, Game.battle:getState()) then
+            elseif Game.battle:getActionBy(battler) and Utils.containsValue({"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT"}, Game.battle:getState()) and Game.battle:getActionBy(battler).action ~= "AUTOATTACK" then
                 color = MagicalGlassLib.PALETTE["player_action_text"]
             elseif karma > 0 then
                 color = MagicalGlassLib.PALETTE["player_karma_text"]

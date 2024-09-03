@@ -96,7 +96,6 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
-    Game.battle:shakeCamera(3, 3, 2)
 
     if crit then
         Assets.stopAndPlaySound("saber3", 0.7)

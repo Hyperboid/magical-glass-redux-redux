@@ -88,6 +88,7 @@ function LightBattle:init()
     self.attack_done = false
     self.cancel_attack = false
     self.auto_attack_timer = 0
+    self.auto_attacked = false
 
     self.post_battletext_func = nil
     self.post_battletext_state = "ACTIONSELECT"
@@ -501,6 +502,9 @@ function LightBattle:processAction(action)
         enemy = self:retargetEnemy()
         action.target = enemy
         if not self:enemyExists(enemy) then
+            if action.action == "AUTOATTACK" then
+                self:finishAction(action)
+            end
             return true
         end
     end
@@ -574,7 +578,7 @@ function LightBattle:processAction(action)
         
         return false
 
-    elseif action.action == "ATTACK" or action.action == "AUTOATTACK" then
+    elseif action.action == "ATTACK" then
 
         self.actions_done_timer = 1.2
 
@@ -623,6 +627,50 @@ function LightBattle:processAction(action)
                 end
             end
 
+        end
+
+        return false
+        
+    elseif action.action == "AUTOATTACK" then
+    
+        self.actions_done_timer = 1.2
+    
+        if self:enemyExists(action.target) and action.target.done_state then
+            enemy = self:retargetEnemy()
+            action.target = enemy
+            if not self:enemyExists(enemy) then
+                self.cancel_attack = true
+                self:finishAction(action)
+                return
+            end
+        end
+        
+        local weapon = battler.chara:getWeapon() or Registry.createItem("ut_weapons/stick") -- placeholder to allow attacking without a weapon
+        local damage = 0
+        
+        if self:enemyExists(enemy) then
+            if not action.force_miss then
+                if Game:isLight() then
+                    damage = (battler.chara:getStat("attack") - enemy.defense) + Utils.random(0, 2, 1)
+                else
+                    damage = (battler.chara:getStat("attack") * 3.375 - enemy.defense * 1.363) + Utils.random(0, 2, 1)
+                end
+                damage = Utils.round(damage * 2.2)
+
+                if damage < 0 then
+                    damage = 0
+                end
+
+                local result = weapon:onLightAttack(battler, enemy, damage, 1, false)
+                if result or result == nil then
+                    self:finishAction(action)
+                end
+            else
+                local result = weapon:onLightMiss(battler, enemy, true, false)
+                if result or result == nil then
+                    self:finishAction(action)
+                end
+            end
         end
 
         return false
@@ -1739,6 +1787,7 @@ function LightBattle:update()
             self.attackers = {}
             self.normal_attackers = {}
             self.auto_attackers = {}
+            self.auto_attacked = false
             if self.battle_ui.attacking then
                 self.battle_ui:endAttack()
             end
@@ -1749,6 +1798,7 @@ function LightBattle:update()
             self.attackers = {}
             self.normal_attackers = {}
             self.auto_attackers = {}
+            self.auto_attacked = false
             if self.battle_ui.attacking then
                 self.battle_ui:endAttack()
             end
@@ -1899,28 +1949,43 @@ function LightBattle:updateAttacking()
         self:finishAllActions()
         self:setState("ACTIONSDONE")
     end
+    
+    local function autoAttack(only_auto)
+        if #self.auto_attackers > 0 then
+            if self.auto_attack_timer < 4 then
+                self.auto_attack_timer = self.auto_attack_timer + DTMULT
+
+                if not self.auto_attacked and (self.auto_attack_timer >= 4 or self:allActionsDone()) then
+                    self.auto_attacked = true
+                    local next_attacker = self.auto_attackers[1]
+
+                    local next_action = self:getActionBy(next_attacker)
+                    if next_action then
+                        self:beginAction(next_action)
+                        self:processAction(next_action)
+                        if only_auto then
+                            self.timer:after(43/30, function()
+                                self.battle_ui.attack_box.fading = true
+                                self:setState("ACTIONSDONE")
+                            end)
+                        end
+                    end
+                end
+            end
+        end
+    end
 
     if not self.attack_done then
         if not self.battle_ui.attacking then
             self:toggleSoul(false)
             self.battle_ui:beginAttack()
         end
-
-        if #self.attackers == #self.auto_attackers and self.auto_attack_timer < 4 then
-            self.auto_attack_timer = self.auto_attack_timer + DTMULT
-
-            if self.auto_attack_timer >= 4 then
-                local next_attacker = self.auto_attackers[1]
-
-                local next_action = self:getActionBy(next_attacker)
-                if next_action then
-                    self:beginAction(next_action)
-                    self:processAction(next_action)
-                end
-            end
-        end
         
         local all_done = true
+        
+        if #self.attackers == #self.auto_attackers then
+            autoAttack(true)
+        end
 
         for _,attacker in ipairs(self.battle_ui.attack_box.lanes) do
             if not attacker.attacked then
@@ -1956,6 +2021,7 @@ function LightBattle:updateAttacking()
             self.attack_done = true
         end
     else
+        autoAttack(false)
         if self:allActionsDone() then
             self:setState("ACTIONSDONE")
         end

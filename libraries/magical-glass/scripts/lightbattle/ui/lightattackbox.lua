@@ -242,7 +242,7 @@ function LightAttackBox:update()
         self:createBolts()
     end
     
-    if #self.lanes ~= 0 then
+    if #self.lanes ~= 0 or #self.attackers == #Game.battle.auto_attackers then
 
         self.done = true
 
@@ -271,7 +271,7 @@ function LightAttackBox:update()
         end
 
         if Game.battle.cancel_attack or self.fading then
-            if self.lanes[1].attack_type == "slice" then
+            if self.shoe_finished < #self.attackers or #self.attackers == 0 then
                 self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
             end
             self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
