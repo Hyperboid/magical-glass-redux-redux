@@ -7,7 +7,7 @@ function encounter:init()
 
     self.music = "battleut"
 
-    self:addEnemy("moldsmal", SCREEN_WIDTH/2, 226)
+    self:addEnemy("moldsmal", SCREEN_WIDTH/2 - 54, 234)
 end
 
 return encounter
