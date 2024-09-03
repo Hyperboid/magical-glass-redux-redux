@@ -716,7 +716,6 @@ function lib:init()
     
     end)
     
-    --[[
     if not Kristal.getLibConfig("magical-glass", "key_item_conversion") then
         -- Don't give the ball of junk
         Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
@@ -795,7 +794,7 @@ function lib:init()
             end
         end)
     end
-    Utils.hook(LightEquipItem, "convertToDark", function(orig, self, inventory) return false end) ]]
+    Utils.hook(LightEquipItem, "convertToDark", function(orig, self, inventory) return false end)
     
     Utils.hook(Item, "getLightBattleText", function(orig, self, user, target)
         if self.target == "ally" then
