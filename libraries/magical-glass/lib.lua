@@ -2493,6 +2493,7 @@ function lib:init()
         local in_battle = function () return in_game() and Game.state == "BATTLE" and not Game.battle.light end
         local in_light_battle = function () return in_game() and Game.state == "BATTLE" and Game.battle.light end
         local in_overworld = function () return in_game() and Game.state == "OVERWORLD" end
+        local in_legend = function() return in_game() and Game.state == "LEGEND" end
 
         -- Global
         self:registerConfigOption("main", "Object Selection Pausing",
@@ -2567,6 +2568,10 @@ function lib:init()
         self:registerOption("main", "Play Cutscene", "Play a cutscene.", function ()
                                 self:enterMenu("cutscene_select", 0)
                             end, in_overworld)
+                            
+        self:registerOption("main", "Play Legend", "Play a legend cutscene.", function ()
+                                self:enterMenu("legend_select", 0)
+                            end, function() return in_overworld() or in_legend() end)
 
         -- Battle specific
         self:registerOption("main", "Start Wave", "Start a wave.", function ()
