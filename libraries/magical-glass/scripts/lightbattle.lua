@@ -210,6 +210,8 @@ end
 
 function LightBattle:postInit(state, encounter)
     self.state = state
+    
+    self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
 
     if type(encounter) == "string" then
         self.encounter = MagicalGlassLib:createLightEncounter(encounter)
@@ -242,8 +244,7 @@ function LightBattle:postInit(state, encounter)
 
     if self.encounter.story then
         self.story_wave = self.encounter:storyWave()
-    else
-        self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
+        self.tension = false
     end
 
     self.arena = LightArena(SCREEN_WIDTH/2, 320)
@@ -253,7 +254,7 @@ function LightBattle:postInit(state, encounter)
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
 
-    self.tension_bar = LightTensionBar(29, 53, true)
+    self.tension_bar = LightTensionBar(25, 53, true)
     if self.tension then
         self.tension_bar.visible = false
     end

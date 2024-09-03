@@ -18,7 +18,7 @@ function Moldsmal:init()
     self.scalevalue = 0.01
     self.yscale = 1
 
-    self.dialogue_offset = {20, -8}
+    self.dialogue_offset = {18, -8}
     self.dialogue_bubble = "ut_large"
 
     self.waves = {
