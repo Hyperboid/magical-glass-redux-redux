@@ -4,6 +4,8 @@ function LightGauge:init(type, amount, x, y, enemy, color)
     super.init(self, x, y)
 
     self.layer = BATTLE_LAYERS["damage_numbers"]
+    self.timer = Timer()
+    self:addChild(self.timer)
 
     self.type = type
     self:setOrigin(0.5, 0)
@@ -36,51 +38,56 @@ function LightGauge:init(type, amount, x, y, enemy, color)
         self.extra_width = (self.width / self.max_value)
         self.reversed = amount >= 0 and true or false -- allows for mercy reduction
     end
+    
+    if not Kristal.getLibConfig("magical-glass", "enemy_gauge_smoothness") then
+        self.timer:every(2/30, function()
+            if self.reversed then
+                self.value = self.value + (self.amount / 15)
+                if not (self.value < (self.real_value + self.amount)) then
+                    self.value = (self.real_value + self.amount)
+                end
+            else
+                self.value = self.value - (self.amount / 15)
+                if not (self.value > (self.real_value - self.amount)) then
+                    self.value = (self.real_value - self.amount)
+                end
+            end
 
+            self.value = Utils.clamp(self.value, 0, self.max_value)
+        end)
+    end
 end
 
 function LightGauge:update()
     super.update(self)
     
-    if self.reversed then
-        if self.value < (self.real_value + self.amount) then
+    if Kristal.getLibConfig("magical-glass", "enemy_gauge_smoothness") then
+        if self.reversed then
             self.value = self.value + (self.amount / 15) * DTMULT / 2
+            if not (self.value < (self.real_value + self.amount)) then
+                self.value = (self.real_value + self.amount)
+            end
         else
-            self.value = (self.real_value + self.amount)
-        end
-    else
-        if self.value > (self.real_value - self.amount) then
             self.value = self.value - (self.amount / 15) * DTMULT / 2
-        else
-            self.value = (self.real_value - self.amount)
+            if not (self.value > (self.real_value - self.amount)) then
+                self.value = (self.real_value - self.amount)
+            end
         end
-    end
 
-    self.value = Utils.clamp(self.value, 0, self.max_value)
+        self.value = Utils.clamp(self.value, 0, self.max_value)
+    end
 end
 
 function LightGauge:draw()
     super.draw(self)
-
-    if self.type == "mercy" then
-        Draw.setColor(COLORS["black"])
-        love.graphics.rectangle("fill", -1, 7, Utils.round(self.max_value * self.extra_width + 2), self.height + 2)
-        Draw.setColor(64 / 255, 64 / 255, 64 / 255) -- temp
-        love.graphics.rectangle("fill", 0, 8, Utils.round(self.max_value * self.extra_width), self.height)
-        if self.value > 0 then
-            Draw.setColor(self.color)
-            love.graphics.rectangle("fill", 0, 8, Utils.round(self.value * self.extra_width), self.height)
-        end
-    end
-    if self.type == "damage" then
-        Draw.setColor(COLORS["black"])
-        love.graphics.rectangle("fill", -1, 7, Utils.round(self.max_value * self.extra_width + 2), self.height + 2)
-        Draw.setColor(64 / 255, 64 / 255, 64 / 255) -- temp
-        love.graphics.rectangle("fill", 0, 8, Utils.round(self.max_value * self.extra_width), self.height)
-        if self.value > 0 then
-            Draw.setColor(self.color)
-            love.graphics.rectangle("fill", 0, 8, Utils.round(self.value * self.extra_width), self.height)
-        end
+    
+    Draw.setColor(COLORS["black"])
+    love.graphics.rectangle("fill", -1, 7, self.max_value * self.extra_width + 2, self.height + 2)
+    Draw.setColor(64 / 255, 64 / 255, 64 / 255)
+    love.graphics.rectangle("fill", 0, 8, self.max_value * self.extra_width, self.height)
+    if self.value > 0 then
+        Draw.setColor(self.color)
+        love.graphics.rectangle("fill", 0, 8, self.value * self.extra_width, self.height)
     end
 
 end
