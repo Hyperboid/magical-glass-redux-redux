@@ -28,7 +28,7 @@ function LightStatusDisplay:drawStatusStripStory()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
     love.graphics.setColor(COLORS["white"])
-    love.graphics.print("LV " .. level, x - karma_mode_offset, y)
+    love.graphics.print("LV " .. level, x - karma_mode_offset - (#tostring(level) > 2 and (#tostring(level) * 15) - 30 or 0), y)
 
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 74 - karma_mode_offset, y + 5)
 
@@ -54,9 +54,9 @@ function LightStatusDisplay:drawStatusStripStory()
     love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, size * 1.2 + 1, 21)
     if current > 0 then
         love.graphics.setColor(MagicalGlassLib.PALETTE["player_karma_health"])
-        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1), 21)
         love.graphics.setColor(MagicalGlassLib.PALETTE["player_health"])
-        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + 10) * 1.2 + 1) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + 10) * 1.2 + 1) - (karma_mode and 1 or 0), 21)
     end
 
     if max < 10 and max >= 0 then
@@ -120,9 +120,9 @@ function LightStatusDisplay:drawStatusStrip()
             love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, size * 1.2 + 1, 21)
             if current > 0 then
                 love.graphics.setColor(MagicalGlassLib.PALETTE["player_karma_health"])
-                love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
+                love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1), 21)
                 love.graphics.setColor(MagicalGlassLib.PALETTE["player_health"])
-                love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
+                love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) - (karma_mode and 1 or 0), 21)
             end
 
             if max < 10 and max >= 0 then
@@ -179,9 +179,9 @@ function LightStatusDisplay:drawStatusStrip()
             love.graphics.rectangle("fill", x + 92, y, (small and 20 or 32) * 1.2 + 1, 21)
             if current > 0 then
                 love.graphics.setColor(MagicalGlassLib.PALETTE["player_karma_health"])
-                love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.2 + 1 + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
+                love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.2 + 1, 21)
                 love.graphics.setColor(MagicalGlassLib.PALETTE["player_health"])
-                love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current - karma, 0, max) / max) * (small and 20 or 32)) * 1.2 + 1 - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
+                love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current - karma, 0, max) / max) * (small and 20 or 32)) * 1.2 + 1 - (karma_mode and 1 or 0), 21)
             end
             
             love.graphics.setFont(Assets.getFont("namelv", 16))
