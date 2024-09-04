@@ -656,6 +656,7 @@ function LightBattle:processAction(action)
                     damage = (battler.chara:getStat("attack") * 3.375 - enemy.defense * 1.363) + Utils.random(0, 2, 1)
                 end
                 damage = Utils.round(damage * 2.2)
+                battler.tp_gain = 6
 
                 if damage < 0 then
                     damage = 0
