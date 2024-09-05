@@ -22,6 +22,7 @@ function UnderPlayer:init(chara, x, y)
     self.event_collide = {}
     self.gone_direction = {}
     self.fix_movement2 = false
+    self.speed = self.walk_speed
 end
 
 function UnderPlayer:handleMovement()
@@ -105,10 +106,11 @@ function UnderPlayer:handleMovement()
         running = not running
     end
 
-    local speed = self.walk_speed
+    self.speed = self.walk_speed
     if running then
-        speed = speed + 5
+        self.speed = self.speed + 5
     end
+    
     
     if Input.down("up") and Input.down("down") then
         if not can_move_y then
@@ -145,7 +147,7 @@ function UnderPlayer:handleMovement()
     if not self.fix_movement2 and event_collide and self.moving_x ~= 0 and self.moving_y ~= 0 then
         self.facing = self.sprite.facing
     elseif not (Input.down("up") and Input.down("down") and not can_move_x and self.moving_x ~= 0) or self.fix_movement and self.fix_movement ~= self.moving_x then
-        self:move(walk_x, walk_y, speed * DTMULT)
+        self:move(walk_x, walk_y, self.speed * DTMULT)
         self.fix_movement = false
         self.fix_movement2 = false
     else
@@ -211,7 +213,7 @@ function UnderPlayer:doMoveAmount(type, amount, other_amount)
                 if not target:includes("Event") then
                     if self.moving_y < 0 and (Input.down("up") and Input.down("down")) then
 						if not self["last_collided_"..other] == true then
-							self[type] = self[type] + 6
+							self[type] = self[type] + self.speed
 						end
                         self.facing = "down"
                         self.sprite.facing = self.facing
