@@ -49,7 +49,7 @@ function Noelle:init()
     self.spareable_text = "* " .. self.name .. " doesn't want to\nfight anymore."
 
     self:registerAct("Sniff")
-    self:registerAct("Befriend")
+    self:registerShortAct("Befriend")
 
     -- can be a table or a number. if it's a number, it determines the width, and the height will be 13 (the ut default).
     -- if it's a table, the first value is the width, and the second is the height
@@ -61,6 +61,15 @@ function Noelle:init()
 
     self.sniff = 0
     self.befriend = 0
+end
+
+function Noelle:isXActionShort(battler)
+    return true
+end
+
+function Noelle:onShortAct(battler, name)
+    self:addMercy(20)
+    return "* "..battler.chara:getName().." said hi!"
 end
 
 function Noelle:onAct(battler, name)
@@ -80,7 +89,7 @@ function Noelle:onAct(battler, name)
            self.dialogue_override = "..."
            return "* You've sniffed " .. self.name .. " enough."
         end
-    elseif name == "Befriend" or name == "Standard" then
+    elseif name == "Befriend" then
         self.befriend = self.befriend + 1
         if self.befriend == 1 then
            self:addMercy(20)
@@ -98,6 +107,9 @@ function Noelle:onAct(battler, name)
            self.dialogue_override = "..."
            return "* " .. self.name .. " is already accepting your friendship."
         end
+    elseif name == "Standard" then
+        self:addMercy(20)
+        return "* "..battler.chara:getName().." said hi!"
     end
 
     -- If the act is none of the above, run the base onAct function

@@ -481,6 +481,8 @@ function LightEnemyBattler:onAct(battler, name)
     end
 end
 
+function LightEnemyBattler:onShortAct(battler, name) end
+
 function LightEnemyBattler:onTurnStart() end
 function LightEnemyBattler:onTurnEnd() end
 

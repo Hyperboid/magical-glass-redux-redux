@@ -22,20 +22,21 @@ function LightBattleUI:init()
     self.encounter_text.debug_rect = {-30, -12, SCREEN_WIDTH - 45, 121}
     Game.battle.arena:addChild(self.encounter_text)
 
-    self.choice_box = Choicebox(56, 49, 529, 103, true)
+    self.choice_box = Choicebox(14, 17, 529, 103, true)
     self.choice_box.active = false
     self.choice_box.visible = false
     Game.battle.arena:addChild(self.choice_box)
-
-    self.text_choice_box = TextChoicebox(14, 17, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, default_font, default_font_size, true)
-    self.text_choice_box:setText("")
-    self.text_choice_box.active = false
-    self.text_choice_box.visible = false
-    Game.battle.arena:addChild(self.text_choice_box)
+    
+    self.choice_option = {}
+    for i = 1, 2 do
+        self.choice_option[i] = Text("", 62, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
+        self.choice_option[i].line_offset = 4
+        self.choice_box:addChild(self.choice_option[i])
+    end
 
     self.short_act_text_1 = DialogueText("", 14, 15, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
-    self.short_act_text_2 = DialogueText("", 14, 15 + 30, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
-    self.short_act_text_3 = DialogueText("", 14, 15 + 30 + 30, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
+    self.short_act_text_2 = DialogueText("", 14, 15 + 32, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
+    self.short_act_text_3 = DialogueText("", 14, 15 + 32 + 32, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, {wrap = false, line_offset = 0})
     Game.battle.arena:addChild(self.short_act_text_1)
     Game.battle.arena:addChild(self.short_act_text_2)
     Game.battle.arena:addChild(self.short_act_text_3)

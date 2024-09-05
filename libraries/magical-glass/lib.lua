@@ -242,6 +242,93 @@ function lib:init()
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
+    Utils.hook(Choicebox, "clearChoices", function(orig, self)
+        orig(self)
+        if Game.battle and Game.battle.light then
+            for i = 1, 2 do
+                Game.battle.battle_ui.choice_option[i]:setText("")
+            end
+            self.current_choice = 1
+            Input.clear("confirm")
+        end
+    end)
+    
+    Utils.hook(Choicebox, "update", function(orig, self)
+        if Game.battle and Game.battle.light then
+            local old_choice = self.current_choice
+            if Input.pressed("left") or Input.pressed("right") then
+                Game.battle:playMoveSound()
+                if self.current_choice == 1 then
+                    self.current_choice = 2
+                else
+                    self.current_choice = 1
+                end
+            end
+
+            if self.current_choice > #self.choices then
+                self.current_choice = old_choice
+            end
+
+            if Input.pressed("confirm") then
+                if self.current_choice ~= 0 then
+                    self.selected_choice = self.current_choice
+
+                    self.done = true
+                    Game.battle:toggleSoul(false)
+
+                    if not self.battle_box then
+                        self:remove()
+                        if Game.world:hasCutscene() then
+                            Game.world.cutscene.choice = self.selected_choice
+                            Game.world.cutscene:tryResume()
+                        end
+                    else
+                        self:clearChoices()
+                        self.active = false
+                        self.visible = false
+                        Game.battle.battle_ui.encounter_text.active = true
+                        Game.battle.battle_ui.encounter_text.visible = true
+                        if Game.battle:hasCutscene() then
+                            Game.battle.cutscene.choice = self.selected_choice
+                            Game.battle.cutscene:tryResume()
+                        end
+                    end
+                end
+            end
+            Object.update(self)
+        else
+            orig(self)
+        end
+    end)
+    
+    Utils.hook(Choicebox, "draw", function(orig, self)
+        if Game.battle and Game.battle.light then
+            Object.draw(self)
+            love.graphics.setFont(self.font)
+            if self.choices[1] then
+                Game.battle.battle_ui.choice_option[1]:setPosition(48, 30 - (select(2, string.gsub(self.choices[1], "\n", "")) >= 2 and love.graphics.getFont():getHeight() or 0))
+                Game.battle.battle_ui.choice_option[1]:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.choices[1])
+            end
+            if self.choices[2] then
+                Game.battle.battle_ui.choice_option[2]:setPosition(304, 30 - (select(2, string.gsub(self.choices[2], "\n", "")) >= 2 and love.graphics.getFont():getHeight() or 0))
+                Game.battle.battle_ui.choice_option[2]:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.choices[2])
+            end
+
+            local soul_positions = {
+                --[[ Left:   ]] {80, 318},
+                --[[ Right:  ]] {340, 318},
+            }
+
+            local heart_x = soul_positions[self.current_choice][1]
+            local heart_y = soul_positions[self.current_choice][2]
+
+            Game.battle:toggleSoul(true)
+            Game.battle.soul:setPosition(heart_x, heart_y)
+        else
+            orig(self)
+        end
+    end)
+    
     Utils.hook(DebugSystem, "update", function(orig, self)
         orig(self)
         if self:isMenuOpen() then

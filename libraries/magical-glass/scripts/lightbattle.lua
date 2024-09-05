@@ -591,9 +591,6 @@ function LightBattle:processAction(action)
         return false
 
     elseif action.action == "ATTACK" then
-
-        self.actions_done_timer = 1.2
-
         local lane
         for _,ilane in ipairs(self.battle_ui.attack_box.lanes) do
             if ilane.battler == battler then
@@ -644,9 +641,6 @@ function LightBattle:processAction(action)
         return false
         
     elseif action.action == "AUTOATTACK" then
-    
-        self.actions_done_timer = 1.2
-    
         if self:enemyExists(action.target) and action.target.done_state then
             enemy = self:retargetEnemy()
             action.target = enemy
@@ -814,8 +808,8 @@ function LightBattle:finishAction(action, keep_animation)
     action = action or self.current_actions[self.current_action_index]
 
     local battler = self.party[action.character_id]
-
-    Game.battle.timer:after(battler.delay_turn_end and 43/30 or 0, function()
+    
+    local function finish()
         self.processed_action[action] = true
 
         if self.processing_action == action then
@@ -884,7 +878,13 @@ function LightBattle:finishAction(action, keep_animation)
             -- Process actions if we can
             self:tryProcessNextAction()
         end
-    end)
+    end
+    
+    if battler.delay_turn_end then
+        Game.battle.timer:after(43/30, function() finish() end)
+    else
+        finish()
+    end
 end
 
 function LightBattle:onStateChange(old,new)
@@ -1657,9 +1657,9 @@ function LightBattle:shortActText(text)
     self:setState("SHORTACTTEXT")
     self.battle_ui:clearEncounterText()
 
-    self.battle_ui.short_act_text_1:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[1] or "")
-    self.battle_ui.short_act_text_2:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[2] or "")
-    self.battle_ui.short_act_text_3:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[3] or "")
+    self.battle_ui.short_act_text_1:setText(text[1] and "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[1] or "")
+    self.battle_ui.short_act_text_2:setText(text[2] and "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[2] or "")
+    self.battle_ui.short_act_text_3:setText(text[3] and "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[3] or "")
 end
 
 function LightBattle:checkGameOver()

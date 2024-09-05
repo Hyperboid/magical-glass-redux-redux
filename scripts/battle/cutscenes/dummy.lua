@@ -6,6 +6,10 @@ return {
         -- Hurt the target enemy for 1 damage
         Assets.playSound("damage")
         enemy:hurt(1, battler)
+        -- Choicer test
+        local choice = cutscene:choicer({"I can\nmake\nspagetti","I have zero\nredeeming\nqualities"})
+        print("Choice: "..choice)
+        --cutscene:choicer({"Yes","No"})
         -- Wait 1 second
         cutscene:wait(1)
 
