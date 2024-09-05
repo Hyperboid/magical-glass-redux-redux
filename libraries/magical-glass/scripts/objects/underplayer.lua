@@ -107,13 +107,7 @@ function UnderPlayer:handleMovement()
 
     local speed = self.walk_speed
     if running then
-        if self.run_timer > 60 then
-            speed = speed + (Game:isLight() and 6 or 5)
-        elseif self.run_timer > 10 then
-            speed = speed + 4
-        else
-            speed = speed + 2
-        end
+        speed = speed + 5
     end
     
     if Input.down("up") and Input.down("down") then
@@ -160,23 +154,6 @@ function UnderPlayer:handleMovement()
     end
     
     self.sprite.facing = self.facing
-    
-    
-
-    if not running then
-        self.run_timer = 0
-    else
-        if walk_x ~= 0 or walk_y ~= 0 then
-            self.run_timer = self.run_timer + DTMULT
-            self.run_timer_grace = 0
-        else
-            -- Dont reset running until 2 frames after you release the movement keys
-            if self.run_timer_grace >= 2 then
-                self.run_timer = 0
-            end
-            self.run_timer_grace = self.run_timer_grace + DTMULT
-        end
-    end
 end
 
 function UnderPlayer:doMoveAmount(type, amount, other_amount)
