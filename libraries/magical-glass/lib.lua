@@ -2477,7 +2477,7 @@ function lib:init()
             if #Game.battle.party > 1 then
                 message = "* Everyone recovered " .. amount .. " HP."
             else
-                message = "* " .. Game.battle.party[1].chara:getNameOrYou() .. " recovered " .. amount .. " HP."
+                message = "* You recovered " .. amount .. " HP."
             end
         elseif self.target == "enemy" then
             if maxed then

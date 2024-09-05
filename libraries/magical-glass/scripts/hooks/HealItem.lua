@@ -99,7 +99,7 @@ function HealItem:getLightBattleText(user, target)
         if #Game.battle.party > 1 then
             return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
         else
-            return "* "..Game.battle.party[1].chara:getNameOrYou().." "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
+            return "* You "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
         end
     elseif self.target == "enemy" then
         return "* " .. target.name .. " "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
@@ -115,7 +115,7 @@ function HealItem:getWorldUseText(target)
         if #Game.party > 1 then
             return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
         else
-            return "* "..Game.party[1]:getNameOrYou().." "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
+            return "* You "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
         end
     end
 end
@@ -140,7 +140,7 @@ function HealItem:getLightBattleHealingText(user, target, amount)
         if #Game.battle.party > 1 then
             message = "* Everyone recovered " .. amount .. " HP."
         else
-            message = "* " .. Game.battle.party[1].chara:getNameOrYou() .. " recovered " .. amount .. " HP."
+            message = "* You recovered " .. amount .. " HP."
         end
     elseif self.target == "enemy" then
         if maxed then
@@ -174,7 +174,7 @@ function HealItem:getLightWorldHealingText(target, amount)
         if #Game.party > 1 then
             message = "* Everyone recovered " .. amount .. " HP."
         else
-            message = "* " .. Game.party[1]:getNameOrYou() .. " recovered " .. amount .. " HP."
+            message = "* You recovered " .. amount .. " HP."
         end
     end
     return message
