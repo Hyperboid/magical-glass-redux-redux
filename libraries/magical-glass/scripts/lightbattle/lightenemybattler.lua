@@ -501,6 +501,9 @@ function LightEnemyBattler:isXActionShort(battler)
 end
 
 function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacked)
+    if Game.battle:getCurrentAction() and Game.battle:getCurrentAction().action == "SPELL" then
+        battler.delay_turn_end = true
+    end
     if attacked ~= false then
         attacked = true
     end
@@ -768,6 +771,7 @@ function LightEnemyBattler:onDefeatFatal(damage, battler)
 end
 
 function LightEnemyBattler:heal(amount)
+    MagicalGlassLib.heal_amount = amount
     Assets.stopAndPlaySound("power")
     self:lightStatusMessage("damage", "+" .. amount, {0, 1, 0})
 

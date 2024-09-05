@@ -189,8 +189,9 @@ function LightPartyBattler:revive()
     self.is_down = false
 end
 
-function LightPartyBattler:heal(amount, show_up, sound)
-    if sound then
+function LightPartyBattler:heal(amount, sparkle_color, show_up, sound)
+    MagicalGlassLib.heal_amount = amount
+    if sound or sound == nil then
         Assets.stopAndPlaySound("power")
     end
 

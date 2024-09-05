@@ -209,7 +209,7 @@ function LightStatusDisplay:drawStatusStrip()
             Draw.printAlign(current .. "/" .. max, x + 197, y + 3 - (karma_mode and 2 or 0), "right")
             
             if Game.battle.current_selecting == index or DEBUG_RENDER and Input.alt() then
-                love.graphics.setColor(battler.chara:getLightColor())
+                love.graphics.setColor(battler.chara:getColor())
                 love.graphics.setLineWidth(2)
                 love.graphics.rectangle("line", x - 3, y - 7, 201, 35)
             end
