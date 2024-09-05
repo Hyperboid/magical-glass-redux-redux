@@ -26,7 +26,7 @@ function actor:init()
         ["battle/defeat"]       = {"battle/defeat", 1/15, false},
 
         ["battle/transition"]   = {"knife_jump_down", 0.2, true},
-        ["battle/intro"]        = {"battle/attack", 1/15, true},
+        ["battle/intro"]        = {"battle/attack", 1/15, false},
         ["battle/victory"]      = {"battle/victory", 1/10, false},
         
         -- Cutscene animations

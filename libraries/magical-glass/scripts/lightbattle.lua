@@ -325,6 +325,18 @@ function LightBattle:swapSoul(object)
     self:addChild(object)
 end
 
+function LightBattle:resetAttackers()
+    if #self.attackers > 0 then
+        self.attackers = {}
+        self.normal_attackers = {}
+        self.auto_attackers = {}
+        self.auto_attacked = false
+        if self.battle_ui.attacking then
+            self.battle_ui:endAttack()
+        end
+    end
+end
+
 function LightBattle:getSoulLocation(always_player)
     if self.soul and (not always_player) then
         return self.soul:getPosition()
@@ -1785,24 +1797,7 @@ function LightBattle:update()
             end
         end
         if not any_hurt then
-            self.attackers = {}
-            self.normal_attackers = {}
-            self.auto_attackers = {}
-            self.auto_attacked = false
-            if self.battle_ui.attacking then
-                self.battle_ui:endAttack()
-            end
-            if not self.encounter:onActionsEnd() then
-                self:setState("ENEMYDIALOGUE")
-            end
-        elseif not any_hurt then
-            self.attackers = {}
-            self.normal_attackers = {}
-            self.auto_attackers = {}
-            self.auto_attacked = false
-            if self.battle_ui.attacking then
-                self.battle_ui:endAttack()
-            end
+            self:resetAttackers()
             if not self.encounter:onActionsEnd() then
                 self:setState("ENEMYDIALOGUE")
             end
