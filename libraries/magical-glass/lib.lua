@@ -69,7 +69,6 @@ function lib:load(data, new_file)
     
     if new_file then
         lib.kills = 0
-        lib.game_overs = lib.game_overs or 0
         lib.serious_mode = false
         lib.lw_save_lv = 0
         lib.in_light_shop = false
@@ -2602,7 +2601,7 @@ function lib:init()
 
     Utils.hook(Game, "gameOver", function(orig, self, x, y)
         orig(self, x, y)
-        lib:setGameOvers(lib:getGameOvers() + 1)
+        lib:setGameOvers((lib:getGameOvers() or 0) + 1)
     end)
     
     Utils.hook(ActionBoxDisplay, "draw", function(orig, self) -- Fixes an issue with HP higher than normal
