@@ -24,10 +24,10 @@ function item:init(inventory)
     self.can_sell = true
 
     -- Item description text (unused by light items outside of debug menu)
-    self.description = "A psychologically damaged spinach egg pie."
+    self.description = "Comes with everything you need for a quick meal!"
 
     -- Light world check text
-    self.check = "Heals HP\n* A psychologically damaged\nspinach egg pie."
+    self.check = "Heals HP\n* Comes with everything you\nneed for a quick meal!"
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "ally"
@@ -38,6 +38,10 @@ function item:init(inventory)
     -- Will this item be instantly consumed in battles?
     self.instant = false
     
+end
+
+function item:onCheck()
+    Game.world:showText("* \""..self:getName().."\" "..self:getCheck())
 end
 
 function item:getLightBattleText(user, target)
