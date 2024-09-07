@@ -129,7 +129,7 @@ function LightPartyBattler:hurt(amount, exact, color, options)
         self:removeHealthBroken(amount)
     end
 
-    Game.battle:shakeCamera(2, 2, 0.3)
+    Game.battle:shakeCamera(2, 2, 0.35)
 end
 
 function LightPartyBattler:removeHealth(amount)
