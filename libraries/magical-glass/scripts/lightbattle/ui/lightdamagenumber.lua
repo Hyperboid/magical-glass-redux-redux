@@ -146,19 +146,7 @@ function LightDamageNumber:draw()
             love.graphics.setFont(Assets.getFont("main"))
             love.graphics.print(Utils.pick(messages))
         end
-    elseif self.type == "mercy" then
-        if self.timer >= self.delay then
-            local r, g, b, a = self:getDrawColor()
-            Draw.setColor(r, g, b, a)
-    
-            if self.texture then
-                Draw.draw(self.texture, 0, 0)
-            elseif self.text then
-                love.graphics.setFont(self.font)
-                love.graphics.print(self.text, 0, 0)
-            end
-        end
-    elseif self.type == "damage" or self.type == "msg" then
+    else
         if self.timer >= self.delay then
             local r, g, b, a = self:getDrawColor()
             Draw.setColor(r, g, b, a)

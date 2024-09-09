@@ -49,8 +49,8 @@ function LightEncounter:init()
     self.flee_messages = {
         "* I'm outta here.", -- 1/20
         "* I've got better to do.", --1/20
-        "* Escaped...", --17/20
-        "* Don't slow me down." --1/20
+        "* Don't slow me down.", --1/20
+        "* Escaped..." --17/20
     }
 
     self.used_flee_message = nil
@@ -366,17 +366,7 @@ function LightEncounter:addEnemy(enemy, x, y, ...)
 end
 
 function LightEncounter:getFleeMessage()
-    local message = Utils.random(0, 20, 1)
-
-    if message == 0 or message == 1 then
-        return self.flee_messages[1]
-    elseif message == 2 then
-        return self.flee_messages[2]
-    elseif message > 3 then
-        return self.flee_messages[3]
-    elseif message == 3 then
-        return self.flee_messages[4]
-    end
+    return self.flee_messages[math.min(Utils.random(1, 20, 1), #self.flee_messages)]
 end
 
 function LightEncounter:getUsedFleeMessage()

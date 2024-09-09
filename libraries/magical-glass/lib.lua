@@ -1049,25 +1049,33 @@ function lib:init()
     end)
 
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
+    
+    Utils.hook(Battler, "init", function(orig, self, x, y, width, height)
+        orig(self, x, y, width, height)
+        
+        self.active_msg = 0
+        self.light_hit_count = 0
+        self.x_number_offset = 0
+    end)
 
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
         
         if self.active_msg <= 0 then
             self.active_msg = 0
-            self.hit_count = 0
+            self.light_hit_count = 0
         end
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
         local function y_msg_position()
-            return y + (offset_y - 2) - (not kill and self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
+            return y + (offset_y - 2) - (not kill and self.light_hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
         end
         
         if y_msg_position() <= Assets.getFont("lwdmg"):getHeight() then
-            self.hit_count = -2 
+            self.light_hit_count = -2 
         elseif y_msg_position() > SCREEN_HEIGHT / 2 then
-            self.hit_count = 0
+            self.light_hit_count = 0
             self.x_number_offset = self.x_number_offset + 1
         end
         local percent
@@ -1080,10 +1088,10 @@ function lib:init()
             self.active_msg = self.active_msg + 1
         
             if not kill then
-                if self.hit_count >= 0 then
-                    self.hit_count = self.hit_count + 1
+                if self.light_hit_count >= 0 then
+                    self.light_hit_count = self.light_hit_count + 1
                 else
-                    self.hit_count = self.hit_count - 1
+                    self.light_hit_count = self.light_hit_count - 1
                 end
             end
         end
