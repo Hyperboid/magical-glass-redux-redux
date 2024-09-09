@@ -1049,62 +1049,6 @@ function lib:init()
     end)
 
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
-    
-    Utils.hook(Battler, "init", function(orig, self, x, y, width, height)
-        orig(self, x, y, width, height)
-        
-        self.active_msg = 0
-        self.light_hit_count = 0
-        self.x_number_offset = 0
-    end)
-
-    Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
-        x, y = self:getRelativePos(x, y)
-        
-        if self.active_msg <= 0 then
-            self.active_msg = 0
-            self.light_hit_count = 0
-        end
-        
-        local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
-        
-        local function y_msg_position()
-            return y + (offset_y - 2) - (not kill and self.light_hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
-        end
-        
-        if y_msg_position() <= Assets.getFont("lwdmg"):getHeight() then
-            self.light_hit_count = -2 
-        elseif y_msg_position() > SCREEN_HEIGHT / 2 then
-            self.light_hit_count = 0
-            self.x_number_offset = self.x_number_offset + 1
-        end
-        local percent
-        if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
-            percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
-            if kill then
-                percent.kill_others = true
-            end
-            self.parent:addChild(percent)
-            self.active_msg = self.active_msg + 1
-        
-            if not kill then
-                if self.light_hit_count >= 0 then
-                    self.light_hit_count = self.light_hit_count + 1
-                else
-                    self.light_hit_count = self.light_hit_count - 1
-                end
-            end
-        end
-
-        if type ~= "msg" then
-            if (type == "damage" and self:getHPVisibility()) or (type == "mercy" and self:getMercyVisibility()) then
-                local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
-                self.parent:addChild(gauge)
-            end
-        end
-    
-        return percent
-    end)
 
     Utils.hook(Textbox, "init", function(orig, self, x, y, width, height, default_font, default_font_size, battle_box)
         Object.init(self, x, y, width, height)

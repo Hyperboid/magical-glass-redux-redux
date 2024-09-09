@@ -88,6 +88,10 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.comment = ""
     self.icons = {}
     self.defeated = false
+    
+    self.active_msg = 0
+    self.light_hit_count = 0
+    self.x_number_offset = 0
 
     self.current_target = "ANY"
 
@@ -821,8 +825,52 @@ function LightEnemyBattler:freeze()
     self:defeat("FROZEN", true)
 end
 
-function LightEnemyBattler:lightStatusMessage(...)
-    return super.lightStatusMessage(self, (self.width/2), (self.height/2) - 10, ...)
+function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
+    local x, y = self:getRelativePos(self.width/2, self.height/2 - 10)
+    
+    if self.active_msg <= 0 then
+        self.active_msg = 0
+        self.light_hit_count = 0
+    end
+    
+    local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
+    
+    local function y_msg_position()
+        return y + (offset_y - 2) - (not kill and self.light_hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
+    end
+    
+    if y_msg_position() <= Assets.getFont("lwdmg"):getHeight() then
+        self.light_hit_count = -2 
+    elseif y_msg_position() > SCREEN_HEIGHT / 2 then
+        self.light_hit_count = 0
+        self.x_number_offset = self.x_number_offset + 1
+    end
+    local percent
+    if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
+        percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
+        if kill then
+            percent.kill_others = true
+        end
+        self.parent:addChild(percent)
+        self.active_msg = self.active_msg + 1
+    
+        if not kill then
+            if self.light_hit_count >= 0 then
+                self.light_hit_count = self.light_hit_count + 1
+            else
+                self.light_hit_count = self.light_hit_count - 1
+            end
+        end
+    end
+
+    if type ~= "msg" then
+        if (type == "damage" and self:getHPVisibility()) or (type == "mercy" and self:getMercyVisibility()) then
+            local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
+            self.parent:addChild(gauge)
+        end
+    end
+
+    return percent
 end
 
 function LightEnemyBattler:recruitMessage(...)
