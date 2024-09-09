@@ -1055,7 +1055,7 @@ function LightBattle:onStateChange(old,new)
         end
 
         self.current_selecting = 0
-        self:toggleSoul(self.encounter.story)
+        self:toggleSoul(false)
         self.battle_ui:clearEncounterText()
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
@@ -1063,7 +1063,6 @@ function LightBattle:onStateChange(old,new)
         if #active_enemies == 0 and not self.encounter.story then
             self:setState("VICTORY")
         else
-
             if self.state_reason then
                 self:setWaves(self.state_reason)
                 local enemy_found = false
@@ -1081,7 +1080,7 @@ function LightBattle:onStateChange(old,new)
             end
 
             local soul_x, soul_y, soul_offset_x, soul_offset_y
-            local arena_x, arena_y, arena_w, arena_h, arena_shape
+            local arena_x, arena_y, arena_h, arena_w
             local has_arena = false
             local has_soul = false
             for _,wave in ipairs(self.waves) do
@@ -1093,9 +1092,6 @@ function LightBattle:onStateChange(old,new)
                 arena_y = wave.arena_y or arena_y or self.arena.home_y
                 arena_w = wave.arena_width and math.max(wave.arena_width, arena_w or 0) or arena_w
                 arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
-                if wave.arena_shape then
-                    arena_shape = wave.arena_shape
-                end
                 if wave.has_arena then
                     has_arena = true
                 end
@@ -1104,35 +1100,41 @@ function LightBattle:onStateChange(old,new)
                 end
             end
     
-            local center_x, center_y
-    
-            if has_arena then
-                
-                if not arena_shape then
-                    arena_w, arena_h = arena_w or 160, arena_h or 130
-                    arena_x, arena_y = self.arena.home_x, self.arena.home_y
-                    arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
-                end
+            arena_w, arena_h = arena_w or 160, arena_h or 130
+            arena_x, arena_y = self.arena.home_x, self.arena.home_y
 
+            if has_arena then
                 if self.encounter.story then
                     self.arena:setSize(arena_w, arena_h)
                 else
                     self.arena:changeShape({arena_w, self.arena.height})
                 end
-
-                center_x, center_y = self.arena:getCenter()
             else
-                center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 --+ 10
+                if self.encounter.story then
+                    self.arena:changePosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+                    self.arena:setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+                else
+                    self.arena:changeShape({SCREEN_WIDTH-11, self.arena.height})
+                end
             end
+
+            local center_x, center_y = self.arena:getCenter()
     
-            if has_soul and not self.encounter.story then
-                self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
+            if has_soul then
+                if not self.encounter.story then
+                    self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
+                        soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
+                        soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
+                        self.soul:setPosition(soul_x or center_x, soul_y or center_y)
+                        self:toggleSoul(true)
+                        self.soul.can_move = false
+                    end)
+                else
                     soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
                     soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
                     self.soul:setPosition(soul_x or center_x, soul_y or center_y)
                     self:toggleSoul(true)
-                    self.soul.can_move = false
-                end)
+                end
             end
 
             for _,enemy in ipairs(active_enemies) do
@@ -1316,9 +1318,6 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "TRANSITIONOUT" then
-        if self.encounter.story then
-            self:toggleSoul(true)
-        end
         self.ended = true
         self.current_selecting = 0
         if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
@@ -1386,6 +1385,8 @@ function LightBattle:onStateChange(old,new)
             self:setState("TRANSITIONOUT")
             self.encounter:onBattleEnd()
         else
+            self:toggleSoul(false)
+            self.arena.sprite_border.visible = true
             self.arena.rotation = 0
             if self.arena.height >= self.arena.init_height then
                 self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
@@ -1835,9 +1836,8 @@ function LightBattle:update()
         end
     elseif self.state == "DEFENDINGBEGIN" then
         if self.arena:isNotTransitioning() then
-
             local soul_x, soul_y, soul_offset_x, soul_offset_y
-            local arena_x, arena_y, arena_h, arena_shape
+            local arena_x, arena_y, arena_h, arena_w
             local has_arena = true
             for _,wave in ipairs(self.waves) do
                 soul_x = wave.soul_start_x or soul_x
@@ -1847,17 +1847,13 @@ function LightBattle:update()
                 arena_x = wave.arena_x or arena_x
                 arena_y = wave.arena_y or arena_y
                 arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
-                if wave.arena_shape then
-                    arena_shape = wave.arena_shape
-                end
                 if not wave.has_arena then
                     has_arena = false
                 end
             end
 
-            if not arena_shape then
-                arena_w, arena_h = arena_w or 160, arena_h or 130
-            end
+            arena_h, arena_w  = arena_h or 130, arena_w or 160
+            
             local center_x, center_y = self.arena:getCenter()
 
             if has_arena and self.arena.height ~= arena_h then
@@ -1867,10 +1863,20 @@ function LightBattle:update()
             if has_arena and not (self.arena.x == arena_x and self.arena.y == arena_y) then
                 self.arena:changePosition({arena_x, arena_y})
             end
-
+            
+            if not has_arena and (self.arena.width ~= SCREEN_WIDTH or self.arena.height ~= SCREEN_HEIGHT) then
+                self.arena:changeShape({SCREEN_WIDTH, SCREEN_HEIGHT})
+            end
+            
+            if not has_arena and not (self.arena.x == SCREEN_WIDTH/2 and self.arena.y == SCREEN_HEIGHT/2) then
+                self.arena:changePosition({SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+            end
         end
 
         if self.arena:isNotTransitioning() then
+            if self.arena.width >= SCREEN_WIDTH and self.arena.height >= SCREEN_HEIGHT then
+                self.arena.sprite_border.visible = false
+            end
             self.soul.can_move = true
             self:setState("DEFENDING") 
         end
@@ -1922,7 +1928,6 @@ function LightBattle:update()
     
     self.update_child_list = true
     super.update(self)
-
 end
 
 function LightBattle:updateChildren()

@@ -39,13 +39,10 @@ function LightEncounter:init()
 
     -- Whether the flee command is available at the mercy button
     self.can_flee = true
+
+    -- The chance of successful flee (increases by 10 every turn)
+    self.flee_chance = 50
     
-    -- When rolling to determine if an escape is successful, that number must exceed this number for a successful escape.
-    self.flee_threshold = 50
-
-
-
-    self.flee_chance = 0
     self.flee_messages = {
         "* I'm outta here.", -- 1/20
         "* I've got better to do.", --1/20
@@ -204,8 +201,9 @@ function LightEncounter:onBattleStart() end
 function LightEncounter:onBattleEnd() end
 
 function LightEncounter:onTurnStart() end
+
 function LightEncounter:onTurnEnd()
-    self.flee_chance = Utils.random(100) + (10 * (Game.battle.turn_count - 1))
+    self.flee_chance = self.flee_chance + 10
 end
 
 function LightEncounter:onActionsStart() end
@@ -214,7 +212,6 @@ function LightEncounter:onActionsEnd() end
 function LightEncounter:onCharacterTurn(battler, undo) end
 
 function LightEncounter:onFlee()
-
     Assets.playSound("escaped")
     
     for _,battler in ipairs(Game.battle.party) do
@@ -296,7 +293,6 @@ function LightEncounter:onFlee()
         Game.battle:setState("TRANSITIONOUT")
         self:onBattleEnd()
     end)
-
 end
 
 function LightEncounter:onFleeFail() end
@@ -425,19 +421,6 @@ function LightEncounter:onDialogueEnd()
 end
 
 function LightEncounter:onWavesDone()
-
-    local chance = self.flee_chance
-
-    if Game.battle.turn_count > 2 then
-        if chance == 0 or chance == nil then
-            self.flee_chance = Utils.random(0, 100, 1)
-        else
-            self.flee_chance = self.flee_chance + 10
-        end
-    end
-
-    Game.battle:toggleSoul(false)
-
     Game.battle:setState("DEFENDINGEND", "WAVEENDED")
 end
 

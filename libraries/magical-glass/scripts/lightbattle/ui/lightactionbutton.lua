@@ -210,8 +210,10 @@ function LightActionButton:select()
                             chance = chance + (equip.getFleeBonus and equip:getFleeBonus() / #Game.battle.party or 0)
                         end
                     end
+                    
+                    chance = math.floor(chance)
 
-                    if chance > Game.battle.encounter.flee_threshold then
+                    if chance >= Utils.random(1, 100, 1) then
                         Game.battle:setState("FLEEING")
                     else
                         Game.battle:playSelectSound()

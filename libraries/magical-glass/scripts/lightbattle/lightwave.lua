@@ -8,6 +8,13 @@ function LightWave:init()
     self.has_soul = true
     self.darken = false
     self.auto_clear = true
+    self.has_arena = true
+    
+    self.soul_start_x = nil
+    self.soul_start_y = nil
+    
+    self.soul_offset_x = nil
+    self.soul_offset_y = nil
 end
 
 function LightWave:getAllowDuplicates()
@@ -22,6 +29,16 @@ end
 function LightWave:setArenaPosition(x, y)
     self.arena_x = x
     self.arena_y = y
+end
+
+function LightWave:setSoulStartingPosition(x, y)
+    self.soul_start_x = x
+    self.soul_start_y = y
+end
+
+function LightWave:setSoulOffset(x, y)
+    self.soul_offset_x = x
+    self.soul_offset_y = y
 end
 
 function LightWave:getMenuAttackers()

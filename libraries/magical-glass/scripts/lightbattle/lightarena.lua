@@ -121,8 +121,7 @@ function LightArena:onAdd(parent)
     self.sprite.rotation = math.pi
 end
 
-function LightArena:onRemove(parent)
-end
+function LightArena:onRemove(parent) end
 
 function LightArena:isNotTransitioning()
     return #self.target_shape == 0 and #self.target_position == 0
