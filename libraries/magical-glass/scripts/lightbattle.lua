@@ -1352,30 +1352,8 @@ function LightBattle:onStateChange(old,new)
     elseif new == "FLEEFAIL" then
         self:toggleSoul(false)
         self.current_selecting = 0
-
-        local any_hurt = false
-        for _,enemy in ipairs(self.enemies) do
-            if enemy.hurt_timer > 0 then
-                any_hurt = true
-                break
-            end
-        end
-
-        if not any_hurt then
-            self.attackers = {}
-            self.normal_attackers = {}
-            self.auto_attackers = {}
-            if self.battle_ui.attacking then
-                self.battle_ui:endAttack()
-            end
-
-            self.encounter:onFleeFail()
-
-            if not self.encounter:onActionsEnd() then
-                self:setState("ACTIONSDONE")
-            end
-        end
-        
+        self.encounter:onFleeFail()
+        self:setState("ACTIONSDONE")
     elseif new == "DEFENDINGEND" then
         if self.encounter.story then
             self:setState("TRANSITIONOUT")
