@@ -1109,7 +1109,7 @@ function LightBattle:onStateChange(old,new)
                 else
                     self.arena:changeShape({arena_w, self.arena.height})
                 end
-            else
+            elseif #self.waves > 0 then
                 if self.encounter.story then
                     self.arena:changePosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
                     self.arena:setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -1856,20 +1856,20 @@ function LightBattle:update()
             
             local center_x, center_y = self.arena:getCenter()
 
-            if has_arena and self.arena.height ~= arena_h then
-                self.arena:changeShape({self.arena.width, arena_h})
-            end
-
-            if has_arena and not (self.arena.x == arena_x and self.arena.y == arena_y) then
-                self.arena:changePosition({arena_x, arena_y})
-            end
-            
-            if not has_arena and (self.arena.width ~= SCREEN_WIDTH or self.arena.height ~= SCREEN_HEIGHT) then
-                self.arena:changeShape({SCREEN_WIDTH, SCREEN_HEIGHT})
-            end
-            
-            if not has_arena and not (self.arena.x == SCREEN_WIDTH/2 and self.arena.y == SCREEN_HEIGHT/2) then
-                self.arena:changePosition({SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+            if has_arena then
+                if self.arena.height ~= arena_h then
+                    self.arena:changeShape({self.arena.width, arena_h})
+                end
+                if not (self.arena.x == arena_x and self.arena.y == arena_y) then
+                    self.arena:changePosition({arena_x, arena_y})
+                end
+            elseif #self.waves > 0 then
+                if (self.arena.width ~= SCREEN_WIDTH or self.arena.height ~= SCREEN_HEIGHT) then
+                    self.arena:changeShape({SCREEN_WIDTH, SCREEN_HEIGHT})
+                end
+                if not (self.arena.x == SCREEN_WIDTH/2 and self.arena.y == SCREEN_HEIGHT/2) then
+                    self.arena:changePosition({SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+                end
             end
         end
 
