@@ -1,23 +1,11 @@
 local HealItem, super = Class("HealItem", false)
 
 function HealItem:onWorldUse(target)
-    local text = self:getWorldUseText(target)
-    if self.target == "ally" then
-        self:worldUseSound(target)
-        local amount = self:getWorldHealAmount(target.id)
-        for _,member in ipairs(Game.party) do
-            for _,equip in ipairs(member:getEquipment()) do
-                if equip.applyHealBonus then
-                    amount = equip:applyHealBonus(amount)
-                end
-            end
-        end
-        Game.world:heal(target, amount, text, self)
-        return true
-    elseif self.target == "party" then
-        self:worldUseSound(target)
-        for _,party_member in ipairs(target) do
-            local amount = self:getWorldHealAmount(party_member.id)
+    if Game:isLight() then
+        local text = self:getWorldUseText(target)
+        if self.target == "ally" then
+            self:worldUseSound(target)
+            local amount = self:getWorldHealAmount(target.id)
             for _,member in ipairs(Game.party) do
                 for _,equip in ipairs(member:getEquipment()) do
                     if equip.applyHealBonus then
@@ -25,11 +13,27 @@ function HealItem:onWorldUse(target)
                     end
                 end
             end
-            Game.world:heal(party_member, amount, text, self)
+            Game.world:heal(target, amount, text, self)
+            return true
+        elseif self.target == "party" then
+            self:worldUseSound(target)
+            for _,party_member in ipairs(target) do
+                local amount = self:getWorldHealAmount(party_member.id)
+                for _,member in ipairs(Game.party) do
+                    for _,equip in ipairs(member:getEquipment()) do
+                        if equip.applyHealBonus then
+                            amount = equip:applyHealBonus(amount)
+                        end
+                    end
+                end
+                Game.world:heal(party_member, amount, text, self)
+            end
+            return true
+        else
+            return false
         end
-        return true
     else
-        return false
+        return super.onWorldUse(self, target)
     end
 end
 
@@ -189,13 +193,11 @@ function HealItem:battleUseSound(user, target)
 end
 
 function HealItem:worldUseSound(target)
-    if Game:isLight() then
-        Game.world.timer:script(function(wait)
-            Assets.stopAndPlaySound("swallow")
-            wait(0.4)
-            Assets.stopAndPlaySound("power")
-        end)
-    end
+    Game.world.timer:script(function(wait)
+        Assets.stopAndPlaySound("swallow")
+        wait(0.4)
+        Assets.stopAndPlaySound("power")
+    end)
 end
 
 return HealItem
