@@ -2544,11 +2544,10 @@ function lib:init()
             else
                 Draw.draw(self:getSprite(), 0, 0)
             end
+            Object.draw(self)
         else
             orig(self)
         end
-
-        Object.draw(self)
     end)
 
     Utils.hook(Game, "gameOver", function(orig, self, x, y)
