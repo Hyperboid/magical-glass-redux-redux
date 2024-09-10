@@ -335,7 +335,7 @@ function LightEnemyBattler:addMercy(amount)
     
     if Kristal.getLibConfig("magical-glass", "mercy_messages") and self:getMercyVisibility() then
         if amount == 0 then
-            self:lightStatusMessage("msg", "miss", {192/255, 192/255, 192/255})
+            self:lightStatusMessage("msg", "miss", COLORS.silver)
         else
             if amount > 0 then
                 local pitch = 0.8

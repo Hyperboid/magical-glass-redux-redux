@@ -1034,9 +1034,9 @@ function lib:init()
         enemy:hurt(0, battler, nil, nil, anim, attacked)
     end)
 
-    Utils.hook(Item, "onCheck", function(orig, self)
+    Utils.hook(Item, "onMultiCheck", function(orig, self)
         if type(self.check) == "string" then
-            orig(self)
+            self:onCheck()
         elseif type(self.check) == "table" then
             local text = {}
             for i, check in ipairs(self:getCheck()) do
@@ -1387,7 +1387,7 @@ function lib:init()
                         self:useItem(item)
                     end
                 elseif self.option_selecting == 2 then
-                    item:onCheck()
+                    item:onMultiCheck()
                 elseif self.option_selecting == 3 then
                     self:dropItem(item)
                 end
@@ -1913,7 +1913,7 @@ function lib:init()
 
     Utils.hook(PartyMember, "getLightDamageColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
-            return Utils.unpackColor({1, 0, 0})
+            return Utils.unpackColor(COLORS.red)
         elseif self.light_dmg_color and type(self.light_dmg_color) == "table" then
             return Utils.unpackColor(self.light_dmg_color)
         else
@@ -1923,7 +1923,7 @@ function lib:init()
 
     Utils.hook(PartyMember, "getLightMissColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
-            return Utils.unpackColor({192/255, 192/255, 192/255})
+            return Utils.unpackColor(COLORS.silver)
         elseif self.light_miss_color and type(self.light_miss_color) == "table" then
             return Utils.unpackColor(self.light_miss_color)
         else
@@ -1943,7 +1943,7 @@ function lib:init()
     
     Utils.hook(PartyMember, "getLightMultiboltAttackColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
-            return Utils.unpackColor({1, 1, 1})
+            return Utils.unpackColor(COLORS.white)
         elseif self.light_multibolt_attack_color and type(self.light_multibolt_attack_color) == "table" then
             return self.light_multibolt_attack_color
         else
@@ -1953,7 +1953,7 @@ function lib:init()
 
     Utils.hook(PartyMember, "getLightAttackBarColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
-            return Utils.unpackColor({1, 1, 1})
+            return Utils.unpackColor(COLORS.white)
         elseif self.light_attack_bar_color and type(self.light_attack_bar_color) == "table" then
             return Utils.unpackColor(self.light_attack_bar_color)
         else
