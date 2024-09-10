@@ -1337,7 +1337,7 @@ function LightBattle:onStateChange(old,new)
         self.battle_ui:clearEncounterText()
     elseif new == "FLEEING" then
         self.current_selecting = 0
-
+        
         for _,battler in ipairs(self.party) do
             battler:setSleeping(false)
             battler.defending = false
@@ -1347,12 +1347,8 @@ function LightBattle:onStateChange(old,new)
                 battler:revive()
                 battler.chara:setHealth(battler.chara:autoHealAmount())
             end
-
-            local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
         end
-
         self.encounter:onFlee()
-
     elseif new == "FLEEFAIL" then
         self:toggleSoul(false)
         self.current_selecting = 0
