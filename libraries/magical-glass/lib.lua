@@ -1732,16 +1732,34 @@ function lib:init()
         
         self.undertale_movement = false
 
+        -- Light Stat Menu stuff
         self.lw_stat_text = nil
         self.lw_portrait = nil
 
+        -- Main Color
         self.light_color = nil
+        
+        -- Light Battle Colors
         self.light_dmg_color = nil
         self.light_miss_color = nil
         self.light_attack_color = nil
         self.light_multibolt_attack_color = nil
         self.light_attack_bar_color = nil
         self.light_xact_color = nil
+        
+        -- Light Battle Colors in the dark world
+        self.light_dmg_color_dw = nil
+        self.light_miss_color_dw = nil
+        self.light_attack_color_dw = nil
+        self.light_multibolt_attack_dw = nil
+        self.light_attack_bar_color_dw = nil
+        self.light_xact_color_dw = nil
+        
+        -- Dark Battle Colors in the light world
+        self.dmg_color_lw = nil
+        self.attack_bar_color_lw = nil
+        self.attack_box_color_lw = nil
+        self.xact_color_lw = nil
 
         self.lw_stats["magic"] = 0
     end)
@@ -1813,11 +1831,10 @@ function lib:init()
 
     Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
         if Game.battle.turn_count == 1 and not undo then
-            if self:getWeapon() and self:getWeapon().onActionSelect then
-                self:getWeapon():onActionSelect(self)
-            end
-            if self:getArmor(1) and self:getArmor(1).onActionSelect then
-                self:getArmor(1):onActionSelect(self)
+            for _,equip in ipairs(self:getEquipment()) do
+                if equip.onActionSelect() then
+                    equip:onActionSelect(self)
+                end
             end
         end
     end)
@@ -1903,18 +1920,23 @@ function lib:init()
     Utils.hook(PartyMember, "getLightStatText", function(orig, self) return self.lw_stat_text end)
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
     
+    -- Main Color
     Utils.hook(PartyMember, "getColor", function(orig, self)
-        if self.light_color and type(self.light_color) == "table" and Game:isLight() then
+        if self.light_color and Game:isLight() then
             return Utils.unpackColor(self.light_color)
         else
             return orig(self)
         end
     end)
 
+
+    -- Light Battle Colors
     Utils.hook(PartyMember, "getLightDamageColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor(COLORS.red)
-        elseif self.light_dmg_color and type(self.light_dmg_color) == "table" then
+        elseif self.light_dmg_color_dw and not Game:isLight() then
+            return Utils.unpackColor(self.light_dmg_color_dw)
+        elseif self.light_dmg_color then
             return Utils.unpackColor(self.light_dmg_color)
         else
             return self:getColor()
@@ -1924,7 +1946,9 @@ function lib:init()
     Utils.hook(PartyMember, "getLightMissColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor(COLORS.silver)
-        elseif self.light_miss_color and type(self.light_miss_color) == "table" then
+        elseif self.light_miss_color_dw and not Game:isLight() then
+            return Utils.unpackColor(self.light_miss_color_dw)
+        elseif self.light_miss_color then
             return Utils.unpackColor(self.light_miss_color)
         else
             return self:getColor()
@@ -1934,7 +1958,9 @@ function lib:init()
     Utils.hook(PartyMember, "getLightAttackColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor({1, 105/255, 105/255})
-        elseif self.light_attack_color and type(self.light_attack_color) == "table" then
+        elseif self.light_attack_color_dw and not Game:isLight() then
+            return Utils.unpackColor(self.light_attack_color_dw)
+        elseif self.light_attack_color then
             return Utils.unpackColor(self.light_attack_color)
         else
             return self:getColor()
@@ -1944,7 +1970,9 @@ function lib:init()
     Utils.hook(PartyMember, "getLightMultiboltAttackColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor(COLORS.white)
-        elseif self.light_multibolt_attack_color and type(self.light_multibolt_attack_color) == "table" then
+        elseif self.light_multibolt_attack_color_dw and not Game:isLight() then
+            return Utils.unpackColor(self.light_multibolt_attack_color_dw)
+        elseif self.light_multibolt_attack_color then
             return self.light_multibolt_attack_color
         else
             return self:getColor()
@@ -1954,7 +1982,9 @@ function lib:init()
     Utils.hook(PartyMember, "getLightAttackBarColor", function(orig, self)
         if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor(COLORS.white)
-        elseif self.light_attack_bar_color and type(self.light_attack_bar_color) == "table" then
+        elseif self.light_attack_bar_color_dw and not Game:isLight() then
+            return Utils.unpackColor(self.light_attack_bar_color_dw)
+        elseif self.light_attack_bar_color then
             return Utils.unpackColor(self.light_attack_bar_color)
         else
             return self:getColor()
@@ -1962,10 +1992,46 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getLightXActColor", function(orig, self)
-        if self.light_xact_color and type(self.light_xact_color) == "table" then
+        if self.light_xact_color_dw and not Game:isLight() then
+            return Utils.unpackColor(self.light_xact_color_dw)
+        elseif self.light_xact_color then
             return Utils.unpackColor(self.light_xact_color)
         else
             return self:getXActColor()
+        end
+    end)
+    
+    
+    -- Dark Battle Colors
+    Utils.hook(PartyMember, "getDamageColor", function(orig, self)
+        if self.dmg_color_lw and Game:isLight() then
+            return Utils.unpackColor(self.dmg_color_lw)
+        else
+            return orig(self)
+        end
+    end)
+    
+    Utils.hook(PartyMember, "getAttackBarColor", function(orig, self)
+        if self.attack_bar_color_lw and Game:isLight() then
+            return Utils.unpackColor(self.attack_bar_color_lw)
+        else
+            return orig(self)
+        end
+    end)
+    
+    Utils.hook(PartyMember, "getAttackBoxColor", function(orig, self)
+        if self.attack_box_color_lw and Game:isLight() then
+            return Utils.unpackColor(self.attack_box_color_lw)
+        else
+            return orig(self)
+        end
+    end)
+    
+    Utils.hook(PartyMember, "getXActColor", function(orig, self)
+        if self.xact_color_lw and Game:isLight() then
+            return Utils.unpackColor(self.xact_color_lw)
+        else
+            return orig(self)
         end
     end)
     

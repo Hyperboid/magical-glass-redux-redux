@@ -481,7 +481,7 @@ function LightBattleUI:drawState()
                 end
                 
                 if Game.battle.state_reason == "XACT" then
-                    xact_text:setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
+                    xact_text:setColor(Game.battle.party[Game.battle.current_selecting].chara:getLightXActColor())
                     if Game.battle.selected_xaction.id == 0 then
                         xact_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. enemy:getXAction(Game.battle.party[Game.battle.current_selecting]))
                     else
