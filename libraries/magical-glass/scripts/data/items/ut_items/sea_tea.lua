@@ -49,7 +49,8 @@ function item:getLightBattleText(user, target)
 end
 
 function item:onLightBattleUse(user, target)
-    if Game.battle.soul.speed < 8 then
+    if Game.battle.soul_speed_bonus < 4 then
+        Game.battle.soul_speed_bonus = Game.battle.soul_speed_bonus + 1
         Game.battle.soul.speed = Game.battle.soul.speed + 1
     end
     self:battleUseSound(user, target)

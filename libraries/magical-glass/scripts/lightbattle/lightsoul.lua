@@ -47,7 +47,7 @@ function LightSoul:init(x, y, color)
     self.target_y = y
     self.timer = 0
     self.transitioning = false
-    self.speed = 4
+    self.speed = 4 + Game.battle.soul_speed_bonus
 
     self.inv_timer = 0
     self.inv_flash_timer = 0

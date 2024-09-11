@@ -137,6 +137,8 @@ function LightBattle:init()
     self.on_finish_action = nil
 
     self.background_fade_alpha = 0
+    
+    self.soul_speed_bonus = 0
 
     self.wave_length = 0
     self.wave_timer = 0
@@ -314,14 +316,12 @@ function LightBattle:spawnSoul(x, y)
 end
 
 function LightBattle:swapSoul(object)
-    local prev_soul_speed = self.soul.speed
     if self.soul then
         self.soul:remove()
     end
     object:setPosition(self.soul:getPosition())
     object.layer = self.soul.layer
     self.soul = object
-    self.soul.speed = prev_soul_speed
     self:addChild(object)
 end
 
@@ -338,7 +338,7 @@ function LightBattle:resetAttackers()
 end
 
 function LightBattle:getSoulLocation(always_player)
-    if self.soul and (not always_player) then
+    if self.soul and not always_player then
         return self.soul:getPosition()
     else
         return 49, 455
