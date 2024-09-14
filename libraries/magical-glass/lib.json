@@ -70,15 +70,11 @@
         /////
         "key_item_conversion": true,
 
-        ///// Hide CELL in The Light World Menu
-        // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.
-        /////
-        "hide_cell": false,
-
-        ///// UNDERTALE Stat Display
+        ///// UNDERTALE Menu Display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
+        // Moves the currency amount in the menu to be align with the rest of the amonuts.
         /////
-        "undertale_stat_display": true,
+        "undertale_menu_display": true,
         
         ///// Always Show Magic
         // Displays the MAGIC stat in the Light World STAT menu even if there's no

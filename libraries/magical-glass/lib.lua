@@ -1344,6 +1344,7 @@ function lib:init()
     end)
     
     Utils.hook(LightItemMenu, "update", function(orig, self)
+        lib.is_light_menu_partyselect = false
     
         if self.state == "ITEMOPTION" then
             if Input.pressed("cancel") then
@@ -2049,85 +2050,35 @@ function lib:init()
         self.lw_portrait = data.lw_portrait or self.lw_portrait
     end)
 
-    Utils.hook(LightMenu, "init", function(orig, self)
-        Object.init(self, 0, 0)
-
-        self.layer = 1 -- TODO
-
-        self.parallax_x = 0
-        self.parallax_y = 0
-
-        self.animation_done = false
-        self.animation_timer = 0
-        self.animate_out = false
-
-        self.selected_submenu = 1
-
-        self.current_selecting = Game.world.current_selecting or 1
-
-        self.item_selected = 1
-
-        -- States: MAIN, ITEMMENU, ITEMUSAGE
-        self.state = "MAIN"
-        self.state_reason = nil
-        self.heart_sprite = Assets.getTexture("player/heart_menu")
-
-        self.ui_move = Assets.newSound("ui_move")
-        self.ui_select = Assets.newSound("ui_select")
-        self.ui_cant_select = Assets.newSound("ui_cant_select")
-        self.ui_cancel_small = Assets.newSound("ui_cancel_small")
-
-        self.font       = Assets.getFont("main")
-        self.font_small = Assets.getFont("small")
-
-        self.box = nil
-
-        self.top = true
-
-        self.info_box = UIBox(56, 76, 94, 62)
-        self:addChild(self.info_box)
-        self:realign()
-
-        self.choice_box = UIBox(56, 192, 94, 100)
-        self:addChild(self.choice_box)
-
-        self.storage = "items"
-        
-        if Kristal.getLibConfig("magical-glass", "hide_cell") and not Game:getFlag("has_cell_phone") then
-            self.max_selecting = 2
-        else
-            self.max_selecting = 3
-        end
-        if self.current_selecting > self.max_selecting then
-            self.current_selecting = 1
-        end
-    end)
-
-    Utils.hook(LightMenu, "onKeyPressed", function(orig, self, key)
-        if (Input.isMenu(key) or Input.isCancel(key)) and self.state == "MAIN" then
-            Game.world:closeMenu()
-            return
-        end
-    
-        if self.state == "MAIN" then
-            local old_selected = self.current_selecting
-            if Input.is("up", key)    then self.current_selecting = self.current_selecting - 1 end
-            if Input.is("down", key) then self.current_selecting = self.current_selecting + 1 end
-    
-            self.current_selecting = Utils.clamp(self.current_selecting, 1, self.max_selecting)
-            if old_selected ~= self.current_selecting then
-                self.ui_move:stop()
-                self.ui_move:play()
-            end
-            if Input.isConfirm(key) then
-                self:onButtonSelect(self.current_selecting)
-            end
-        end
-    end)
-
     Utils.hook(LightMenu, "draw", function(orig, self)
         Object.draw(self)
+
+        local offset = 0
+        if self.top then
+            offset = 270
+            if lib.is_light_menu_partyselect and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
+                love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
+            end
+        end
+
+        local chara = Game.party[1]
+
+        love.graphics.setFont(self.font)
+        Draw.setColor(PALETTE["world_text"])
+        love.graphics.print(chara:getName(), 46, 60 + offset)
+
+        love.graphics.setFont(self.font_small)
+        love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
+        love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
+        if Kristal.getLibConfig("magical-glass", "undertale_menu_display") then
+            love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
+            love.graphics.print(Game.lw_money, 82, 136 + offset)
+        else
+            love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4)..Game.lw_money, 46, 136 + offset)
+        end
         
+        love.graphics.setScissor()
+
         love.graphics.setFont(self.font)
         if Game.inventory:getItemCount(self.storage, false) <= 0 then
             Draw.setColor(PALETTE["world_gray"])
@@ -2137,56 +2088,26 @@ function lib:init()
         love.graphics.print("ITEM", 84, 188 + (36 * 0))
         Draw.setColor(PALETTE["world_text"])
         love.graphics.print("STAT", 84, 188 + (36 * 1))
-    
-        if not Kristal.getLibConfig("magical-glass", "hide_cell") then
-            if Game:getFlag("has_cell_phone") and #Game.world.calls > 0 then
+        if Game:getFlag("has_cell_phone", false) then
+            if #Game.world.calls > 0 then
                 Draw.setColor(PALETTE["world_text"])
             else
                 Draw.setColor(PALETTE["world_gray"])
             end
             love.graphics.print("CELL", 84, 188 + (36 * 2))
-        else
-            if Game:getFlag("has_cell_phone") then
-                if #Game.world.calls > 0 then
-                    Draw.setColor(PALETTE["world_text"])
-                else
-                    Draw.setColor(PALETTE["world_gray"])
-                end
-                love.graphics.print("CELL", 84, 188 + (36 * 2))
-            end
         end
-        
+
         if self.state == "MAIN" then
             Draw.setColor(Game:getSoulColor())
             Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
         end
-        
-        local offset = 0
-        if self.top then
-            offset = 270
-            if lib.is_light_menu_partyselect and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
-                love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
-            end
-        end
-    
-        local chara = Game.party[1]
-    
-        love.graphics.setFont(self.font)
-        Draw.setColor(PALETTE["world_text"])
-        love.graphics.print(chara:getName(), 46, 60 + offset)
-        love.graphics.setFont(self.font_small)
-        love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
-        love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
-        -- pastency when -sam, to sam
-        love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
-        love.graphics.print(Game.lw_money, 82, 136 + offset)
     end)
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
         orig(self)
         self.party_selecting = 1
 
-        self.undertale_stat_display = Kristal.getLibConfig("magical-glass", "undertale_stat_display")
+        self.undertale_stat_display = Kristal.getLibConfig("magical-glass", "undertale_menu_display")
         self.always_show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic")
     end)
 
@@ -3048,7 +2969,6 @@ function lib:setLightLV(level)
 end
 
 function lib:postUpdate()
-    lib.is_light_menu_partyselect = nil
     Game.lw_xp = nil
     for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP
         if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then
