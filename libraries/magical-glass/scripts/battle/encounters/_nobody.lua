@@ -25,4 +25,12 @@ function encounter:getVictoryText()
     return self.text
 end
 
+function encounter:getVictoryMoney(money)
+    return 0
+end
+
+function encounter:getVictoryXP(xp)
+    return 0
+end
+
 return encounter
