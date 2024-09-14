@@ -8,8 +8,8 @@ function Mod:load(new_file)
         Game.lw_money = Kristal.getLibConfig("magical-glass", "debug") and 1000 or 0
         MagicalGlassLib:setLightBattleShakingText(true)
     end
-    Game.world:registerCall("Dimensional Box A", "cell.box_a", false, 5/30)
-    Game.world:registerCall("Dimensional Box B", "cell.box_b", false, 5/30)
+    Game.world:registerCall("Dimensional Box A", "cell.box_a", false)
+    Game.world:registerCall("Dimensional Box B", "cell.box_b", false)
 end
 
 -- function Mod:getLightActionButtons(battler, buttons)
