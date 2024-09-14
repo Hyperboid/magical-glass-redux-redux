@@ -2227,10 +2227,6 @@ function lib:init()
         end
     end)
 
-    Utils.hook(World, "registerCall", function(orig, self, name, scene, sound)
-        table.insert(self.calls, {name, scene, sound})
-    end)
-
     Utils.hook(World, "spawnPlayer", function(orig, self, ...)
         local args = {...}
 
