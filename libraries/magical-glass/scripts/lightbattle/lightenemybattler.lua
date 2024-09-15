@@ -569,10 +569,40 @@ function LightEnemyBattler:forceDefeat(amount, battler)
 end
 
 function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
-
     local crit = false
     local total_damage
-    if lane.attack_type == "shoe" then
+    if isClass(lane) and Utils.getClassName(lane) == "LightPartyBattler" then
+        if damage > 0 then
+            return damage
+        end
+        
+        local battler = lane
+        
+        if Game:isLight() then
+            total_damage = (battler.chara:getStat("attack") - self.defense) + Utils.random(0, 2, 1)
+        else
+            total_damage = (battler.chara:getStat("attack") * 3.375 - self.defense * 1.363) + Utils.random(0, 2, 1)
+        end
+        if points == 150 then
+            total_damage = Utils.round(total_damage * 2.2)
+        else
+            total_damage = Utils.round((total_damage * stretch) * 2)
+        end
+        
+        if Game.battle:getActionBy(battler).critical then
+            crit = true
+        end
+        
+        if points >= 150 then
+            battler.tp_gain = 6
+        elseif points >= 120 then
+            battler.tp_gain = 5
+        elseif points >= 100 then
+            battler.tp_gain = 4
+        else
+            battler.tp_gain = 3
+        end
+    elseif lane.attack_type == "shoe" then
         if damage > 0 then
             return damage
         end
@@ -610,11 +640,12 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         end
         if points <= 12 then
             total_damage = Utils.round(total_damage * 2.2)
+            crit = true
         else
             total_damage = Utils.round((total_damage * stretch) * 2)
         end
         
-        if points <= 12 then
+        if crit then
             lane.battler.tp_gain = 6
         elseif points <= 20 then
             lane.battler.tp_gain = 5
@@ -653,7 +684,9 @@ function LightEnemyBattler:onHurt(damage, battler)
         end
     end
 
-    self:getActiveSprite():shake(9, 0, 0.5, 2/30) -- not sure if this should be different
+     -- not sure if this should be different
+    self.sprite:shake(9, 0, 0.5, 2/30)
+    self.overlay_sprite:shake(9, 0, 0.5, 2/30)
 
     Game.battle.timer:after(1/3, function()
         local sound = self:getDamageVoice()

@@ -88,7 +88,7 @@ function LightBattle:init()
     self.attack_done = false
     self.cancel_attack = false
     self.auto_attack_timer = 0
-    self.auto_attacked = false
+    self.auto_attacker_index = 0
 
     self.post_battletext_func = nil
     self.post_battletext_state = "ACTIONSELECT"
@@ -330,7 +330,7 @@ function LightBattle:resetAttackers()
         self.attackers = {}
         self.normal_attackers = {}
         self.auto_attackers = {}
-        self.auto_attacked = false
+        self.auto_attacker_index = 0
         if self.battle_ui.attacking then
             self.battle_ui:endAttack()
         end
@@ -653,22 +653,19 @@ function LightBattle:processAction(action)
         
         local weapon = battler.chara:getWeapon() or Registry.createItem("ut_weapons/stick") -- placeholder to allow attacking without a weapon
         local damage = 0
+        local crit
         
         if self:enemyExists(enemy) then
-            if not action.force_miss then
-                if Game:isLight() then
-                    damage = (battler.chara:getStat("attack") - enemy.defense) + Utils.random(0, 2, 1)
-                else
-                    damage = (battler.chara:getStat("attack") * 3.375 - enemy.defense * 1.363) + Utils.random(0, 2, 1)
-                end
-                damage = Utils.round(damage * 2.2)
-                battler.tp_gain = 6
+            if not action.force_miss and action.points > 0 then
+                local stretch = action.points / 150
+                damage, crit = enemy:getAttackDamage(action.damage or 0, battler, action.points or 0, stretch)
+                damage = Utils.round(damage)
 
                 if damage < 0 then
                     damage = 0
                 end
 
-                local result = weapon:onLightAttack(battler, enemy, damage, 1, false)
+                local result = weapon:onLightAttack(battler, enemy, damage, stretch, crit)
                 if result or result == nil then
                     self:finishAction(action)
                 end
@@ -1060,8 +1057,39 @@ function LightBattle:onStateChange(old,new)
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
         local active_enemies = self:getActiveEnemies()
+        
+        local function update_enemies()
+            for _,enemy in ipairs(active_enemies) do
+                enemy.current_target = enemy:getTarget()
+            end
+            local cutscene_args = {self.encounter:getDialogueCutscene()}
+            if self.debug_wave then
+                self:setState("DIALOGUEEND")
+            elseif #cutscene_args > 0 then
+                self:startCutscene(unpack(cutscene_args)):after(function()
+                    self:setState("DIALOGUEEND")
+                end)
+            else
+                local any_dialogue = false
+                for _,enemy in ipairs(active_enemies) do
+                    local dialogue = enemy:getEnemyDialogue()
+                    if dialogue then
+                        any_dialogue = true
+                        local bubble = enemy:spawnSpeechBubble(dialogue, {no_sound_overlap = true})
+                        bubble:setSkippable(false)
+                        bubble:setAdvance(false)
+                        table.insert(self.enemy_dialogue, bubble)
+                    end
+                end
+                if not any_dialogue then
+                    self:setState("DIALOGUEEND")
+                end
+            end
+        end
         if #active_enemies == 0 and not self.encounter.story then
             self:setState("VICTORY")
+        elseif Mod.libs["classic_turn_based_rpg"] and self.encounter:getEnemyAutoAttack() and not self.encounter.story and not self.debug_wave then
+            update_enemies()
         else
             if self.state_reason then
                 self:setWaves(self.state_reason)
@@ -1137,32 +1165,7 @@ function LightBattle:onStateChange(old,new)
                 end
             end
 
-            for _,enemy in ipairs(active_enemies) do
-                enemy.current_target = enemy:getTarget()
-            end
-            local cutscene_args = {self.encounter:getDialogueCutscene()}
-            if self.debug_wave then
-                self:setState("DIALOGUEEND")
-            elseif #cutscene_args > 0 then
-                self:startCutscene(unpack(cutscene_args)):after(function()
-                    self:setState("DIALOGUEEND")
-                end)
-            else
-                local any_dialogue = false
-                for _,enemy in ipairs(active_enemies) do
-                    local dialogue = enemy:getEnemyDialogue()
-                    if dialogue then
-                        any_dialogue = true
-                        local bubble = enemy:spawnSpeechBubble(dialogue, {no_sound_overlap = true})
-                        bubble:setSkippable(false)
-                        bubble:setAdvance(false)
-                        table.insert(self.enemy_dialogue, bubble)
-                    end
-                end
-                if not any_dialogue then
-                    self:setState("DIALOGUEEND")
-                end
-            end
+            update_enemies()
         end
     elseif new == "DIALOGUEEND" then
         self.battle_ui:clearEncounterText()
@@ -1930,20 +1933,24 @@ function LightBattle:updateAttacking()
             if self.auto_attack_timer < 4 then
                 self.auto_attack_timer = self.auto_attack_timer + DTMULT
 
-                if not self.auto_attacked and (self.auto_attack_timer >= 4 or self:allActionsDone()) then
-                    self.auto_attacked = true
-                    local next_attacker = self.auto_attackers[1]
+                if self.auto_attack_timer >= 4 or self:allActionsDone() then
+                    self.auto_attacker_index = self.auto_attacker_index + 1
+                    local next_attacker = self.auto_attackers[self.auto_attacker_index]
 
                     local next_action = self:getActionBy(next_attacker)
                     if next_action then
                         self:beginAction(next_action)
                         self:processAction(next_action)
+                    end
+                    if #self.auto_attackers <= self.auto_attacker_index then
                         if only_auto then
                             self.timer:after(43/30, function()
                                 self.battle_ui.attack_box.fading = true
                                 self:setState("ACTIONSDONE")
                             end)
                         end
+                    else
+                        self.auto_attack_timer = 0
                     end
                 end
             end

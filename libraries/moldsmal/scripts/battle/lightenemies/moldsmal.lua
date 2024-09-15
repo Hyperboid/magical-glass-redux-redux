@@ -62,13 +62,8 @@ function Moldsmal:onAct(battler, name)
     return super:onAct(self, battler, name)
 end
 
-function Moldsmal:onDefeat(damage, battler)
-    Game:setFlag("##test_kills", Game:getFlag("##test_kills", 0) + 1)
-    super.onDefeat(self, damage, battler)
-end
-
 function Moldsmal:onHurt(...)
-    local body = self:getActiveSprite():getPart("body")
+    local body = self.sprite:getPart("body")
     body.sprite.scale_y = 1
     body.scale_direction = 0.01
     super.onHurt(self, ...)
