@@ -668,10 +668,14 @@ end
 function LightEnemyBattler:getDamageSound() end
 function LightEnemyBattler:getDamageVoice() end
 
+function LightEnemyBattler:getAttackTension(amount)
+    return amount * 1
+end
+
 function LightEnemyBattler:onHurt(damage, battler)
     self:toggleOverlay(true)
     if Game.battle.tension_bar.visible then
-        Game:giveTension(battler.tp_gain or 0)
+        Game:giveTension(self:getAttackTension(battler.tp_gain or 0))
     end
     battler.tp_gain = 0
     if self.actor.use_light_battler_sprite then
