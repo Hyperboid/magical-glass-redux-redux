@@ -57,6 +57,8 @@ function Dummy:init()
     -- (second argument is description, usually empty)
     self:registerAct("Tell Story", "", {"noelle"})
     
+    self:registerAct("Wave Mode", "", "all")
+    
     self:registerAct("Red Buster", "Red\nDamage", "susie", 60)
     self:registerAct("DualHeal", "Heals\neveryone", "noelle", 50)
 
@@ -102,6 +104,21 @@ function Dummy:onAct(battler, name)
     elseif name == "lmao" then
         self.menu_wave_override = "aiming"
         return "* get attacked"
+        
+    elseif name == "Wave Mode" then
+        if self.encounter.wave_mode then
+            self.encounter.wave_mode = false
+            self.waves = {}
+            return "* Normal Mode."
+        else
+            self.encounter.wave_mode = true
+            self.waves = {
+                "basic",
+                "aiming",
+                "movingarena"
+            }
+            return "* Wave Mode!"
+        end
 
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy

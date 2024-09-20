@@ -39,7 +39,7 @@ function LightGauge:init(type, amount, x, y, enemy, color)
         self.reversed = amount >= 0 and true or false -- allows for mercy reduction
     end
     
-    if not Kristal.getLibConfig("magical-glass", "enemy_gauge_smoothness") then
+    if not Kristal.getLibConfig("magical-glass", "enemy_gauge_smoothness") and self.max_value >= self.real_value then
         self.timer:every(2/30, function()
             if self.reversed then
                 self.value = self.value + (self.amount / 15)
@@ -61,7 +61,7 @@ end
 function LightGauge:update()
     super.update(self)
     
-    if Kristal.getLibConfig("magical-glass", "enemy_gauge_smoothness") then
+    if Kristal.getLibConfig("magical-glass", "enemy_gauge_smoothness") and self.max_value >= self.real_value then
         if self.reversed then
             self.value = self.value + (self.amount / 15) * DTMULT / 2
             if not (self.value < (self.real_value + self.amount)) then

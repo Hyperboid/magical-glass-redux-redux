@@ -1010,11 +1010,12 @@ function lib:init()
         local scale = (stretch * 2) - 0.5
         sprite:setScale(scale)
         sprite:setOrigin(0.5)
-        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5 - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 5))
+        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 8)
+        sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
         sprite.color = {battler.chara:getLightAttackColor()}
         enemy.parent:addChild(sprite)
-        sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect
+        sprite:play((stretch / 4) / 1.5, false, function(this)
             local sound = enemy:getDamageSound() or "damage"
             if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
                 Assets.stopAndPlaySound(sound)

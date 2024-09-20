@@ -37,6 +37,9 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     -- Whether this enemy can be selected or not
     self.selectable = true
+    
+    -- The offset of this enemy's damage sprites
+    self.dmg_sprite_offset = {0, 0}
 
     -- Whether mercy is disabled for this enemy, like snowgrave Spamton NEO.
     -- This only affects the visual mercy bar.
@@ -688,9 +691,7 @@ function LightEnemyBattler:onHurt(damage, battler)
         end
     end
 
-     -- not sure if this should be different
-    self.sprite:shake(9, 0, 0.5, 2/30)
-    self.overlay_sprite:shake(9, 0, 0.5, 2/30)
+    self:getActiveSprite():shake(6, 0, 0.2, 2/30)
 
     Game.battle.timer:after(1/3, function()
         local sound = self:getDamageVoice()
@@ -717,9 +718,6 @@ end
 
 function LightEnemyBattler:onDefeat(damage, battler)
     if self.exit_on_defeat then
-        if self.actor.use_light_battler_sprite then
-            self:toggleOverlay(true)
-        end
         Game.battle.timer:after(self.hurt_timer, function()
             if self.actor.use_light_battler_sprite then
                 self:toggleOverlay(true)
@@ -876,7 +874,7 @@ function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
         return y + (offset_y - 2) - (not kill and self.light_hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
     end
     
-    if y_msg_position() <= Assets.getFont("lwdmg"):getHeight() then
+    if y_msg_position() <= 6 and self.light_hit_count > 0 then
         self.light_hit_count = -2 
     elseif y_msg_position() > SCREEN_HEIGHT / 2 then
         self.light_hit_count = 0

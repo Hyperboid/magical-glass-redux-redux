@@ -8,10 +8,12 @@ function Dummy:init()
 
     -- Battle music ("battleut" is undertale)
     self.music = nil
+    -- self.music = "prebattle1ut"
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("dummy")
-
+    
+    self.wave_mode = false
     self.bg_siners = {0, 15, 30, 45, 60, 75}
 end
 
@@ -21,22 +23,22 @@ function Dummy:update()
     for i = 1, #self.bg_siners do
         self.bg_siners[i] = self.bg_siners[i] + DTMULT
     end
-
 end
 
 function Dummy:drawBackground()
-    local offset = 0
-    for i = 1, 6 do
-        local sine = (math.sin(self.bg_siners[i] / 14) * 8) + 12
-        Draw.setColor(0, 107/255, 183/255)
-        love.graphics.setLineWidth(1)
-        love.graphics.rectangle("line", 18 + offset, sine, 101, 118)
-        love.graphics.rectangle("line", 18 + offset, sine + 118, 101, 118)
-        offset = offset + 101
+    if self.wave_mode then
+        local offset = 0
+        for i = 1, 6 do
+            local sine = (math.sin(self.bg_siners[i] / 14) * 8) + 12
+            Draw.setColor(0, 107/255, 183/255)
+            love.graphics.setLineWidth(1)
+            love.graphics.rectangle("line", 18 + offset, sine, 101, 118)
+            love.graphics.rectangle("line", 18 + offset, sine + 118, 101, 118)
+            offset = offset + 101
+        end
+    else
+        super.drawBackground(self)
     end
-    
-    -- Draw.setColor(0,1,0,1)
-    -- love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 end
 
 return Dummy

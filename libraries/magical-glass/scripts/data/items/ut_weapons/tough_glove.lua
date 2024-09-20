@@ -72,7 +72,8 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
         local sprite = Sprite("effects/attack/hyperfist")
         sprite:setOrigin(0.5)
-        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
+        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
+        sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
         sprite.color = {battler.chara:getLightMultiboltAttackColor()}
         enemy.parent:addChild(sprite)
@@ -107,24 +108,27 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         local confirm_button
         local press = Sprite("ui/lightbattle/pressz_press")
         local confirm_key = string.sub(Input.getText("confirm"), 2, -2)
+        local relative_pos_x, relative_pos_y = 0, 0
         if Input.usingGamepad() then
             confirm_button = Sprite(Input.getTexture("confirm"))
             confirm_button:setScale(2)
             confirm_button:setOrigin(0.5)
-            confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2) + 6))
+            relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2), (enemy.height / 2) + 6)
         elseif confirm_key ~= "Z" then
             confirm_button = Text(confirm_key)
             confirm_button:setColor(0,1,0)
             confirm_button:addFX(OutlineFX({0,0,0}))
-            confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2) - 3 - (#confirm_key - 1) * 3.5, (enemy.height / 2) - 3))
+            relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - 3 - (#confirm_key - 1) * 3.5, (enemy.height / 2) - 3)
         else
             confirm_button = Sprite("ui/lightbattle/pressz_z")
             confirm_button:setOrigin(0.5)
-            confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+            relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2), (enemy.height / 2))
         end
+        confirm_button:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         local press_timer = 3
         press:setOrigin(0.5)
-        press:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2), (enemy.height / 2))
+        press:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         press:setLayer(BATTLE_LAYERS["above_ui"] + 5)
         confirm_button:setLayer(BATTLE_LAYERS["above_ui"] + 5)
 
@@ -210,7 +214,8 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                         punch:setOrigin(0.5)
                         punch.layer = BATTLE_LAYERS["above_ui"] + 5
                         punch.color = {battler.chara:getLightMultiboltAttackColor()}
-                        punch:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
+                        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
+                        punch:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
                         enemy.parent:addChild(punch)
                         punch:play(2/30, false, function(s) s:remove() finishAttack() end)
                     end
