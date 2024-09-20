@@ -376,8 +376,8 @@ function lib:init()
         end
     end)
     
-    Utils.hook(Game, "enterShop", function(orig, self, shop, options)
-        if lib.in_light_shop then
+    Utils.hook(Game, "enterShop", function(orig, self, shop, options, light)
+        if lib.in_light_shop or light then
             MagicalGlassLib:enterLightShop(shop, options)
         else
             orig(self, shop, options)
@@ -2887,7 +2887,7 @@ function lib:registerDebugOptions(debug)
     debug:registerMenu("light_select_shop", "Enter Light Shop", "search")
     for id,_ in pairs(self.light_shops) do
         debug:registerOption("light_select_shop", id, "Enter this light shop.", function()
-            self:enterLightShop(id)
+            Game:enterShop(id, nil, true)
             debug:closeMenu()
         end)
     end
@@ -2895,7 +2895,7 @@ function lib:registerDebugOptions(debug)
     debug:registerMenu("dark_select_shop", "Enter Shop", "search")
     for id,_ in pairs(Registry.shops) do
         debug:registerOption("dark_select_shop", id, "Enter this shop.", function()
-            Game:enterShop(id)
+            Game:enterShop(id, nil, false)
             debug:closeMenu()
         end)
     end
