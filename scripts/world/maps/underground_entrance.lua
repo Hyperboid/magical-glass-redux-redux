@@ -12,6 +12,7 @@ return {
   nextlayerid = 5,
   nextobjectid = 18,
   properties = {
+    ["border"] = "undertale/ruins",
     ["light"] = true
   },
   tilesets = {

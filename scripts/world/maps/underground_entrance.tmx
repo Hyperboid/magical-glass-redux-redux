@@ -4,6 +4,7 @@
   <export target="underground_entrance.lua" format="lua"/>
  </editorsettings>
  <properties>
+  <property name="border" value="undertale/ruins"/>
   <property name="light" type="bool" value="true"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/underground_entrance.tsx"/>

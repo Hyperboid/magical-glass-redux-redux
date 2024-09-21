@@ -4,6 +4,7 @@
   <export target="darktundra1.lua" format="lua"/>
  </editorsettings>
  <properties>
+  <property name="border" value="undertale/tundra"/>
   <property name="name" value="Snowdin - Dark Zone"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/tundratiles_dark.tsx"/>

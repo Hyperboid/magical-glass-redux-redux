@@ -12,6 +12,7 @@ return {
   nextlayerid = 17,
   nextobjectid = 138,
   properties = {
+    ["border"] = "undertale/tundra",
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
   },

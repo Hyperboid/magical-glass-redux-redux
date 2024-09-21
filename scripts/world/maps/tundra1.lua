@@ -1,7 +1,7 @@
 return {
   version = "1.10",
   luaversion = "5.1",
-  tiledversion = "1.10.1",
+  tiledversion = "1.10.2",
   class = "",
   orientation = "orthogonal",
   renderorder = "right-down",
@@ -12,6 +12,7 @@ return {
   nextlayerid = 12,
   nextobjectid = 120,
   properties = {
+    ["border"] = "undertale/tundra",
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
   },

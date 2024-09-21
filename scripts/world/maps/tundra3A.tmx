@@ -4,6 +4,7 @@
   <export target="tundra3A.lua" format="lua"/>
  </editorsettings>
  <properties>
+  <property name="border" value="undertale/tundra"/>
   <property name="light" type="bool" value="true"/>
   <property name="name" value="Snowdin - Box Road"/>
  </properties>

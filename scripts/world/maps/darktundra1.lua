@@ -12,6 +12,7 @@ return {
   nextlayerid = 13,
   nextobjectid = 89,
   properties = {
+    ["border"] = "undertale/tundra",
     ["name"] = "Snowdin - Dark Zone"
   },
   tilesets = {
