@@ -60,6 +60,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/gunshot_stab")
+    table.insert(enemy.dmg_sprites, sprite)
     sprite:setScale(2)
     sprite:setOrigin(0.5)
     local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
@@ -75,6 +76,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
     Game.battle.timer:after(6/30, function()
         sprite:remove()
+        Utils.removeFromTable(enemy.dmg_sprites, sprite)
 
         local stars = {}
         for i = 0, 7 do
@@ -97,6 +99,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                 star:setColor(1, 1, 130/255)
                 Assets.stopAndPlaySound("saber3", 0.8)
             end
+            table.insert(enemy.dmg_sprites, star)
             table.insert(stars, star)
             enemy.parent:addChild(star)
             star:play(4/30, true)
@@ -126,6 +129,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
                 if star.star_sine_amt <= 0.5 then
                     star:remove()
+                    Utils.removeFromTable(enemy.dmg_sprites, star)
                 end
             end
         end)
@@ -133,6 +137,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         local ring_opacity = 1
         Game.battle.timer:every(3/30, function()
             local ring = Sprite("effects/attack/gunshot_remnant")
+            table.insert(enemy.dmg_sprites, ring)
             local ring_form = false
             local ring_size = 1
             local ring_shots = 0
@@ -164,6 +169,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     ring_size = ring_size - 0.3 * DTMULT
                     if ring.alpha < 0.1 then
                         ring:remove()
+                        Utils.removeFromTable(enemy.dmg_sprites, ring)
                     end
                 end
     

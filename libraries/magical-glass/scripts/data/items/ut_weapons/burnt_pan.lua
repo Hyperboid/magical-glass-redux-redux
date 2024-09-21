@@ -56,6 +56,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/frypan_impact")
+    table.insert(enemy.dmg_sprites, sprite)
     local stars = {}
     local angle = 6 * Utils.pick({1, -1})
     local form = 0
@@ -89,6 +90,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             star:setColor(1, 1, 130/255)
         end
         enemy.parent:addChild(star)
+        table.insert(enemy.dmg_sprites, star)
         table.insert(stars, star)
     end
 
@@ -132,8 +134,10 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
         battler.chara:onLightAttackHit(enemy, damage)
         sprite:remove()
+        Utils.removeFromTable(enemy.dmg_sprites, sprite)
         for _,star in ipairs(stars) do
             star:remove()
+            Utils.removeFromTable(enemy.dmg_sprites, star)
         end
 
         Game.battle:finishActionBy(battler)

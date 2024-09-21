@@ -1015,6 +1015,7 @@ function lib:init()
         src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
 
         local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
+        table.insert(enemy.dmg_sprites, sprite)
         local scale = (stretch * 2) - 0.5
         sprite:setScale(scale)
         sprite:setOrigin(0.5)
@@ -1032,6 +1033,8 @@ function lib:init()
 
             battler.chara:onLightAttackHit(enemy, damage)
             this:remove()
+            Utils.removeFromTable(enemy.dmg_sprites, this)
+            
 
             Game.battle:finishActionBy(battler)
         end)

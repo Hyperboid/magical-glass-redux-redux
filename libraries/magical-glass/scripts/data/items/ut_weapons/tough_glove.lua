@@ -83,6 +83,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         src:setPitch(self:getLightAttackPitch() or 1)
 
         local sprite = Sprite("effects/attack/hyperfist")
+        table.insert(enemy.dmg_sprites, sprite)
         sprite:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
@@ -94,14 +95,14 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             Assets.stopAndPlaySound("saber3", 0.7)
         end
 
-        Game.battle.timer:during(1, function() -- can't even tell if this is accurate
+        Game.battle.timer:during(1, function()
             sprite.x = sprite.x - 2 * DTMULT
             sprite.y = sprite.y - 2 * DTMULT
             sprite.x = sprite.x + Utils.random(4) * DTMULT
             sprite.y = sprite.y + Utils.random(4) * DTMULT
         end)
 
-        sprite:play(2/30, false, function(this) -- timing may still be incorrect    
+        sprite:play(2/30, false, function(this)
             local sound = enemy:getDamageSound() or "damage"
             if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
                 Assets.stopAndPlaySound(sound)
@@ -110,6 +111,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
             battler.chara:onLightAttackHit(enemy, damage)
             this:remove()
+            Utils.removeFromTable(enemy.dmg_sprites, this)
             Game.battle:finishActionBy(battler)
         end)
     else
@@ -164,7 +166,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     enemy:onDodge(battler, true)
                 end
                 
-                battler.chara:onLightAttackHit(enemy, damage)
+                battler.chara:onLightAttackHit(enemy, new_damage)
                 Game.battle:finishActionBy(battler)
             else
                 enemy:hurt(0, battler, nil, nil, true, false)
@@ -208,12 +210,13 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
                         Assets.playSound("punchweak")
                         local small_punch = Sprite("effects/attack/regfist")
+                        table.insert(enemy.dmg_sprites, small_punch)
                         small_punch:setOrigin(0.5)
                         small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
                         small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
                         small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
                         enemy.parent:addChild(small_punch)
-                        small_punch:play(2/30, false, function(s) s:remove() end)
+                        small_punch:play(2/30, false, function(s) s:remove(); Utils.removeFromTable(enemy.dmg_sprites, small_punch) end)
                     else
                         if damage <= 0 then
                             enemy:onDodge(battler, true)
@@ -223,13 +226,14 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                         src:setPitch(self:getLightAttackPitch() or 1)
                         
                         local punch = Sprite("effects/attack/hyperfist")
+                        table.insert(enemy.dmg_sprites, punch)
                         punch:setOrigin(0.5)
                         punch.layer = BATTLE_LAYERS["above_ui"] + 5
                         punch.color = {battler.chara:getLightMultiboltAttackColor()}
                         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
                         punch:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
                         enemy.parent:addChild(punch)
-                        punch:play(2/30, false, function(s) s:remove() finishAttack() end)
+                        punch:play(2/30, false, function(s) s:remove(); Utils.removeFromTable(enemy.dmg_sprites, punch) finishAttack() end)
                     end
 
                 end

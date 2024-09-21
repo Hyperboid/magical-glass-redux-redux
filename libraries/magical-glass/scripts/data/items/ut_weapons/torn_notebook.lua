@@ -65,6 +65,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/notebook_attack")
+    table.insert(enemy.dmg_sprites, sprite)
     local impact = "effects/attack/frypan_impact"
     local siner = 0
     local timer = 0
@@ -106,6 +107,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
                 if sprite.alpha < 0.1 then
                     sprite:remove()
+                    Utils.removeFromTable(enemy.dmg_sprites, sprite)
                 end
             end
         end
@@ -118,6 +120,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         end
         enemy:hurt(damage, battler)
         sprite:remove()
+        Utils.removeFromTable(enemy.dmg_sprites, sprite)
 
         battler.chara:onLightAttackHit(enemy, damage)
 

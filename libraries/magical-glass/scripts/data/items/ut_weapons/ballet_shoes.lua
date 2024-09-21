@@ -83,6 +83,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/hyperfoot")
+    table.insert(enemy.dmg_sprites, sprite)
     sprite:setOrigin(0.5)
     local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
     sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
@@ -112,6 +113,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
         battler.chara:onLightAttackHit(enemy, damage)
         this:remove()
+        Utils.removeFromTable(enemy.dmg_sprites, this)
 
         Game.battle:finishActionBy(battler)
     end)
