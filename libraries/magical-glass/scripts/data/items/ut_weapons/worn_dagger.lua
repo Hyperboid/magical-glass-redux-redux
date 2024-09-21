@@ -43,4 +43,8 @@ function item:showEquipText(target)
     Game.world:showText("* " .. target:getNameOrYou() .. " equipped the dagger.")
 end
 
+function item:showEquipTextFail(target)
+    Game.world:showText("* " .. target:getNameOrYou() .. " didn't want to equip the dagger.")
+end
+
 return item

@@ -40,6 +40,7 @@ function LightEquipItem:getEquipDisplayName()
         return self:getName()
     end
 end
+
 function LightEquipItem:getFleeBonus() return 0 end
 
 function LightEquipItem:applyHealBonus(value) return value + self.heal_bonus end
@@ -54,6 +55,7 @@ function LightEquipItem:getLightBoltSpeed()
         return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
     end
 end
+
 function LightEquipItem:getLightBoltSpeedVariance() return self.light_bolt_speed_variance or 0 end
 
 function LightEquipItem:getLightBoltStart()
@@ -104,81 +106,119 @@ function LightEquipItem:showEquipText(target)
     Game.world:showText("* " .. target:getNameOrYou() .. " equipped the " .. self:getName() .. ".")
 end
 
-function LightEquipItem:onWorldUse(target)
-    self.storage, self.index = Game.inventory:getItemIndex(self)
-    Assets.playSound("item")
-    if self.type == "weapon" then
-        if target:getWeapon() then
-            Game.inventory:addItemTo(self.storage, self.index, target:getWeapon())
-        end
-        target:setWeapon(self)
-    elseif self.type == "armor" then
-        if target:getArmor(1) then
-            Game.inventory:addItemTo(self.storage, self.index, target:getArmor(1))
-        end
-        target:setArmor(1, self)
-    else
-        error("LightEquipItem "..self.id.." invalid type: "..self.type)
-    end
+function LightEquipItem:showEquipTextFail(target)
+    Game.world:showText("* " .. target:getNameOrYou() .. " didn't want to equip the " .. self:getName() .. ".")
+end
 
-    self.storage, self.index = nil, nil
-    self:showEquipText(target)
-    return true
+function LightEquipItem:onWorldUse(target)
+    if self:canEquip(target) then
+        self.storage, self.index = Game.inventory:getItemIndex(self)
+        Assets.playSound("item")
+        if self.type == "weapon" then
+            if target:getWeapon() then
+                Game.inventory:addItemTo(self.storage, self.index, target:getWeapon())
+            end
+            target:setWeapon(self)
+        elseif self.type == "armor" then
+            if target:getArmor(1) then
+                Game.inventory:addItemTo(self.storage, self.index, target:getArmor(1))
+            end
+            target:setArmor(1, self)
+        else
+            error("LightEquipItem "..self.id.." invalid type: "..self.type)
+        end
+
+        self.storage, self.index = nil, nil
+        self:showEquipText(target)
+        return true
+    else
+        self:showEquipTextFail(target)
+        return false
+    end
 end
 
 function LightEquipItem:getLightBattleText(user, target)
     local text = "* "..target.chara:getNameOrYou().." equipped the "..self:getUseName().."."
     if user ~= target then
-        text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+        text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." equipped it."
+    end
+    return text
+end
+
+function LightEquipItem:getLightBattleTextFail(user, target)
+    local text = "* "..target.chara:getNameOrYou().." didn't want to equip the "..self:getUseName().."."
+    if user ~= target then
+        text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." didn't want to equip it."
     end
     return text
 end
 
 function LightEquipItem:getBattleText(user, target)
-    local text = "* "..target.chara:getName().." equipped the "..self:getUseName().."!"
+    if self:canEquip(target.chara) then
+        local text = "* "..target.chara:getName().." equipped the "..self:getUseName().."!"
+        if user ~= target then
+            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." equipped it!"
+        end
+        return text
+    else
+        return self:getBattleTextFail(user, target)
+    end
+end
+
+function LightEquipItem:getBattleTextFail(user, target)
+    local text = "* "..target.chara:getName().." didn't want to equip the "..self:getUseName().."."
     if user ~= target then
-        text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. text
+        text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." didn't want to equip it."
     end
     return text
 end
 
 function LightEquipItem:onLightBattleUse(user, target)
-    Assets.playSound("item")
-    local chara = target.chara
-    if self.type == "weapon" then
-        if chara:getWeapon() then
-            Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
+    if self:canEquip(target.chara) then
+        Assets.playSound("item")
+        local chara = target.chara
+        if self.type == "weapon" then
+            if chara:getWeapon() then
+                Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
+            end
+            chara:setWeapon(self)
+        elseif self.type == "armor" then
+            if chara:getArmor(1) then
+                Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
+            end
+            chara:setArmor(1, self)
+        else
+            error("LightEquipItem "..self.id.." invalid type: "..self.type)
         end
-        chara:setWeapon(self)
-    elseif self.type == "armor" then
-        if chara:getArmor(1) then
-            Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
-        end
-        chara:setArmor(1, self)
+        self.storage, self.index = nil, nil
+        Game.battle:battleText(self:getLightBattleText(user, target))
     else
-        error("LightEquipItem "..self.id.." invalid type: "..self.type)
+        Game.inventory:addItemTo(self.storage, self.index, self)
+        Game.battle:battleText(self:getLightBattleTextFail(user, target))
     end
-    self.storage, self.index = nil, nil
-    Game.battle:battleText(self:getLightBattleText(user, target))
 end
 
 function LightEquipItem:onBattleUse(user, target)
-    Assets.playSound("item")
-    local chara = target.chara
-    if self.type == "weapon" then
-        if chara:getWeapon() then
-            Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
+    if self:canEquip(target.chara) then
+        Assets.playSound("item")
+        local chara = target.chara
+        if self.type == "weapon" then
+            if chara:getWeapon() then
+                Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
+            end
+            chara:setWeapon(self)
+        elseif self.type == "armor" then
+            if chara:getArmor(1) then
+                Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
+            end
+            chara:setArmor(1, self)
+        else
+            error("LightEquipItem "..self.id.." invalid type: "..self.type)
         end
-        chara:setWeapon(self)
-    elseif self.type == "armor" then
-        if chara:getArmor(1) then
-            Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
-        end
-        chara:setArmor(1, self)
+        self.storage, self.index = nil, nil
     else
-        error("LightEquipItem "..self.id.." invalid type: "..self.type)
+        Game.inventory:addItemTo(self.storage, self.index, self)
     end
-    self.storage, self.index = nil, nil
 end
 
 function LightEquipItem:onLightBoltHit(battler) end

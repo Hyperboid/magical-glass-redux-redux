@@ -32,13 +32,18 @@ function item:init()
     self.bonuses = {
         defense = 3
     }
-
-    -- Default dark item conversion for this item
-    self.dark_item = "white_ribbon"
+    
+    self.can_equip = {
+        ["susie"] = false
+    }
 end
 
 function item:showEquipText(target)
     Game.world:showText("* "..target:getNameOrYou().." equipped the ribbon.")
+end
+
+function item:showEquipTextFail(target)
+    Game.world:showText("* " .. target:getNameOrYou() .. " didn't want to equip the ribbon.")
 end
 
 return item

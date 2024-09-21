@@ -4,9 +4,9 @@ function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Tough Glove 2"
-    self.short_name = "TuffGlove2"
-    self.serious_name = "Glove 2"
+    self.name = "Tough Glove EX"
+    self.short_name = "TuffGloveEX"
+    self.serious_name = "Glove EX"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -55,13 +55,25 @@ function item:init()
 end
 
 function item:showEquipText(target)
-    Game.world:showText("* " .. target:getNameOrYou() .." equipped Tough Glove 2.")
+    Game.world:showText("* " .. target:getNameOrYou() .." equipped Tough Glove EX.")
+end
+
+function item:showEquipTextFail(target)
+    Game.world:showText("* " .. target:getNameOrYou() .. " didn't want to equip Tough Glove EX.")
 end
 
 function item:getLightBattleText(user, target)
     local text = "* "..target.chara:getNameOrYou().." equipped "..self:getUseName().."."
     if user ~= target then
-        text = "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+        text = "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." equipped it."
+    end
+    return text
+end
+
+function item:getLightBattleTextFail(user, target)
+    local text = "* "..target.chara:getNameOrYou().." didn't want to equip "..self:getUseName().."."
+    if user ~= target then
+        text = "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." didn't want to equip it."
     end
     return text
 end

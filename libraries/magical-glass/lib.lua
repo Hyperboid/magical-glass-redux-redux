@@ -802,6 +802,14 @@ function lib:init()
     
     end)
     
+    Utils.hook(Item, "canEquip", function(orig, self, character, slot_type, slot_index)
+        if Game:isLight() then
+            return self.can_equip[character.id] ~= false
+        else
+            return orig(self, character, slot_type, slot_index)
+        end
+    end)
+    
     if not Kristal.getLibConfig("magical-glass", "key_item_conversion") then
         -- Don't give the ball of junk
         Utils.hook(LightInventory, "getDarkInventory", function(orig, self)

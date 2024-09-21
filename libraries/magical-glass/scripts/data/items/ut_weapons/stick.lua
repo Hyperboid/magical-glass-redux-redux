@@ -47,7 +47,7 @@ function item:getLightBattleText(user, target)
     else
         local text = "* "..target.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
         if user ~= target then
-            text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+            text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." threw it away.\n* Then picked it back up."
         end
         return text
     end
@@ -59,7 +59,7 @@ function item:getBattleText(user, target)
     else
         local text = "* "..target.chara:getName().." threw the stick away.\n* Then picked it back up."
         if user ~= target then
-            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. text
+            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." threw it away.\n* Then picked it back up."
         end
         return text
     end

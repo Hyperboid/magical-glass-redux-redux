@@ -49,11 +49,15 @@ function item:getLightBattleText(user, target)
 end
 
 function item:getBattleText(user, target)
-    local text = "* About time."
-    if user ~= target then
-        text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. text
+    if self:canEquip(target.chara) then
+        local text = "* About time."
+        if user ~= target then
+            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. text
+        end
+        return text
+    else
+        return super.getBattleText(self, user, target)
     end
-    return text
 end
 
 return item

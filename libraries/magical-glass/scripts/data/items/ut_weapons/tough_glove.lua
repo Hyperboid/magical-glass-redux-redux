@@ -54,10 +54,22 @@ function item:showEquipText(target)
     Game.world:showText("* " .. target:getNameOrYou() .." equipped Tough Glove.")
 end
 
+function item:showEquipTextFail(target)
+    Game.world:showText("* " .. target:getNameOrYou() .. " didn't want to equip Tough Glove.")
+end
+
 function item:getLightBattleText(user, target)
     local text = "* "..target.chara:getNameOrYou().." equipped "..self:getUseName().."."
     if user ~= target then
-        text = "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+        text = "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." equipped it."
+    end
+    return text
+end
+
+function item:getLightBattleTextFail(user, target)
+    local text = "* "..target.chara:getNameOrYou().." didn't want to equip "..self:getUseName().."."
+    if user ~= target then
+        text = "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." didn't want to equip it."
     end
     return text
 end

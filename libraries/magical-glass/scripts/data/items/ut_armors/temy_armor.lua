@@ -53,17 +53,21 @@ end
 function item:getLightBattleText(user, target)
     local text = "* "..target.chara:getNameOrYou().." donned the "..self:getUseName().."."
     if user ~= target then
-        text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. text
+        text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." donned it."
     end
     return text
 end
 
 function item:getBattleText(user, target)
-    local text = "* "..target.chara:getName().." donned the "..self:getUseName().."!"
-    if user ~= target then
-        text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. text
+    if self:canEquip(target.chara) then
+        local text = "* "..target.chara:getName().." donned the "..self:getUseName().."!"
+        if user ~= target then
+            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." donned it!"
+        end
+        return text
+    else
+        return super.getBattleText(self, user, target)
     end
-    return text
 end
 
 function item:getPrice()
