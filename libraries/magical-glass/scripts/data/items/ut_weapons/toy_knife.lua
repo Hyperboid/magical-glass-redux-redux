@@ -35,6 +35,9 @@ function item:init()
     self.light_bolt_speed = self.light_bolt_speed * 1.25
     self.light_bolt_direction = "random"
 
+    self.can_equip = {
+        ["susie"] = false
+    }
 end
 
 function item:showEquipText(target)
