@@ -36,6 +36,8 @@
             "mercy_messages": true,
             "mercy_bar": true,
             "enemy_bar_percentages": true,
+            "expanded_light_save_menu": true,
+            "undertale_movement_can_run": true,
             "debug": true,
         }
     }

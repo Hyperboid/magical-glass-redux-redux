@@ -47,7 +47,7 @@
         ///// UNDERTALE Movement Can Run
         // Enables the ability to run when using the Undertale player movement.
         /////
-        "undertale_movement_can_run": true,
+        "undertale_movement_can_run": false,
         
         ///// Light Battles HP Gauge Length Cap
         // Limits the length of the HP bar in light battles.
@@ -127,7 +127,7 @@
         ///// Expanded Light Save Menu
         // Allows having 3 save slots in the light world save points.
         /////
-        "expanded_light_save_menu": true,
+        "expanded_light_save_menu": false,
         
         ///// Multi-Party Mode in Solo-Party
         // Whether Multi-Party light battle style will also be enabled when playing with just a single party member.
