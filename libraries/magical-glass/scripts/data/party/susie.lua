@@ -16,7 +16,7 @@ function character:init()
     }
 
     -- Default light world equipment item IDs (saves current equipment)
-    self.lw_weapon_default = "light/toothbrush"
+    self.lw_weapon_default = "light/hairbrush"
     self.lw_armor_default = "light/bandage"
 
 end

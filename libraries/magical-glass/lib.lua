@@ -2232,11 +2232,11 @@ function lib:init()
         local armor_name = "None"
 
         if chara:getWeapon() then
-            weapon_name = chara:getWeapon():getEquipDisplayName() or chara:getWeapon():getName()
+            weapon_name = chara:getWeapon().getEquipDisplayName and chara:getWeapon():getEquipDisplayName() or chara:getWeapon():getName()
         end
 
         if chara:getArmor(1) then
-            armor_name = chara:getArmor(1):getEquipDisplayName() or chara:getArmor(1):getName()
+            armor_name = chara:getArmor(1).getEquipDisplayName and chara:getArmor(1):getEquipDisplayName() or chara:getArmor(1):getName()
         end
         
         love.graphics.print("WEAPON: "..weapon_name, 4, 256)

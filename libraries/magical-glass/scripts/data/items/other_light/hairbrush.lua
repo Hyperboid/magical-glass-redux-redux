@@ -1,11 +1,11 @@
-local item, super = Class(LightEquipItem, "light/toothbrush")
+local item, super = Class(LightEquipItem, "light/hairbrush")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Toothbrush"
-    self.short_name = "TthBrush"
+    self.name = "Hairbrush"
+    self.short_name = "Hirbrush"
     self.serious_name = "Brush"
 
     -- Item type (item, key, weapon, armor)
@@ -14,10 +14,10 @@ function item:init()
     self.light = true
 
     -- Item description text (unused by light items outside of debug menu)
-    self.description = "Keeps the plaque away...\nOr, that's what the dentists say."
+    self.description = "Purple, with hair stuck to it.\nFire stickers on the handle."
 
     -- Light world check text
-    self.check = "Weapon 1 AT\n* Keeps the plaque away...\n* Or, that's what the dentists say."
+    self.check = "Weapon 1 AT\n* Purple, with hair stuck to it.\n* Fire stickers on the handle."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
