@@ -1,6 +1,7 @@
 local lib = {}
 
 function lib:init()
+    self.active_keys = {}
     self.flower_positions = {
         {34, 679},
         {94, 939},
@@ -16,8 +17,18 @@ function lib:init()
     self.idle = false
 end
 
+function lib:onKeyPressed(key, is_repeat)
+    if not is_repeat then
+        self.active_keys[key] = true
+    end
+end
+
+function lib:onKeyReleased(key)
+    self.active_keys[key] = nil
+end
+
 function lib:postUpdate(dt)
-    if Input.down("left") or Input.down("right") or Input.down("up") or Input.down("down") or Input.down("confirm") or Input.down("cancel") or Input.down("menu") then
+    if Utils.equal(self.active_keys, {}, false) then
         self.idle_time = 0
         self.idle = false
     else
