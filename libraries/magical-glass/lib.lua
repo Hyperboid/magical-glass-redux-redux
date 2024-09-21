@@ -2616,118 +2616,6 @@ function lib:init()
             orig(self)
         end
     end)
-    
-    Utils.hook(DebugSystem, "registerDefaults", function(orig, self)
-        local in_game = function () return Kristal.getState() == Game end
-        local in_battle = function () return in_game() and Game.state == "BATTLE" and not Game.battle.light end
-        local in_light_battle = function () return in_game() and Game.state == "BATTLE" and Game.battle.light end
-        local in_overworld = function () return in_game() and Game.state == "OVERWORLD" end
-        local in_legend = function() return in_game() and Game.state == "LEGEND" end
-
-        -- Global
-        self:registerConfigOption("main", "Object Selection Pausing",
-                                  "Pauses the game when the object selection menu is opened.", "objectSelectionSlowdown")
-
-        self:registerOption("main", "Engine Options", "Configure various noningame options.", function ()
-            self:enterMenu("engine_options", 1)
-        end)
-
-        self:registerOption("main", "Fast Forward", function () return self:appendBool("Speed up the engine.", FAST_FORWARD) end,
-                                                    function () self:enterMenu("fast_forward", 1)
-        end)
-        self:registerOption("main", "Debug Rendering",
-                            function () return self:appendBool("Draw debug information.", DEBUG_RENDER) end,
-                            function () DEBUG_RENDER = not DEBUG_RENDER end)
-        self:registerOption("main", "Hotswap", "Swap out code from the files. Might be unstable.",
-                            function ()
-                                Hotswapper.scan(); self:refresh()
-                            end)
-        self:registerOption("main", "Reload", "Reload the mod. Hold shift to\nnot temporarily save.", function ()
-            if Kristal.getModOption("hardReset") then
-                love.event.quit("restart")
-            else
-                if Mod then
-                    Kristal.quickReload(Input.shift() and "save" or "temp")
-                else
-                    Kristal.returnToMenu()
-                end
-            end
-        end)
-
-        self:registerOption("main", "Noclip",
-                            function () return self:appendBool("Toggle interaction with solids.", NOCLIP) end,
-                            function () NOCLIP = not NOCLIP end,
-                            in_game
-        )
-
-        self:registerOption("main", "Give Item", "Give an item.", function ()
-                                self:enterMenu("give_item", 0)
-                            end, in_game)
-
-        self:registerOption("main", "Portrait Viewer", "Enter the portrait viewer menu.", function ()
-                                self:setState("FACES")
-                            end, in_game)
-
-        self:registerOption("main", "Flag Editor", "Enter the flag editor menu.", function ()
-                                self:setState("FLAGS")
-                            end, in_game)
-
-        self:registerOption("main", "Sound Test", "Enter the sound test menu.", function ()
-                                self:fadeMusicOut()
-                                self:enterMenu("sound_test", 0)
-                            end, in_game)
-
-        self:registerOption("main", "Change Party", "Enter the party change menu.", function ()
-                                self:enterMenu("change_party", 0)
-                            end, in_game)
-
-        -- World specific
-        self:registerOption("main", "Select Map", "Switch to a new map.", function ()
-                                self:enterMenu("select_map", 0)
-                            end, in_overworld)
-
-        self:registerOption("main", "Start Encounter", "Start an encounter.", function ()
-                                self:enterMenu("encounter_select", 0)
-                            end, in_overworld)
-
-        self:registerOption("main", "Enter Shop", "Enter a shop.", function ()
-                                self:enterMenu("select_shop", 0)
-                            end, in_overworld)
-
-        self:registerOption("main", "Play Cutscene", "Play a cutscene.", function ()
-                                self:enterMenu("cutscene_select", 0)
-                            end, in_overworld)
-                            
-        self:registerOption("main", "Play Legend", "Play a legend cutscene.", function ()
-                                self:enterMenu("legend_select", 0)
-                            end, function() return in_overworld() or in_legend() end)
-
-        -- Battle specific
-        self:registerOption("main", "Start Wave", "Start a wave.", function ()
-                                self:enterMenu("wave_select", 0)
-                            end, in_battle)
-
-        self:registerOption("main", "End Battle", "Instantly complete a battle.", function ()
-                                if Game.battle.state == "DEFENDING" and Game:isLight() then
-                                    Game.battle:setState("DEFENDINGEND", "NONE")
-                                end
-                                Game.battle:setState("VICTORY")
-                                self:closeMenu()
-                            end, in_battle)
-                            
-        self:registerOption("main", "Start Wave", "Start a wave.", function ()
-                                self:enterMenu("light_wave_select", 0)
-                            end, in_light_battle)
-
-        self:registerOption("main", "End Battle", "Instantly complete a battle.", function ()
-                                Game.battle.forced_victory = true
-                                if Game.battle.state == "DEFENDING" then
-                                    Game.battle.encounter:onWavesDone()
-                                end
-                                Game.battle:setState("VICTORY")
-                                self:closeMenu()
-                            end, in_light_battle)
-    end)
 end
 
 function lib:registerRandomEncounter(id, class)
@@ -2899,6 +2787,42 @@ function lib:registerDebugOptions(debug)
             debug:closeMenu()
         end)
     end
+    
+    local in_game = function () return Kristal.getState() == Game end
+    local in_dark_battle = function () return in_game() and Game.state == "BATTLE" and not Game.battle.light end
+    local in_light_battle = function () return in_game() and Game.state == "BATTLE" and Game.battle.light end
+    
+    for i = #debug.menus["main"].options, 1, -1 do
+        local option = debug.menus["main"].options[i]
+        if Utils.containsValue({"Start Wave", "End Battle"}, option.name) then
+            table.remove(debug.menus["main"].options, i)
+        end
+    end
+    
+    debug:registerOption("main", "Start Wave", "Start a wave.", function ()
+        debug:enterMenu("wave_select", 0)
+    end, in_dark_battle)
+
+    debug:registerOption("main", "End Battle", "Instantly complete a battle.", function ()
+        if Game.battle.state == "DEFENDING" and Game:isLight() then
+            Game.battle:setState("DEFENDINGEND", "NONE")
+        end
+        Game.battle:setState("VICTORY")
+        debug:closeMenu()
+    end, in_dark_battle)
+                        
+    debug:registerOption("main", "Start Wave", "Start a wave.", function ()
+        debug:enterMenu("light_wave_select", 0)
+    end, in_light_battle)
+
+    debug:registerOption("main", "End Battle", "Instantly complete a battle.", function ()
+        Game.battle.forced_victory = true
+        if Game.battle.state == "DEFENDING" then
+            Game.battle.encounter:onWavesDone()
+        end
+        Game.battle:setState("VICTORY")
+        debug:closeMenu()
+    end, in_light_battle)
     
     debug:addToExclusiveMenu("OVERWORLD", {"dark_encounter_select", "light_encounter_select", "dark_select_shop", "light_select_shop"})
     debug:addToExclusiveMenu("BATTLE", "light_wave_select")
