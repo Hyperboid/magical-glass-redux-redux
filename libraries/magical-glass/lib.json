@@ -98,7 +98,7 @@
         /////
         "gauge_style": "undertale",
         
-        ///// Gauge Gauge Smoothness
+        ///// Enemy Gauge Smoothness
         // Whether the enemy HP/MERCY bar when hit/gain mercy will be smooth like Deltatraveler or be accurate to Undertale.
         /////
         "enemy_gauge_smoothness": false,
