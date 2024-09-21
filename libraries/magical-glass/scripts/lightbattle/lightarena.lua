@@ -80,8 +80,20 @@ function LightArena:setShape(shape)
     self.area_collider = PolygonCollider(self, Utils.copy(shape, true))
 
     self.collider.colliders = {}
-    for _,v in ipairs(Utils.getPolygonEdges(self.shape)) do
-        table.insert(self.collider.colliders, LineCollider(self, v[1][1], v[1][2], v[2][1], v[2][2]))
+    for i,v in ipairs(Utils.getPolygonEdges(self.shape)) do
+        if #Utils.getPolygonEdges(self.shape) == 4 then
+            if i == 1 then
+                table.insert(self.collider.colliders, LineCollider(self, v[1][1] - 1, v[1][2] - 1, v[2][1] + 1, v[2][2] - 1))
+            elseif i == 2 then
+                table.insert(self.collider.colliders, LineCollider(self, v[1][1], v[1][2] - 1, v[2][1], v[2][2] + 1))
+            elseif i == 3 then
+                table.insert(self.collider.colliders, LineCollider(self, v[1][1] + 1, v[1][2] + 1, v[2][1] - 1, v[2][2] + 1))
+            elseif i == 4 then
+                table.insert(self.collider.colliders, LineCollider(self, v[1][1] - 1, v[1][2] + 1, v[2][1] - 1, v[2][2] - 1))
+            end
+        else
+            table.insert(self.collider.colliders, LineCollider(self, v[1][1], v[1][2], v[2][1], v[2][2]))
+        end
     end
 end
 

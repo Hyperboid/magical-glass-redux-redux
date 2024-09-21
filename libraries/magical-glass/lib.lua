@@ -2714,7 +2714,7 @@ function lib:registerDebugOptions(debug)
 
     debug:registerMenu("dark_encounter_select", "Select Dark Encounter", "search")
     for id,_ in pairs(Registry.encounters) do
-        if id ~= "_nobody" then
+        if id ~= "_nobody" or Kristal.getLibConfig("magical-glass", "debug") then
             debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
                 Game:encounter(id, true, nil, nil, false)
                 debug:closeMenu()
@@ -2724,7 +2724,7 @@ function lib:registerDebugOptions(debug)
 
     debug:registerMenu("light_encounter_select", "Select Light Encounter", "search")
     for id,_ in pairs(self.light_encounters) do
-        if id ~= "_nobody" then
+        if id ~= "_nobody" or Kristal.getLibConfig("magical-glass", "debug") then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
                 Game:encounter(id, true, nil, nil, true)
                 debug:closeMenu()
@@ -2743,7 +2743,7 @@ function lib:registerDebugOptions(debug)
 
     local waves_list = {}
     for id,_ in pairs(self.light_waves) do
-        if id ~= "_none" and id ~= "_story" then
+        if id ~= "_none" and id ~= "_story" or Kristal.getLibConfig("magical-glass", "debug") then
             table.insert(waves_list, id)
         end
     end
