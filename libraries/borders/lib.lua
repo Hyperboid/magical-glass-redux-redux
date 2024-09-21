@@ -128,9 +128,9 @@ function lib:registerDebugOptions(debug)
         "glow",
     }
     
-    -- for _,border in ipairs(borders) do
-        -- debug:registerOption("border_menu", border, "Switch to the border \"" .. border .. "\".", function() Game:setBorder(border) end)
-    -- end
+    for _,border in ipairs(borders) do
+        debug:registerOption("border_menu", border, "Switch to the border \"" .. border .. "\".", function() Game:setBorder(border) end)
+    end
 end
 
 
