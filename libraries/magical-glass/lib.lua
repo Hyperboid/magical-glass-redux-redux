@@ -1024,7 +1024,7 @@ function lib:init()
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
         sprite.color = {battler.chara:getLightAttackColor()}
         enemy.parent:addChild(sprite)
-        sprite:play((stretch^(1/2) / 4) / 1.5, false, function(this)
+        sprite:play((math.sqrt(stretch) / 4) / 1.5, false, function(this)
             local sound = enemy:getDamageSound() or "damage"
             if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
                 Assets.stopAndPlaySound(sound)
