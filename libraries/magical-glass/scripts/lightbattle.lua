@@ -540,15 +540,16 @@ function LightBattle:processAction(action)
 
         if Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode then
             enemy:onMercy(battler)
-            self:finishAction(action)
-
             self:battleText(enemy:getSpareText(battler, enemy:canSpare()))
+            self:finishAction(action)
         else
             self:toggleSoul(false)
 
             local success = false
             local tired = false
+            local active = false
             for _,act_enemy in ipairs(self:getActiveEnemies()) do
+                active = true
                 if act_enemy:canSpare() then
                     success = true
                 end
@@ -558,7 +559,7 @@ function LightBattle:processAction(action)
                 act_enemy:onMercy(battler)
             end
             
-            if Game.battle.multi_mode then
+            if Game.battle.multi_mode and active then
                 if success then
                     self:battleText("* " .. battler.chara:getNameOrYou() .. " spared the enemies.")
                 else
