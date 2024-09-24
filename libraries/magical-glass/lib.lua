@@ -1015,6 +1015,7 @@ function lib:init()
         src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
 
         local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
+        sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, sprite)
         local scale = (stretch * 2) - 0.5
         sprite:setScale(scale)
@@ -2256,13 +2257,16 @@ function lib:init()
 
         local x, y = 0, 0
         local chara = self.player and self.player.actor
+        local party
         if #args > 0 then
             if type(args[1]) == "number" then
                 x, y = args[1], args[2]
                 chara = args[3] or chara
+                party = args[4]
             elseif type(args[1]) == "string" then
                 x, y = self.map:getMarker(args[1])
                 chara = args[2] or chara
+                party = args[3]
             end
         end
 
@@ -2288,6 +2292,10 @@ function lib:init()
         self.player.layer = self.map.object_layer
         self.player:setFacing(facing)
         self:addChild(self.player)
+        
+        if party then
+            self.player.party = party
+        end
 
         self.soul = OverworldSoul(self.player:getRelativePos(self.player.actor:getSoulOffset()))
         self.soul:setColor(Game:getSoulColor())

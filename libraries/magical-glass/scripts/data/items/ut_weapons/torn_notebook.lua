@@ -65,6 +65,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/notebook_attack")
+    sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
     table.insert(enemy.dmg_sprites, sprite)
     local impact = "effects/attack/frypan_impact"
     local siner = 0

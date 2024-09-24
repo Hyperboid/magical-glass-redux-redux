@@ -83,6 +83,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         src:setPitch(self:getLightAttackPitch() or 1)
 
         local sprite = Sprite("effects/attack/hyperfist")
+        sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, sprite)
         sprite:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
@@ -144,14 +145,20 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2), (enemy.height / 2))
         press:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         press:setLayer(BATTLE_LAYERS["above_ui"] + 5)
+        press.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
+        table.insert(enemy.dmg_sprites, press)
         confirm_button:setLayer(BATTLE_LAYERS["above_ui"] + 5)
+        confirm_button.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
+        table.insert(enemy.dmg_sprites, confirm_button)
 
         local function finishAttack()
             if press then
                 press:remove()
+                Utils.removeFromTable(enemy.dmg_sprites, press)
             end
             if confirm_button then
                 confirm_button:remove()
+                Utils.removeFromTable(enemy.dmg_sprites, confirm_button)
             end
 
             if punches > 0 then
@@ -203,13 +210,16 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     if punches < self.attack_punches then
                         if press then
                             press:remove()
+                            Utils.removeFromTable(enemy.dmg_sprites, press)
                         end
                         if confirm_button then
                             confirm_button:remove()
+                            Utils.removeFromTable(enemy.dmg_sprites, confirm_button)
                         end
 
                         Assets.playSound("punchweak")
                         local small_punch = Sprite("effects/attack/regfist")
+                        small_punch.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
                         table.insert(enemy.dmg_sprites, small_punch)
                         small_punch:setOrigin(0.5)
                         small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
@@ -226,6 +236,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                         src:setPitch(self:getLightAttackPitch() or 1)
                         
                         local punch = Sprite("effects/attack/hyperfist")
+                        punch.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
                         table.insert(enemy.dmg_sprites, punch)
                         punch:setOrigin(0.5)
                         punch.layer = BATTLE_LAYERS["above_ui"] + 5

@@ -85,6 +85,7 @@ function item:onLightBoltHit(lane)
     if Game.battle:enemyExists(enemy) and lane.bolts[2] then
         Assets.playSound("punchweak")
         local small_punch = Sprite("effects/attack/hyperfist")
+        small_punch.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, small_punch)
         small_punch:setOrigin(0.5)
         small_punch:setScale(0.5)
@@ -104,6 +105,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/hyperfist")
+    sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
     table.insert(enemy.dmg_sprites, sprite)
     sprite:setOrigin(0.5)
     local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))

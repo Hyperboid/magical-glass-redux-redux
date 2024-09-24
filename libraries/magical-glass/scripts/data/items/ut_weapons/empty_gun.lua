@@ -60,6 +60,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/gunshot_stab")
+    sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
     table.insert(enemy.dmg_sprites, sprite)
     sprite:setScale(2)
     sprite:setOrigin(0.5)
@@ -99,6 +100,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                 star:setColor(1, 1, 130/255)
                 Assets.stopAndPlaySound("saber3", 0.8)
             end
+            star.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
             table.insert(enemy.dmg_sprites, star)
             table.insert(stars, star)
             enemy.parent:addChild(star)
@@ -137,6 +139,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         local ring_opacity = 1
         Game.battle.timer:every(3/30, function()
             local ring = Sprite("effects/attack/gunshot_remnant")
+            ring.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
             table.insert(enemy.dmg_sprites, ring)
             local ring_form = false
             local ring_size = 1
