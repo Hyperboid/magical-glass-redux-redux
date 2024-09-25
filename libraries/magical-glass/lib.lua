@@ -1047,20 +1047,6 @@ function lib:init()
         enemy:hurt(0, battler, nil, nil, anim, attacked)
     end)
 
-    Utils.hook(Item, "onMultiCheck", function(orig, self)
-        if type(self.check) == "string" then
-            self:onCheck()
-        elseif type(self.check) == "table" then
-            local text = {}
-            for i, check in ipairs(self:getCheck()) do
-                if i > 1 then
-                    table.insert(text, check)
-                end
-            end
-            Game.world:showText({{"* \""..self:getName().."\" - "..self:getCheck()[1]}, text})
-        end
-    end)
-
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
 
     Utils.hook(Textbox, "init", function(orig, self, x, y, width, height, default_font, default_font_size, battle_box)
@@ -1401,7 +1387,7 @@ function lib:init()
                         self:useItem(item)
                     end
                 elseif self.option_selecting == 2 then
-                    item:onMultiCheck()
+                    item:onCheck()
                 elseif self.option_selecting == 3 then
                     self:dropItem(item)
                 end
