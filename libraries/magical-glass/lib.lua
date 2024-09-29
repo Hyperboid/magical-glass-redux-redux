@@ -2893,7 +2893,7 @@ function lib:setLightBattleShakingText(v)
     end
 end
 
-function lib:setLightBattleSpareColor(value)
+function lib:setLightBattleSpareColor(value, color_name)
     if value == "pink" then
         lib.spare_color, lib.spare_color_name = lib.PALETTE["pink_spare"], "PINK"
     elseif type(value) == "table" then
@@ -2902,12 +2902,15 @@ function lib:setLightBattleSpareColor(value)
         for name,color in pairs(COLORS) do
             if value == name then
                 lib.spare_color, lib.spare_color_name = color, name:upper()
-                if value == "white" then
+                if value == "white" and color_name ~= true then
                     lib.spare_color_name = lib.spare_color_name .. "?"
                 end
                 break
             end
         end
+    end
+    if type(color_name) == "string" then
+        lib.spare_color_name = color_name:upper()
     end
 end
 
