@@ -277,8 +277,8 @@ function LightBattleUI:drawState()
             end
 
             for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
-                if enemy.mercy >= 100 and item.special == "spare" then
-                    menu_text:setColor(COLORS.yellow)
+                if enemy:canSpare() and item.special == "spare" then
+                    menu_text:setColor(MagicalGlassLib.spare_color)
                 end
             end
 

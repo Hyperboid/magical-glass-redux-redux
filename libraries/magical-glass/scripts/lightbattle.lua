@@ -563,7 +563,7 @@ function LightBattle:processAction(action)
                 if success then
                     self:battleText("* " .. battler.chara:getNameOrYou() .. " spared the enemies.")
                 else
-                    local text = "* " .. battler.chara:getNameOrYou() .. " spared the enemies.\n* But none of the enemies' names were [color:yellow]YELLOW[color:reset]..."
+                    local text = "* " .. battler.chara:getNameOrYou() .. " spared the enemies.\n* But none of the enemies' names were [color:"..Utils.rgbToHex(MagicalGlassLib.spare_color).."]"..MagicalGlassLib.spare_color_name.."[color:reset]..."
                     if tired then
                         local found_spell = nil
                         for _,party in ipairs(Game.battle.party) do

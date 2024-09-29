@@ -53,6 +53,8 @@ function lib:save(data)
     data.magical_glass = {}
     data.magical_glass["kills"] = lib.kills
     data.magical_glass["serious_mode"] = lib.serious_mode
+    data.magical_glass["spare_color"] = lib.spare_color
+    data.magical_glass["spare_color_name"] = lib.spare_color_name
     data.magical_glass["lw_save_lv"] = Game.party[1] and Game.party[1]:getLightLV() or 0
     data.magical_glass["in_light_shop"] = lib.in_light_shop
     data.magical_glass["current_battle_system"] = lib.current_battle_system
@@ -70,6 +72,8 @@ function lib:load(data, new_file)
     if new_file then
         lib.kills = 0
         lib.serious_mode = false
+        lib.spare_color = COLORS.yellow
+        lib.spare_color_name = "YELLOW"
         lib.lw_save_lv = 0
         lib.in_light_shop = false
         self:setGameOvers(0)
@@ -79,6 +83,8 @@ function lib:load(data, new_file)
         lib.kills = data.magical_glass["kills"] or 0
         self:setGameOvers(self:getGameOvers() or 0)
         lib.serious_mode = data.magical_glass["serious_mode"] or false
+        lib.spare_color = data.magical_glass["spare_color"] or COLORS.yellow
+        lib.spare_color_name = data.magical_glass["spare_color_name"] or "YELLOW"
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.in_light_shop = data.magical_glass["in_light_shop"] or false
         lib.current_battle_system = data.magical_glass["current_battle_system"] or nil
@@ -90,6 +96,7 @@ function lib:load(data, new_file)
                 party:lightLVStats()
             end
         end
+        
     end
 end
 
@@ -183,6 +190,8 @@ function lib:preInit()
         ["action_health_text"] = PALETTE["action_health_text"],
         ["battle_mercy_bg"] = PALETTE["battle_mercy_bg"],
         ["battle_mercy_text"] = PALETTE["battle_mercy_text"],
+        
+        ["pink_spare"] = {1, 167/255, 212/255, 1},
         
         ["player_health_bg"] = COLORS.red,
         ["player_health"] = COLORS.yellow,
@@ -2881,6 +2890,24 @@ function lib:setLightBattleShakingText(v)
         lib.light_battle_shake_text = 0
     elseif type(v) == "number" then
         lib.light_battle_shake_text = v
+    end
+end
+
+function lib:setLightBattleSpareColor(value)
+    if value == "pink" then
+        lib.spare_color, lib.spare_color_name = lib.PALETTE["pink_spare"], "PINK"
+    elseif type(value) == "table" then
+        lib.spare_color, lib.spare_color_name = value, "SPAREABLE"
+    else
+        for name,color in pairs(COLORS) do
+            if value == name then
+                lib.spare_color, lib.spare_color_name = color, name:upper()
+                if value == "white" then
+                    lib.spare_color_name = lib.spare_color_name .. "?"
+                end
+                break
+            end
+        end
     end
 end
 

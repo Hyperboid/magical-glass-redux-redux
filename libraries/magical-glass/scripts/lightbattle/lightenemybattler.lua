@@ -289,7 +289,7 @@ function LightEnemyBattler:getSpareText(battler, success)
     if success then
         return "* " .. battler.chara:getNameOrYou() .. " spared " .. self.name .. "."
     else
-        local text = "* " .. battler.chara:getNameOrYou() .. " spared " .. self.name .. ".\n* But its name wasn't [color:yellow]YELLOW[color:reset]..."
+        local text = "* " .. battler.chara:getNameOrYou() .. " spared " .. self.name .. ".\n* But its name wasn't [color:"..Utils.rgbToHex(MagicalGlassLib.spare_color).."]"..MagicalGlassLib.spare_color_name.."[color:reset]..."
         if self.tired then
             local found_spell = nil
             for _,party in ipairs(Game.battle.party) do
@@ -391,7 +391,7 @@ end
 function LightEnemyBattler:getNameColors()
     local result = {}
     if self:canSpare() then
-        table.insert(result, COLORS.yellow)
+        table.insert(result, MagicalGlassLib.spare_color)
     end
     if self.tired then
         table.insert(result, {0, 0.7, 1})
