@@ -191,7 +191,7 @@ function lib:preInit()
         ["battle_mercy_bg"] = PALETTE["battle_mercy_bg"],
         ["battle_mercy_text"] = PALETTE["battle_mercy_text"],
         
-        ["pink_spare"] = {1, 167/255, 212/255, 1},
+        ["pink_spare"] = {255/255, 187/255, 212/255, 1},
         
         ["player_health_bg"] = COLORS.red,
         ["player_health"] = COLORS.yellow,
