@@ -8,7 +8,7 @@ local LightDamageNumber, super = Class(Object)
 --    "msg": message sprite name ("mercy", "miss")
 --    (use "_special" for the amalgamate damage popup)
 
-function LightDamageNumber:init(type, arg, x, y, color, enemy)
+function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
     super.init(self, x, y)
 
     self:setOrigin(0.5, 0.5)
@@ -24,7 +24,7 @@ function LightDamageNumber:init(type, arg, x, y, color, enemy)
     -- Halfway between UI and the layer above it
     self.layer = BATTLE_LAYERS["damage_numbers"]
 
-    self.type = type or "msg"
+    self.type = msg_type or "msg"
 
     if self.type == "msg" then
         self.message = arg or "miss"
@@ -63,6 +63,18 @@ function LightDamageNumber:init(type, arg, x, y, color, enemy)
 
     self.timer = 0
     self.delay = 2
+    self.special_timer = 0
+    
+    self.special_messages = type(self.enemy.special_messages) == "table" and self.enemy.special_messages or {
+        "Don't worry about it.",
+        "Absorbed",
+        "I'm lovin' it.",
+        "But it didn't work.",
+        "nope",
+        "FAILURE"
+    }
+    
+    self.special_message = Utils.pick(self.special_messages)
 
     self.start_x = nil
     self.start_y = nil
@@ -134,23 +146,18 @@ function LightDamageNumber:draw()
     if self.type == "msg" and self.message == "_special" then
         self.width = 100
         if self.timer >= self.delay then
-            local messages = {
-                "Don't worry about it.",
-                "Absorbed",
-                "I'm lovin' it.",
-                "But it didn't work.",
-                "nope",
-                "FAILURE"
-            }
-            Draw.setColor(1, 0, 0, 1)
+            self.special_timer = self.special_timer + DTMULT
+            Draw.setColor(self:getDrawColor())
             love.graphics.setFont(Assets.getFont("main"))
-            love.graphics.print(Utils.pick(messages))
+            if self.special_timer >= 1 then
+                self.special_message = Utils.pick(self.special_messages)
+                self.special_timer = 0
+            end
+            love.graphics.print(self.special_message)
         end
     else
         if self.timer >= self.delay then
-            local r, g, b, a = self:getDrawColor()
-            Draw.setColor(r, g, b, a)
-    
+            Draw.setColor(self:getDrawColor())
             if self.texture then
                 Draw.draw(self.texture, 0, 0)
             elseif self.text then

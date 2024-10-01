@@ -34,6 +34,16 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     -- Whether this enemy should use bigger dust particles upon death when ut_death is enabled.
     self.large_dust = false
+    
+    -- Whether this enemy damage numbers acts like an amalgamate when hit
+    -- If a table of strings, the messages will be them instead of the default ones
+    self.special_messages = false
+    
+    -- Play the "damage" sound even when you deal 0 damage
+    self.always_play_damage_sound = false
+    
+    -- Whether the enemy will shake when it takes damage
+    self.can_shake = true
 
     -- Whether this enemy can be selected or not
     self.selectable = true
@@ -63,11 +73,6 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.tired_percentage = 0
     self.spare_percentage = 1/3
     self.low_health_percentage = 1/3
-    
-    -- Play the "damage" sound even when you deal 0 damage
-    self.always_play_damage_sound = false
-    -- Display 0 instead of miss
-    self.display_damage_on_miss = false
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
@@ -520,30 +525,33 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacke
     end
     local message
     if amount <= 0 then
-        if not self.display_damage_on_miss or not attacked then
-            message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
+        if attacked and self.special_messages then
+            message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
+            self:onHurt(amount, battler)
         else
-            message = self:lightStatusMessage("damage", 0, color or (battler and {battler.chara:getLightDamageColor()}))
+            message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
         end
-        if message and (anim and anim ~= nil) then
+        if message and anim then
             message:resetPhysics()
         end
-        if attacked then
-            self.hurt_timer = 1
-        else
+        if not attacked then
             self:onDodge(battler, attacked) -- if attacked gets called in item:onLightAttack()
         end
         
         return
     end
 
-    message = self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
-    if message and (anim and anim ~= nil) then
+    if self.special_messages then
+        message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
+    else
+        message = self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+    end
+    
+    if message and anim then
         message:resetPhysics()
     end
     self.health = self.health - amount
 
-    self.hurt_timer = 1
     self:onHurt(amount, battler)
 
     self:checkHealth(on_defeat, amount, battler)
@@ -678,6 +686,7 @@ function LightEnemyBattler:getAttackTension(amount)
 end
 
 function LightEnemyBattler:onHurt(damage, battler)
+    self.hurt_timer = 1
     self:toggleOverlay(true)
     if Game.battle.tension_bar.visible then
         Game:giveTension(Utils.round(self:getAttackTension(battler.tp_gain or 0)))
@@ -693,7 +702,9 @@ function LightEnemyBattler:onHurt(damage, battler)
         end
     end
 
-    self:getActiveSprite():shake(6, 0, 0.2, 2/30)
+    if self.can_shake then
+        self:getActiveSprite():shake(6, 0, 0.2, 2/30)
+    end
 
     Game.battle.timer:after(1/3, function()
         local sound = self:getDamageVoice()
@@ -712,7 +723,9 @@ function LightEnemyBattler:onHurt(damage, battler)
 end
 
 function LightEnemyBattler:onHurtEnd()
-    self:getActiveSprite():stopShake()
+    if self.can_shake then
+        self:getActiveSprite():stopShake()
+    end
     if self.health > 0 or not self.exit_on_defeat then
         self:toggleOverlay(false, true)
     end
