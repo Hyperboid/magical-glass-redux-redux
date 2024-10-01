@@ -83,6 +83,12 @@ function LightBattleUI:init()
         Game.battle.arena:addChild(self.enemies_text[i])
     end
     
+    self.enemies_special_text = {}
+    for i = 1, 3 do
+        self.enemies_special_text[i] = DynamicGradientText("", 90, 15 + 32 * (i-1), nil, nil, nil, {["font"] = "main_mono"})
+        Game.battle.arena:addChild(self.enemies_special_text[i])
+    end
+    
     self.xact_text = {}
     for i = 1, 3 do
         self.xact_text[i] = Text("", 284, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
@@ -145,12 +151,20 @@ function LightBattleUI:drawActionArea()
 end
 
 function LightBattleUI:drawState()
+    local state = Game.battle.state
+    
     for _,text in ipairs(self.menu_text) do
         text:setText("")
     end
     self.page_text:setText("")
     for _,text in ipairs(self.enemies_text) do
         text:setText("")
+    end
+    for _,text in ipairs(self.enemies_special_text) do
+        if state ~= "ENEMYSELECT" then
+            text:setText("")
+            text.enemy = nil
+        end
     end
     for _,text in ipairs(self.xact_text) do
         text:setText("")
@@ -159,8 +173,7 @@ function LightBattleUI:drawState()
         text:setText("")
     end
     self.flee_text:setText("")
-        
-    local state = Game.battle.state
+    
     if state == "MENUSELECT" then
     
         local page = Game.battle:isPagerMenu() and math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1 or math.ceil(Game.battle.current_menu_y / Game.battle.current_menu_rows) - 1
@@ -173,7 +186,7 @@ function LightBattleUI:drawState()
             ["ACT"] = {12, 16},
             ["ITEM"] = {0, 0},
             ["SPELL"] = {12, 16},
-            ["MERCY"] = {0, 0}, --doesn't matter lmao
+            ["MERCY"] = {0, 0},
         }
 
         for lib_id,_ in Kristal.iterLibraries() do
@@ -418,7 +431,13 @@ function LightBattleUI:drawState()
             end
         end
         
-        for index = page_offset + 1, math.min(page_offset + 3, #enemies) do
+        local remainder = #enemies % 3
+        if remainder == 0 then
+            remainder = #enemies
+        else
+            remainder = #enemies + (3 - remainder)
+        end
+        for index = page_offset + 1, math.min(page_offset + 3, remainder) do
         
             love.graphics.setFont(font_mono)
             
@@ -437,15 +456,35 @@ function LightBattleUI:drawState()
                 end
 
                 local enemy_text = self.enemies_text[index - page_offset]
+                local enemy_special_text = self.enemies_special_text[index - page_offset]
                 local xact_text = self.xact_text[index - page_offset]
 
                 if #name_colors <= 1 then
                     enemy_text:setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
-                    enemy_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. name)
+                    enemy_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. (enemy.rainbow_name and "*" or name))
                 else
                     enemy_text:setColor(1, 1, 1)
                     enemy_text:setGradientColors(name_colors)
-                    enemy_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. name)
+                    enemy_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. (enemy.rainbow_name and "*" or name))
+                end
+                
+                if enemy.rainbow_name then
+                    enemy_special_text:setColor(1, 1, 1)
+                    local colors = {}
+                    for i = 1, 5 do
+                        table.insert(colors, {Utils.hslToRgb((Kristal.getTime() / 1 + (i-1) * 0.2) % 1, 1, 0.7)})
+                    end
+                    enemy_special_text:setGradientColors(colors)
+                    if enemy_special_text.enemy ~= enemy then
+                        enemy_special_text.enemy = enemy
+                        enemy_special_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."][wave:7,15]" .. string.sub(name, 3))
+                        enemy_special_text.text_width = enemy_special_text.text_width + 24
+                        enemy_special_text.text_height = enemy_special_text.text_height + 10
+                    end
+                    enemy_special_text.state.wave_direction = enemy_special_text.state.wave_direction - (9 * DTMULT)
+                else
+                    enemy_special_text:setText("")
+                    enemy_special_text.enemy = nil
                 end
                 
                 Draw.setColor(1, 1, 1)
@@ -688,6 +727,10 @@ function LightBattleUI:drawState()
                         end
                     end
                 end
+            else
+                local enemy_special_text = self.enemies_special_text[index - page_offset]
+                enemy_special_text:setText("")
+                enemy_special_text.enemy = nil
             end
         end
         

@@ -48,6 +48,9 @@ function LightEnemyBattler:init(actor, use_overlay)
     -- Whether this enemy can be selected or not
     self.selectable = true
     
+    -- Whether this enemy display name will have a wavy-rainbow effect like Asriel Dreemurr
+    self.rainbow_name = false
+    
     -- The the enemy's damage sprites
     self.dmg_sprites = {}
     -- The offset of this enemy's damage sprites
