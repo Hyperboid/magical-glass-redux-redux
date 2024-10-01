@@ -236,6 +236,26 @@ function LightPartyBattler:addKarma(amount)
     self.karma = self.karma + amount
 end
 
+function LightPartyBattler:toggleSaveButton(value)
+    for _,action_box in ipairs(Game.battle.battle_ui.action_boxes) do
+        if action_box.battler == self then
+            for _,button in ipairs(action_box.buttons) do
+                if button.type == "act" then
+                    button.rainbow = value and true or false
+                    if value then
+                        button.tex = Assets.getTexture("ui/lightbattle/btn/save")
+                        button.hover_tex = Assets.getTexture("ui/lightbattle/btn/save_h")
+                    else
+                        button.tex = button.tex_og
+                        button.hover_tex = button.hover_tex_og
+                    end
+                    button:setColor(1, 1, 1, 1)
+                end
+            end
+        end
+    end
+end
+
 function LightPartyBattler:update()
     if self.actor then
         self.actor:onBattleUpdate(self)

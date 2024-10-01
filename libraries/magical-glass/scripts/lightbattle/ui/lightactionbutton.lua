@@ -8,6 +8,11 @@ function LightActionButton:init(type, battler, x, y)
     
     self.tex = Assets.getTexture("ui/lightbattle/btn/" .. type)
     self.hover_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_h")
+    
+    -- Used to restore the save button back to the act button
+    self.tex_og = self.tex
+    self.hover_tex_og = self.hover_tex
+    self.rainbow = false
 
     self.width = self.tex:getWidth()
     self.height = self.tex:getHeight()
@@ -235,6 +240,10 @@ function LightActionButton:draw()
         love.graphics.draw(self.hover_tex or self.tex)
     else
         love.graphics.draw(self.tex)
+    end
+    
+    if self.rainbow then
+        self:setColor(Utils.hslToRgb(Kristal.getTime() / 0.75 % 1, 1, 0.7))
     end
 
     super.draw(self)
