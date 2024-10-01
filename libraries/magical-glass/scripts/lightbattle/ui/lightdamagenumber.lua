@@ -11,7 +11,7 @@ local LightDamageNumber, super = Class(Object)
 function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
     super.init(self, x, y)
 
-    self:setOrigin(0.5, 0.5)
+    self:setOrigin(0.5)
 
     self.color = color or {1, 0, 0}
 
