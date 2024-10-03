@@ -34,7 +34,7 @@ function item:init()
     self.result_item = nil
 
     self.bonuses = {
-        attack = 4
+        attack = 5
     }
 
     self.light_bolt_speed = self.light_bolt_speed * 1.2
