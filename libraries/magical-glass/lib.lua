@@ -1564,6 +1564,33 @@ function lib:init()
         end
     end)
     
+    Utils.hook(WorldCutscene, "startLightEncounter", function(orig, self, encounter, transition, enemy, options)
+        options = options or {}
+        transition = transition ~= false
+        Game:encounter(encounter, transition, enemy, nil, true)
+        if options.on_start then
+            if transition and (type(transition) == "boolean" or transition == "TRANSITION") then
+                Game.battle.timer:script(function(wait)
+                    while Game.battle.state == "TRANSITION" do
+                        wait()
+                    end
+                    options.on_start()
+                end)
+            else
+                options.on_start()
+            end
+        end
+
+        local battle_encounter = Game.battle.encounter
+        local function waitForEncounter(self) return (Game.battle == nil), battle_encounter end
+
+        if options.wait == false then
+            return waitForEncounter, battle_encounter
+        else
+            return self:wait(waitForEncounter)
+        end
+    end)
+    
     Utils.hook(BattleCutscene, "text", function(orig, self, text, portrait, actor, options)
         orig(self, Game.battle.light and ("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text) or text, portrait, actor, options)
     end)
