@@ -26,6 +26,7 @@ local lib = MagicalGlassLib
 
 function lib:unload()
     MagicalGlassLib          = nil
+    MG_PALETTE               = nil
     TweenManager             = nil
     LightBattle              = nil
     LightPartyBattler        = nil
@@ -166,7 +167,7 @@ function lib:clearGlobalSave()
 end
 
 function lib:preInit()
-    self.PALETTE = {
+    MG_PALETTE = {
         ["tension_maxtext"] = PALETTE["tension_maxtext"],
         ["tension_back"] = PALETTE["tension_back"],
         ["tension_decrease"] = PALETTE["tension_decrease"],
@@ -2893,7 +2894,7 @@ end
 
 function lib:setLightBattleSpareColor(value, color_name)
     if value == "pink" then
-        lib.spare_color, lib.spare_color_name = lib.PALETTE["pink_spare"], "PINK"
+        lib.spare_color, lib.spare_color_name = MG_PALETTE["pink_spare"], "PINK"
     elseif type(value) == "table" then
         lib.spare_color, lib.spare_color_name = value, "SPAREABLE"
     else
