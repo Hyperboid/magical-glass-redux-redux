@@ -317,6 +317,8 @@ function LightSoul:onSquished(solid)
     solid:onSquished(self)
 end
 
+function LightSoul:onGraze(bullet, old_graze) end
+
 function LightSoul:doMovement()
     local speed = self.speed
 
@@ -392,6 +394,7 @@ function LightSoul:update()
         end
         if self.inv_timer == 0 and Game.battle:getState() == "DEFENDING" then
             if bullet.tp ~= 0 and bullet:collidesWith(self.graze_collider) then
+                local old_graze = bullet.grazed
                 if bullet.grazed then
                     Game:giveTension(bullet.tp * DT * self.graze_tp_factor)
                     if Game.battle.wave_timer < Game.battle.wave_length - (1/3) then
@@ -409,6 +412,7 @@ function LightSoul:update()
                     self.graze_sprite.timer = 1/3
                     bullet.grazed = true
                 end
+                self:onGraze(bullet, old_graze)
             end
         end
     end
