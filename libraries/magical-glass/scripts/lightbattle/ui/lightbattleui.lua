@@ -477,11 +477,10 @@ function LightBattleUI:drawState()
                     enemy_special_text:setGradientColors(colors)
                     if enemy_special_text.enemy ~= enemy then
                         enemy_special_text.enemy = enemy
-                        enemy_special_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."][wave:7,15]" .. string.sub(name, 3))
+                        enemy_special_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."][wave:7,15,11]" .. string.sub(name, 3))
                         enemy_special_text.text_width = enemy_special_text.text_width + 24
                         enemy_special_text.text_height = enemy_special_text.text_height + 10
                     end
-                    enemy_special_text.state.wave_direction = enemy_special_text.state.wave_direction - (9 * DTMULT)
                 else
                     enemy_special_text:setText("")
                     enemy_special_text.enemy = nil
