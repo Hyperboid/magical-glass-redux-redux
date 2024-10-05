@@ -1,19 +1,5 @@
 local LightTensionBar, super = Class(Object)
 
---[[
-    Some quick notes about the tension bar:
-
-    "apparent" and "current" are still off of 250.
-    This is because of how Deltarune draws the tensionbar,
-    theres no way I would be able to keep accuracy if I didn't do it.
-
-    Max tension is now 100 by default.
-    Setting it to 1000 will make Heal Prayer cost 3.2% TP (displayed as 3% in the menu.)
-    Setting it to 1 will make Heal Prayer cost 3200% TP.
-
-    Tension is no longer stored in the tensionbar, it is now stored in Game.
-]]
-
 function LightTensionBar:init(x, y, dont_animate)
     if Game.world and (not x) then
         local x2 = Game.world.camera:getRect()
@@ -52,31 +38,11 @@ function LightTensionBar:init(x, y, dont_animate)
     self.tsiner = 0
 
     self.tension_preview = 0
-    self.shown = false
 
     self.shifted = false
     self.shift_progress = 0
     self.shift_done = true
     self.shift_up = false
-end
-
-function LightTensionBar:show()
-    if not self.shown then
-        self:resetPhysics()
-        self.x = self.init_x
-        self.shown = true
-        self.animating_in = true
-        self.animation_timer = 0
-    end
-end
-
-function LightTensionBar:hide()
-    if self.shown then
-        self.animating_in = false
-        self.shown = false
-        self.physics.speed_x = -10
-        self.physics.friction = -0.4
-    end
 end
 
 function LightTensionBar:getDebugInfo()
