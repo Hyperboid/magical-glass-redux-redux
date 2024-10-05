@@ -915,7 +915,7 @@ function LightBattle:onStateChange(old,new)
 
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
-        self.battle_ui.encounter_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "[noskip][wait:1][noskip:false]" ..self.battle_ui.current_encounter_text)
+        self.battle_ui.encounter_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "[noskip][wait:1][noskip:false]" ..self.battle_ui.current_encounter_text)
 
         local had_started = self.started
         if not self.started then
@@ -1504,7 +1504,7 @@ function LightBattle:nextTurn()
         else
             self.battle_ui.current_encounter_text = self:getEncounterText()
         end
-        self.battle_ui.encounter_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.battle_ui.current_encounter_text)
+        self.battle_ui.encounter_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.battle_ui.current_encounter_text)
     end
 
     self.encounter:onTurnStart()
@@ -1643,9 +1643,9 @@ function LightBattle:shortActText(text)
     self:setState("SHORTACTTEXT")
     self.battle_ui:clearEncounterText()
 
-    self.battle_ui.short_act_text_1:setText(text[1] and "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[1] or "")
-    self.battle_ui.short_act_text_2:setText(text[2] and "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[2] or "")
-    self.battle_ui.short_act_text_3:setText(text[3] and "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[3] or "")
+    self.battle_ui.short_act_text_1:setText(text[1] and "[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[1] or "")
+    self.battle_ui.short_act_text_2:setText(text[2] and "[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[2] or "")
+    self.battle_ui.short_act_text_3:setText(text[3] and "[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[3] or "")
 end
 
 function LightBattle:checkGameOver()
@@ -1674,10 +1674,10 @@ function LightBattle:battleText(text,post_func)
     
     if type(text) == "table" then
         for key,line in ipairs(text) do
-            text[key] = "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. line
+            text[key] = "[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. line
         end
     else
-        text = "[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text
+        text = "[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text
     end
 
     self.battle_ui.encounter_text:setText(text, function()
@@ -1699,7 +1699,7 @@ function LightBattle:battleText(text,post_func)
 end
 
 function LightBattle:infoText(text)
-    self.battle_ui.encounter_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text or "")
+    self.battle_ui.encounter_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text or "")
 end
 
 function LightBattle:hasCutscene()
@@ -2709,7 +2709,7 @@ function LightBattle:nextParty()
     else
         if self:getState() ~= "ACTIONSELECT" then
             self:setState("ACTIONSELECT")
-            self.battle_ui.encounter_text:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.battle_ui.current_encounter_text)
+            self.battle_ui.encounter_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.battle_ui.current_encounter_text)
         else
             local party = self.party[self.current_selecting]
             party.chara:onActionSelect(party, false)

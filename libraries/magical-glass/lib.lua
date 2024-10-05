@@ -100,18 +100,6 @@ function lib:load(data, new_file)
     end
 end
 
-function lib:registerTextCommands(self)
-    self:registerCommand("ut_shake", function(self, node, dry)
-        local str = node.arguments[1]
-        if str == "true" then
-            str = true
-        elseif str == "false" then
-            str = false
-        end
-        self.state.ut_shake = str ~= false
-    end)
-end
-
 -- GLOBAL SAVE
 
 local read = love.filesystem.read
@@ -315,11 +303,11 @@ function lib:init()
             love.graphics.setFont(self.font)
             if self.choices[1] then
                 Game.battle.battle_ui.choice_option[1]:setPosition(48, 30 - (select(2, string.gsub(self.choices[1], "\n", "")) >= 2 and love.graphics.getFont():getHeight() or 0))
-                Game.battle.battle_ui.choice_option[1]:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.choices[1])
+                Game.battle.battle_ui.choice_option[1]:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.choices[1])
             end
             if self.choices[2] then
                 Game.battle.battle_ui.choice_option[2]:setPosition(304, 30 - (select(2, string.gsub(self.choices[2], "\n", "")) >= 2 and love.graphics.getFont():getHeight() or 0))
-                Game.battle.battle_ui.choice_option[2]:setText("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.choices[2])
+                Game.battle.battle_ui.choice_option[2]:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.choices[2])
             end
 
             local soul_positions = {
@@ -351,25 +339,6 @@ function lib:init()
                 end
             end
         end
-    end)
-    
-    Utils.hook(Text, "drawChar", function(orig, self, node, state, use_color)
-        if state.shake > 0 then
-            if self.timer - state.last_shake >= (1 * DTMULT) then
-                state.last_shake = self.timer
-                if state.ut_shake then
-                    state.offset_x = Utils.random(state.shake) - state.shake / 2
-                    state.offset_y = Utils.random(state.shake) - state.shake / 2
-                else
-                    state.offset_x = Utils.round(Utils.random(-state.shake, state.shake))
-                    state.offset_y = Utils.round(Utils.random(-state.shake, state.shake))
-                end
-            end
-        end
-        
-        local state_mod = Utils.copy(state, true)
-        state_mod.shake = 0
-        orig(self, node, state_mod, use_color)
     end)
     
     Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
@@ -1594,7 +1563,7 @@ function lib:init()
     end)
     
     Utils.hook(BattleCutscene, "text", function(orig, self, text, portrait, actor, options)
-        orig(self, Game.battle.light and ("[ut_shake][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text) or text, portrait, actor, options)
+        orig(self, Game.battle.light and ("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text) or text, portrait, actor, options)
     end)
 
     if not Mod.libs["widescreen"] then
@@ -2914,7 +2883,7 @@ end
 
 function lib:setLightBattleShakingText(v)
     if v == true then
-        lib.light_battle_shake_text = 1
+        lib.light_battle_shake_text = 0.501
     elseif v == false then
         lib.light_battle_shake_text = 0
     elseif type(v) == "number" then
