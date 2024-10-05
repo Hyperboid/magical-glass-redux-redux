@@ -366,8 +366,10 @@ function lib:init()
                 end
             end
         end
-
-        orig(self, node, state, use_color)
+        
+        local state_mod = Utils.copy(state, true)
+        state_mod.shake = 0
+        orig(self, node, state_mod, use_color)
     end)
     
     Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
