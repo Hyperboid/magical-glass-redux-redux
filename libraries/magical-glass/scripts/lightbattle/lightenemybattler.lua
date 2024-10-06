@@ -133,6 +133,12 @@ function LightEnemyBattler:toggleOverlay(overlay, reset)
     end
 end
 
+function LightEnemyBattler:getPart(part, parent)
+    if self.actor.use_light_battler_sprite then
+        return self.sprite:getPart(part, parent)
+    end
+end
+
 function LightEnemyBattler:getGaugeSize()
     if type(self.gauge_size) == "number" then
         return {self.gauge_size, 13}

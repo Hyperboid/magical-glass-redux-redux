@@ -86,8 +86,8 @@ function LightEnemySprite:resetSprite(ignore_actor_callback)
     self.actor:onResetSprite(self)
 end
 
-function LightEnemySprite:getPart(part_id)
-    return self.parts[part_id]
+function LightEnemySprite:getPart(part_id, parent)
+    return parent and self.parts[part_id] or self.parts[part_id] and self.parts[part_id].sprite
 end
 
 function LightEnemySprite:update()
