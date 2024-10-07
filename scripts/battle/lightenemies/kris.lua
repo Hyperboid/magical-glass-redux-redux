@@ -47,7 +47,7 @@ function Dummy:update()
     local head = self:getSpritePart("head")
     if self.bubble and self.bubble:isTyping() then
         if not head.playing then
-            head:play(0.25, true)
+            head:play(4/30, true)
         end
     elseif head.playing then
         head:stop()
