@@ -158,7 +158,10 @@ function LightShop:postInit()
         self:onEmote(node.arguments[1])
     end
 
-    self.dialogue_text = DialogueText(nil, 40, 260, 372, 226)
+    self.dialogue_text = DialogueText(nil, 40, 260, 372, 226, {
+        font = self:getFont(),
+        indent_string = self:getIndentString()
+    })
 
     self.dialogue_text:registerCommand("emote", emoteCommand)
 
@@ -166,7 +169,10 @@ function LightShop:postInit()
     self:addChild(self.dialogue_text)
     self:setDialogueText(self.encounter_text)
 
-    self.right_text = DialogueText("", 460, 260, 176, 206)
+    self.right_text = DialogueText("", 460, 260, 176, 206, {
+        font = self:getFont(),
+        indent_string = self:getIndentString()
+    })
 
     self.right_text:registerCommand("emote", emoteCommand)
 
@@ -195,7 +201,8 @@ function LightShop:onRemove(parent)
 end
 
 function LightShop:getVoice()
-    return self.voice
+    local actor = self.shopkeeper:getActor()
+    return self.voice or (actor and actor:getVoice())
 end
 
 function LightShop:getVoicedText(text)
@@ -212,6 +219,24 @@ function LightShop:getVoicedText(text)
     else
         return "[voice:"..voice.."]"..text
     end
+end
+
+function LightShop:getFont()
+    local actor = self.shopkeeper:getActor()
+    if actor then
+        return actor:getFont()
+    end
+
+    return nil
+end
+
+function LightShop:getIndentString()
+    local actor = self.shopkeeper:getActor()
+    if actor then
+        return actor:getIndentString()
+    end
+
+    return nil
 end
 
 function LightShop:setDialogueText(text, no_voice)
