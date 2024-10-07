@@ -28,7 +28,7 @@ function Dummy:init()
 
     -- Dialogue randomly displayed in the enemy's speech bubble
     self.dialogue = {
-        "[wave:3][speed:0.5]....."
+        "[wave:3][speed:0.5]This is a test! Holy hell!"
     }
 
     -- Check text (automatically has "ENEMY NAME - " at the start)
@@ -41,6 +41,19 @@ function Dummy:init()
     -- Text displayed at the bottom of the screen when the enemy has low health
     self.low_health_text = "* Low HP."
 end
+
+function Dummy:update()
+    super:update(self)
+    local head = self:getSpritePart("head")
+    if self.bubble and self.bubble:isTyping() then
+        if not head.playing then
+            head:play(0.25, true)
+        end
+    elseif head.playing then
+        head:stop()
+    end
+end
+        
 
 function Dummy:onAct(battler, name)
 
