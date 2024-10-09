@@ -42,6 +42,9 @@ function item:init()
     self.world_heal_amounts = {}
     -- Amount this item heals for specific characters in battle (optional)
     self.battle_heal_amounts = {}
+    
+    -- Whether this equipment item can convert on light change
+    self.equip_can_convert = true
 end
 
 function item:getFleeBonus() return 100 end

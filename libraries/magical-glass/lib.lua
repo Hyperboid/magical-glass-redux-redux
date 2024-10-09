@@ -79,6 +79,8 @@ function lib:load(data, new_file)
         lib.in_light_shop = false
         self:setGameOvers(0)
         lib.light_battle_shake_text = 0
+        
+        lib.initialize_armor_conversion = true
     else
         data.magical_glass = data.magical_glass or {}
         lib.kills = data.magical_glass["kills"] or 0
@@ -780,11 +782,13 @@ function lib:init()
         self.shop_magic = false
         -- Doesn't display stats for weapons and armors in light shops
         self.shop_dont_show_change = false
-    
+        
+        -- Whether this equipment item can convert on light change
+        self.equip_can_convert = nil
     end)
     
     Utils.hook(Item, "canEquip", function(orig, self, character, slot_type, slot_index)
-        if Game:isLight() then
+        if self.light then
             return self.can_equip[character.id] ~= false
         else
             return orig(self, character, slot_type, slot_index)
@@ -1770,6 +1774,19 @@ function lib:init()
         self.xact_color_lw = nil
 
         self.lw_stats["magic"] = 0
+        
+        if Kristal.getLibConfig("magical-glass", "equipment_conversion") then
+            Game.stage.timer:after(1/30, function()
+                if not Game:isLight() and MagicalGlassLib.initialize_armor_conversion then
+                    for i = 1, 2 do
+                        if self.equipped.armor[i] and self.equipped.armor[i]:convertToLightEquip(self) == self.lw_armor_default then
+                            self:setFlag("converted_light_armor", false)
+                            break
+                        end
+                    end
+                end
+            end)
+        end
     end)
 
     Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
@@ -1800,10 +1817,51 @@ function lib:init()
         end
         
         if self:getFlag("light_weapon") == nil then
-            self.equipped.weapon = Registry.createItem(self.lw_weapon_default)
+            self.equipped.weapon = self.lw_weapon_default and Registry.createItem(self.lw_weapon_default) or nil
         end
         if self:getFlag("light_armor") == nil then
-            self.equipped.armor[1] = Registry.createItem(self.lw_armor_default)
+            self.equipped.armor[1] = self.lw_armor_default and Registry.createItem(self.lw_armor_default) or nil
+        end
+        
+        if Kristal.getLibConfig("magical-glass", "equipment_conversion") then
+            if last_weapon then
+                local result = Registry.createItem(last_weapon):convertToLightEquip(self)
+                if result then
+                    if type(result) == "string" then
+                        result = Registry.createItem(result)
+                    end
+                    if isClass(result) and self:canEquip(result) and self.equipped.weapon and self.equipped.weapon.dark_item and self.equipped.weapon.equip_can_convert ~= false then
+                        self.equipped.weapon = result
+                    end
+                end
+            end
+            local converted = false
+            for i = 1, 2 do
+                if last_armors[i] then
+                    local result = Registry.createItem(last_armors[i]):convertToLightEquip(self)
+                    if result then
+                        if type(result) == "string" then
+                            result = Registry.createItem(result)
+                        end
+                        if isClass(result) and self:canEquip(result) and (self.equipped.armor[1] and (self.equipped.armor[1].equip_can_convert or self.equipped.armor[1].id == result.id) or not self.equipped.armor[1]) then
+                            if self:getFlag("converted_light_armor") == nil then
+                                if self.equipped.armor[1] and self.equipped.armor[1].id == result.id then
+                                    self:setFlag("converted_light_armor", false)
+                                else
+                                    self:setFlag("converted_light_armor", self.equipped.armor[1] and self.equipped.armor[1].id or false)
+                                end
+                            end
+                            converted = true
+                            self.equipped.armor[1] = result
+                            break
+                        end
+                    end
+                end
+            end
+            if not converted and self:getFlag("converted_light_armor") ~= nil then
+                self.equipped.armor[1] = self:getFlag("converted_light_armor") and Registry.createItem(self:getFlag("converted_light_armor")) or nil
+                self:setFlag("converted_light_armor", nil)
+            end
         end
         
         self:setFlag("dark_weapon", last_weapon)
@@ -1822,6 +1880,57 @@ function lib:init()
         for i = 1, 2 do
             if self:getFlag("dark_armors") and self:getFlag("dark_armors")[i] then
                 self.equipped.armor[i] = Registry.createItem(self:getFlag("dark_armors")[i])
+            end
+        end
+        
+        if Kristal.getLibConfig("magical-glass", "equipment_conversion") then
+            if last_weapon then
+                local result = Registry.createItem(last_weapon).dark_item
+                if result then
+                    if type(result) == "string" then
+                        result = Registry.createItem(result)
+                    end
+                    if isClass(result) and self:canEquip(result) and self.equipped.weapon and self.equipped.weapon:convertToLightEquip(self) and self.equipped.weapon.equip_can_convert ~= false then
+                        self.equipped.weapon = result
+                    end
+                end
+            end
+            if last_armor then
+                local result = Registry.createItem(last_armor).dark_item
+                if result then
+                    if type(result) == "string" then
+                        result = Registry.createItem(result)
+                    end
+                    if isClass(result) and self:canEquip(result) then
+                        if self:getFlag("converted_light_armor") == nil then
+                            self:setFlag("converted_light_armor", false)
+                        end
+                        local already_equipped = false
+                        for i = 1, 2 do
+                            if self.equipped.armor[i] and (self.equipped.armor[i].id == result.id or self.equipped.armor[i].equip_can_convert == false) then
+                                already_equipped = true
+                            end
+                        end
+                        if not already_equipped then
+                            for i = 1, 2 do
+                                if self.equipped.armor[i] then
+                                    Game.inventory:addItem(self.equipped.armor[i].id)
+                                end
+                            end
+                            self.equipped.armor[1] = result
+                            self.equipped.armor[2] = nil
+                        end
+                    end
+                else
+                    for i = 1, 2 do
+                        if self:getFlag("converted_light_armor") ~= nil and self.equipped.armor[i] and self.equipped.armor[i]:convertToLightEquip(self) then
+                            self.equipped.armor[i] = nil
+                            if self:getFlag("converted_light_armor") then Game.inventory:addItem(self:getFlag("converted_light_armor")) end
+                            self:setFlag("converted_light_armor", nil)
+                            break
+                        end
+                    end
+                end
             end
         end
         

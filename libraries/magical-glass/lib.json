@@ -7,7 +7,7 @@
         "Bor",                          // contributor
         "Just Another Random User",     // contributor
     ],
-    "version": "v2.6.10",
+    "version": "v2.7.0",
     "engineVer": "v0.9.0-dev",
 
     "config": {
@@ -62,13 +62,20 @@
         // Limits the gauge to the number specified.
         //
         /////
-        "hp_gauge_length_cap": true,
+        "hp_gauge_length_cap": false,
 
         ///// Key Item Conversion
-        // Converts the Dark World inventory to the Ball of Junk and Shadow Crystals to Glass
-        // when traveling to the Light World.
+        // Like in Deltarune, converts the Dark World inventory to the Ball of Junk and items like the Shadow Crystal to Glass 
+        // when traveling to the Light World or back.
         /////
         "key_item_conversion": true,
+        
+        ///// Equipment Conversion
+        // Like in Deltarune, converts items like the Spookysword to the Halloween Pencil and the Silver Watch to the Wristwatch
+        // when traveling to the Light World or back.
+        // This works somewhat differently than normal, because almost everyone can equip any light item, so the mechanic was adjusted.
+        /////
+        "equipment_conversion": true,
 
         ///// UNDERTALE Menu Display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
