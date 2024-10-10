@@ -12,7 +12,7 @@ function item:init()
     self.light = true
 
     -- Default shop sell price
-    self.sell_price = 150
+    self.sell_price = 10
     -- Whether the item can be sold
     self.can_sell = true
 
@@ -47,10 +47,9 @@ function item:init()
     self.equip_can_convert = true
 end
 
-function item:getFleeBonus() return 100 end
+-- function item:getFleeBonus() return 100 end
 
 function item:onWorldUse(target)
-    -- gross
     local amount = self:getWorldHealAmount(target.id)
     for _,member in ipairs(Game.party) do
         for _,equip in ipairs(member:getEquipment()) do

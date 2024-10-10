@@ -1780,7 +1780,7 @@ function lib:init()
                 if not Game:isLight() and MagicalGlassLib.initialize_armor_conversion then
                     for i = 1, 2 do
                         if self.equipped.armor[i] and self.equipped.armor[i]:convertToLightEquip(self) == self.lw_armor_default then
-                            self:setFlag("converted_light_armor", false)
+                            self:setFlag("converted_light_armor", "light/bandage")
                             break
                         end
                     end
@@ -1846,9 +1846,9 @@ function lib:init()
                         if isClass(result) and self:canEquip(result) and (self.equipped.armor[1] and (self.equipped.armor[1].equip_can_convert or self.equipped.armor[1].id == result.id) or not self.equipped.armor[1]) then
                             if self:getFlag("converted_light_armor") == nil then
                                 if self.equipped.armor[1] and self.equipped.armor[1].id == result.id then
-                                    self:setFlag("converted_light_armor", false)
+                                    self:setFlag("converted_light_armor", "light/bandage")
                                 else
-                                    self:setFlag("converted_light_armor", self.equipped.armor[1] and self.equipped.armor[1].id or false)
+                                    self:setFlag("converted_light_armor", self.equipped.armor[1] and self.equipped.armor[1].id or "light/bandage")
                                 end
                             end
                             converted = true
@@ -1903,7 +1903,7 @@ function lib:init()
                     end
                     if isClass(result) and self:canEquip(result) then
                         if self:getFlag("converted_light_armor") == nil then
-                            self:setFlag("converted_light_armor", false)
+                            self:setFlag("converted_light_armor", "light/bandage")
                         end
                         local already_equipped = false
                         for i = 1, 2 do
@@ -1925,7 +1925,6 @@ function lib:init()
                     for i = 1, 2 do
                         if self:getFlag("converted_light_armor") ~= nil and self.equipped.armor[i] and self.equipped.armor[i]:convertToLightEquip(self) then
                             self.equipped.armor[i] = nil
-                            if self:getFlag("converted_light_armor") then Game.inventory:addItem(self:getFlag("converted_light_armor")) end
                             self:setFlag("converted_light_armor", nil)
                             break
                         end

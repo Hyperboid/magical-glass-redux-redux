@@ -6,7 +6,7 @@ function item:init()
     -- Display name
     self.show_name = "HallowPencil"
 
-    self.price = 50
+    self.price = 6
 end
 
 return item

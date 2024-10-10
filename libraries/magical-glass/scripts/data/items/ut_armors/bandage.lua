@@ -50,7 +50,6 @@ end
 function item:getFleeBonus() return 100 end
 
 function item:onWorldUse(target)
-    -- gross
     local amount = self:getWorldHealAmount(target.id)
     for _,member in ipairs(Game.party) do
         for _,equip in ipairs(member:getEquipment()) do
