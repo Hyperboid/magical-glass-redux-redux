@@ -47,6 +47,9 @@ function HelpWindow:update()
                 if Game.battle.tension_bar then
                     TweenManager.tween(Game.battle.tension_bar, {y = 26}, 6, "outCubic")
                 end
+				if Mod.libs["enemy_tension_bar"] and Game.battle.enemy_tension_bar then
+					TweenManager.tween(Game.battle.enemy_tension_bar, {y = 26}, 6, "outCubic")
+				end
             end
         else
             if self.showing then
@@ -55,6 +58,9 @@ function HelpWindow:update()
                 if Game.battle.tension_bar then
                     TweenManager.tween(Game.battle.tension_bar, {y = 53}, 6, "outCubic")
                 end
+				if Mod.libs["enemy_tension_bar"] and Game.battle.enemy_tension_bar then
+					TweenManager.tween(Game.battle.enemy_tension_bar, {y = 53}, 6, "outCubic")
+				end
             end
         end
     else
@@ -64,6 +70,9 @@ function HelpWindow:update()
             if Game.battle.tension_bar then
                 TweenManager.tween(Game.battle.tension_bar, {y = 53}, 6, "outCubic")
             end
+			if Mod.libs["enemy_tension_bar"] and Game.battle.enemy_tension_bar then
+				TweenManager.tween(Game.battle.enemy_tension_bar, {y = 53}, 6, "outCubic")
+			end
         end
     end
     
