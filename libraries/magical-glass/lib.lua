@@ -1140,14 +1140,45 @@ function lib:init()
             self:addChild(reaction)
             table.insert(self.reaction_instances, reaction)
         end, {instant = false})
+        
+        self.minifaces = {}
+        self.miniface_path = "face/mini"
+
+        self.text:registerCommand("miniface", function(text, node, dry)
+            local ox = tonumber(node.arguments[2]) or 0
+            local oy = tonumber(node.arguments[3]) or 0
+            if self.actor then
+                local actor_ox, actor_oy = self.actor:getMinifaceOffset()
+                ox = actor_ox
+                oy = actor_oy
+            end
+            local x_scale = tonumber(node.arguments[4]) or 2
+            local y_scale = tonumber(node.arguments[5]) or 2
+            local speed = tonumber(node.arguments[6]) or (4/30)
+            local y = self.text.state.current_y
+            if (not dry) then
+                local miniface = Sprite(nil, 0 + ox, y + oy)
+                miniface:setScale(x_scale, y_scale)
+                miniface:setSprite(self.miniface_path.. "/" ..node.arguments[1])
+                miniface:play(speed)
+                if #self.minifaces > 0 then
+                    local last_face = self.minifaces[#self.minifaces]
+                    last_face:stop()
+                end
+                self:addChild(miniface)
+                table.insert(self.minifaces, miniface)
+                if self.actor and self.actor:getMiniface() then
+                    self.miniface_path = self.actor:getMiniface()
+                else
+                    self.miniface_path = "face/mini"
+                end
+                self.text.state.indent_mode = true
+                self.text.state.indent_length = miniface.width * miniface.scale_x + 15
+                self.text.state.current_x = self.text.state.indent_length + self.text.state.spacing
+            end
+        end)
     
         self.advance_callback = nil
-    end)
-
-    Utils.hook(Textbox, "advance", function(orig, self)
-        self.timer:after(self.wait, function()
-            self.text:advance()
-        end)
     end)
 
     Utils.hook(DialogueText, "init", function(orig, self, text, x, y, w, h, options)

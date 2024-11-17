@@ -1077,8 +1077,9 @@ function LightBattle:onStateChange(old,new)
                     if dialogue then
                         any_dialogue = true
                         local bubble = enemy:spawnSpeechBubble(dialogue, {no_sound_overlap = true})
-                        bubble:setSkippable(false)
-                        bubble:setAdvance(false)
+                        if Kristal.getLibConfig("magical-glass", "undertale_text_skipping") then
+                            bubble:setSkippable(false)
+                        end
                         table.insert(self.enemy_dialogue, bubble)
                     end
                 end

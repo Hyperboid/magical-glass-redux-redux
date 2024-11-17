@@ -164,6 +164,7 @@ function LightBattleUI:drawState()
         if state ~= "ENEMYSELECT" then
             text:setText("")
             text.enemy = nil
+            text.enemy_name = nil
         end
     end
     for _,text in ipairs(self.xact_text) do
@@ -475,8 +476,9 @@ function LightBattleUI:drawState()
                         table.insert(colors, {Utils.hslToRgb((Kristal.getTime() / 1 + (i-1) * 0.2) % 1, 1, 0.7)})
                     end
                     enemy_special_text:setGradientColors(colors)
-                    if enemy_special_text.enemy ~= enemy then
+                    if enemy_special_text.enemy ~= enemy or enemy_special_text.enemy_name ~= enemy.name .. (enemy.index and " " .. enemy.index or "") then
                         enemy_special_text.enemy = enemy
+                        enemy_special_text.enemy_name = enemy.name .. (enemy.index and " " .. enemy.index or "")
                         enemy_special_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."][wave:7,15,11]" .. string.sub(name, 3))
                         enemy_special_text.text_width = enemy_special_text.text_width + 24
                         enemy_special_text.text_height = enemy_special_text.text_height + 10
@@ -484,6 +486,7 @@ function LightBattleUI:drawState()
                 else
                     enemy_special_text:setText("")
                     enemy_special_text.enemy = nil
+                    enemy_special_text.enemy_name = nil
                 end
                 
                 Draw.setColor(1, 1, 1)
@@ -730,6 +733,7 @@ function LightBattleUI:drawState()
                 local enemy_special_text = self.enemies_special_text[index - page_offset]
                 enemy_special_text:setText("")
                 enemy_special_text.enemy = nil
+                enemy_special_text.enemy_name = nil
             end
         end
         
