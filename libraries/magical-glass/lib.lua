@@ -61,6 +61,8 @@ function lib:save(data)
     data.magical_glass["current_battle_system"] = lib.current_battle_system
     data.magical_glass["random_encounter"] = lib.random_encounter
     data.magical_glass["light_battle_shake_text"] = lib.light_battle_shake_text
+    data.magical_glass["rearrange_cell_calls"] = lib.rearrange_cell_calls
+    data.magical_glass["lightmenu_calls"] = Game.world.calls
 end
 
 function lib:load(data, new_file)
@@ -79,6 +81,7 @@ function lib:load(data, new_file)
         lib.in_light_shop = false
         self:setGameOvers(0)
         lib.light_battle_shake_text = 0
+        lib.rearrange_cell_calls = false
         
         lib.initialize_armor_conversion = true
     else
@@ -93,6 +96,12 @@ function lib:load(data, new_file)
         lib.current_battle_system = data.magical_glass["current_battle_system"] or nil
         lib.random_encounter = data.magical_glass["random_encounter"] or lib.random_encounter or nil
         lib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
+        lib.rearrange_cell_calls = data.magical_glass["rearrange_cell_calls"] or false
+        if lib.rearrange_cell_calls and data.magical_glass["lightmenu_calls"] then
+            Game.world.timer:after(1/30, function()
+                Game.world.calls = data.magical_glass["lightmenu_calls"]
+            end)
+        end
         
         for _,party in pairs(Game.party_data) do -- Fixes a crash with existing saves
             if not party.lw_stats["magic"] then
@@ -240,6 +249,13 @@ function lib:init()
 
     self.encounters_enabled = false
     self.steps_until_encounter = nil
+    
+    Utils.hook(LightCellMenu, "runCall", function(orig, self, call)
+        orig(self, call)
+        if lib.rearrange_cell_calls then
+            table.insert(Game.world.calls, 1, Utils.removeFromTable(Game.world.calls, call))
+        end
+    end)
     
     Utils.hook(Choicebox, "clearChoices", function(orig, self)
         orig(self)
@@ -3050,6 +3066,10 @@ function lib:setLightBattleSpareColor(value, color_name)
     if type(color_name) == "string" then
         lib.spare_color_name = color_name:upper()
     end
+end
+
+function lib:setCellCallsRearrangement(v)
+    lib.rearrange_cell_calls = v
 end
 
 function lib:setSeriousMode(v)
