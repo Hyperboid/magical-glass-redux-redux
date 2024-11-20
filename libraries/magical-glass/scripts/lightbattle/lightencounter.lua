@@ -1,6 +1,11 @@
 local LightEncounter = Class()
 
 function LightEncounter:init()
+    -- Sets the encounter ID incase it was started without an encounter file
+    if not self.id then
+        self.id = "_local"
+    end
+
     -- Text that will be displayed when the battle starts
     self.text = "* A skirmish breaks out!"
 
@@ -346,7 +351,7 @@ function LightEncounter:addEnemy(enemy, x, y, ...)
     end
 
     local enemies = self.queued_enemy_spawns
-    local enemies_index = enemies
+    local enemies_index = Utils.copy(self.queued_enemy_spawns, true)
     if Game.battle and Game.state == "BATTLE" then
         enemies = Game.battle.enemies
         enemies_index = Game.battle.enemies_index
