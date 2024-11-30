@@ -14,7 +14,7 @@ function LightBattleUI:init()
     self.draw_percents = Kristal.getLibConfig("magical-glass", "enemy_bar_percentages")
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 90, SCREEN_HEIGHT - 53, "main_mono", nil, true)
-    self.encounter_text.text.default_sound = "ut"
+    self.encounter_text.text.default_sound = "ut_battle"
     self.encounter_text.text.hold_skip = false
     self.encounter_text.text.line_offset = 5
     self.encounter_text.text.style = "none"
