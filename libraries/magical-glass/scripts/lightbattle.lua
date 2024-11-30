@@ -1644,9 +1644,9 @@ function LightBattle:shortActText(text)
     self:setState("SHORTACTTEXT")
     self.battle_ui:clearEncounterText()
 
-    self.battle_ui.short_act_text_1:setText(text[1] and "[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[1] or "")
-    self.battle_ui.short_act_text_2:setText(text[2] and "[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[2] or "")
-    self.battle_ui.short_act_text_3:setText(text[3] and "[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[3] or "")
+    self.battle_ui.short_act_text_1:setText(text[1] and "[voice:battle][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[1] or "")
+    self.battle_ui.short_act_text_2:setText(text[2] and "[voice:battle][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[2] or "")
+    self.battle_ui.short_act_text_3:setText(text[3] and "[voice:battle][shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text[3] or "")
 end
 
 function LightBattle:checkGameOver()
