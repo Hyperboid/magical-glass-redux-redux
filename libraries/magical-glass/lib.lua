@@ -2022,7 +2022,7 @@ function lib:init()
         end
     end)
 
-    Utils.hook(PartyMember, "onLightLevelUp", function(orig, self, playsound)
+    Utils.hook(PartyMember, "onLightLevelUp", function(orig, self)
         if self:getLightLV() < #self.lw_exp_needed or self:getLightEXPNeeded(#self.lw_exp_needed) >= self.lw_exp then
             local old_lv = self:getLightLV()
 
