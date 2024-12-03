@@ -5,7 +5,11 @@ function LightAttackBox:init(x, y)
 
     self.arena = Game.battle.arena
 
-    self.target_sprite = Game.battle.multi_mode and Sprite("ui/lightbattle/dumbtarget_multi") or Sprite("ui/lightbattle/dumbtarget")
+    local is_dark = ""
+    if not Game:isLight() then
+        is_dark = "_dark"
+    end
+    self.target_sprite = Game.battle.multi_mode and Sprite("ui/lightbattle/dumbtarget_multi"..is_dark) or Sprite("ui/lightbattle/dumbtarget"..is_dark)
     self.target_sprite:setOrigin(0.5, 0.5)
     self.target_sprite:setPosition(self.arena:getRelativePos(self.arena.width / 2, self.arena.height / 2))
     self.target_sprite.layer = BATTLE_LAYERS["above_ui"]

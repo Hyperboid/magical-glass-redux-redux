@@ -250,6 +250,13 @@ function lib:init()
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
+    Utils.hook(Arena, "init", function(orig, self, x, y, shape)
+        orig(self, x, y, shape)
+        if Game:isLight() then
+            self.color = {1, 1, 1}
+        end
+    end)
+    
     Utils.hook(LightCellMenu, "runCall", function(orig, self, call)
         orig(self, call)
         if lib.rearrange_cell_calls then

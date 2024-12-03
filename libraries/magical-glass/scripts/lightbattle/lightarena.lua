@@ -8,7 +8,11 @@ function LightArena:init(x, y, shape)
     self.x = math.floor(self.x)
     self.y = math.floor(self.y)
 
-    self.color = {1, 1, 1}
+    if Game:isLight() then
+        self.color = {1, 1, 1}
+    else
+        self.color = {0, 0.75, 0}
+    end
     self.bg_color = {0, 0, 0}
 
     self.home_x = self.x
@@ -85,7 +89,7 @@ function LightArena:setShape(shape)
             if i == 1 then
                 table.insert(self.collider.colliders, LineCollider(self, v[1][1] - 1, v[1][2] - 1, v[2][1] + 1, v[2][2] - 1))
             elseif i == 2 then
-                table.insert(self.collider.colliders, LineCollider(self, v[1][1], v[1][2] - 1, v[2][1], v[2][2] + 1))
+                table.insert(self.collider.colliders, LineCollider(self, v[1][1] + 1, v[1][2] - 1, v[2][1] + 1, v[2][2] + 1))
             elseif i == 3 then
                 table.insert(self.collider.colliders, LineCollider(self, v[1][1] + 1, v[1][2] + 1, v[2][1] - 1, v[2][2] + 1))
             elseif i == 4 then
