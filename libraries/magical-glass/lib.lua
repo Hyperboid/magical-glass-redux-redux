@@ -105,7 +105,7 @@ function lib:load(data, new_file)
         
         for _,party in pairs(Game.party_data) do -- Fixes a crash with existing saves
             if not party.lw_stats["magic"] then
-                party:lightLVStats()
+                party:reloadLightStats()
             end
         end
         
@@ -1790,6 +1790,13 @@ function lib:init()
         self.light_can_defend = nil
         
         self.undertale_movement = false
+        
+        self.lw_stats_bonus = {
+            health = 0,
+            attack = 0,
+            defense = 0,
+            magic = 0
+        }
 
         -- Light Stat Menu stuff
         self.lw_stat_text = nil
@@ -2068,7 +2075,15 @@ function lib:init()
                 self.lw_exp = 0
             end
         end
+        
         self:lightLVStats()
+        for stat,amount in pairs(self.lw_stats_bonus) do
+            self.lw_stats[stat] = self.lw_stats[stat] + amount
+        end
+    end)
+    
+    Utils.hook(PartyMember, "reloadLightStats", function(orig, self)
+        self:setLightLV(self:getLightLV(), false)
     end)
     
     Utils.hook(PartyMember, "lightLVStats", function(orig, self)
@@ -2078,6 +2093,20 @@ function lib:init()
             defense = 9 + math.ceil(self:getLightLV() / 4),
             magic = 0
         }
+    end)
+    
+    Utils.hook(PartyMember, "increaseStat", function(orig, self, stat, amount, max)
+        if Game:isLight() and amount == "reset" then
+            self.lw_stats_bonus[stat] = 0
+            self:reloadLightStats()
+            return
+        end
+        local pre_bonus = self:getBaseStats()[stat]
+        orig(self, stat, amount, max)
+        local post_bonus = self:getBaseStats()[stat]
+        if Game:isLight() then
+            self.lw_stats_bonus[stat] = self.lw_stats_bonus[stat] + post_bonus - pre_bonus
+        end
     end)
 
     Utils.hook(PartyMember, "getLightStatText", function(orig, self) return self.lw_stat_text end)
@@ -2204,12 +2233,14 @@ function lib:init()
         orig(self, data)
         data.lw_stat_text = self.lw_stat_text
         data.lw_portrait = self.lw_portrait
+        data.lw_stats_bonus = self.lw_stats_bonus
     end)
     
     Utils.hook(PartyMember, "onLoad", function(orig, self, data)
         orig(self, data)
         self.lw_stat_text = data.lw_stat_text or self.lw_stat_text
         self.lw_portrait = data.lw_portrait or self.lw_portrait
+        self.lw_stats_bonus = data.lw_stats_bonus or self.lw_stats_bonus
     end)
 
     Utils.hook(LightMenu, "draw", function(orig, self)
