@@ -1222,6 +1222,11 @@ function LightBattle:onStateChange(old,new)
         
         local win_text = ""
         
+        local no_skip = ""
+        if Kristal.getLibConfig("magical-glass", "undertale_text_skipping") then
+            no_skip = "[noskip]"
+        end
+        
         if Game:isLight() then
 
             self.money = self.encounter:getVictoryMoney(self.money) or self.money
@@ -1241,7 +1246,7 @@ function LightBattle:onStateChange(old,new)
             self.money = self.encounter:getVictoryMoney(self.money) or self.money
             self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
 
-            win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. "."
+            win_text = no_skip.."* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. "."
 
             Game.lw_money = Game.lw_money + self.money
 
@@ -1254,7 +1259,7 @@ function LightBattle:onStateChange(old,new)
                 member.chara:addLightEXP(self.xp)
 
                 if lv ~= member.chara:getLightLV() then
-                    win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. ".\n* Your LOVE increased."
+                    win_text = no_skip.."* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. ".\n* Your LOVE increased."
                     Assets.stopAndPlaySound("levelup")
                 end
             end
@@ -1286,7 +1291,7 @@ function LightBattle:onStateChange(old,new)
                 Game.money = 0
             end
 
-            win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("darkCurrencyShort") .. "."
+            win_text = no_skip.."* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("darkCurrencyShort") .. "."
             -- if (in_dojo) then
             --     win_text == "* You won the battle!"
             -- end
@@ -1309,7 +1314,7 @@ function LightBattle:onStateChange(old,new)
                     party:onLevelUp(Game.level_up_count)
                 end
 
-                win_text = "[noskip]* YOU WON!\n* You earned " .. self.money .. " " .. Game:getConfig("darkCurrencyShort") .. ".\n* "..stronger.." became stronger."
+                win_text = no_skip.."* YOU WON!\n* You earned " .. self.money .. " " .. Game:getConfig("darkCurrencyShort") .. ".\n* "..stronger.." became stronger."
 
                 Assets.playSound("dtrans_lw", 0.7, 2)
                 --scr_levelup()
