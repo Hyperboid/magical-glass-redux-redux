@@ -56,7 +56,11 @@ end
 function item:onWorldUse(target)
     Game.world:closeMenu()
     Game.world.timer:after(1/30, function()
-        ImageViewer("world/punchcard")
+        if Kristal.getLibConfig("magical-glass", "punch_card_exploit") then
+            ImageViewerBroken("world/punchcard")
+        else
+            Game.world:openMenu(ImageViewer("world/punchcard"))
+        end
     end)
     return false
 end

@@ -7,7 +7,7 @@
         "Bor",                          // contributor
         "Just Another Random User",     // contributor
     ],
-    "version": "v2.9.1",
+    "version": "v2.9.2",
     "engineVer": "v0.9.0-dev",
 
     "config": {
@@ -76,6 +76,11 @@
         // This works somewhat differently than normal, because almost everyone can equip any light item, so the mechanic was adjusted.
         /////
         "equipment_conversion": true,
+
+        ///// Punch Card Exploit Emulation
+        // Re-creates Undertale's Punch Card wrong warp and moving in cutscenes exploit.
+        /////
+        "punch_card_exploit": true,
 
         ///// UNDERTALE Menu Display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
