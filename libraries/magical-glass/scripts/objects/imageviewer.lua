@@ -24,6 +24,10 @@ function ImageViewer:update()
         end
             
         Game.lock_movement = false
+        if not MagicalGlassLib.exploit then
+            local function has_cutscene() return Game.world:hasCutscene() end
+            Game.world.timer:doWhile(has_cutscene, function() MagicalGlassLib.exploit = true end, function() MagicalGlassLib.exploit = false end)
+        end
     end
 end
 

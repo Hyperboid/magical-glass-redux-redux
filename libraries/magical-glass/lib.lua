@@ -383,10 +383,13 @@ function lib:init()
         end
     end)
     
-    Utils.hook(World, "loadMap", function(orig, self, ...)
+    Utils.hook(World, "loadMap", function(orig, self, ...) -- Punch Card Exploit Emulation
+        if self:hasCutscene() and lib.exploit then
+            self:stopCutscene()
+        end
         orig(self, ...)
         lib.map_transitioning = false
-        if lib.viewing_image then -- Punch Card Exploit Emulation
+        if lib.viewing_image then
             local facing = Game.world and Game.world.player and Game.world.player.facing or "down"
             for _,party in ipairs(Utils.mergeMultiple(Game.stage:getObjects(Player), Game.stage:getObjects(Follower))) do
                 party:remove()
