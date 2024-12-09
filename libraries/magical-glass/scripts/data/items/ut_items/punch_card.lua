@@ -26,6 +26,8 @@ function item:init()
         "* Use outside of battle\nto look at the card."
     }
 
+    -- Prevents the overworld selection for an item (Light World Only)
+    self.skip_overworld_selection = true
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "ally"
     -- Where this item can be used (world, battle, all, or none)
@@ -54,7 +56,7 @@ end
 function item:onWorldUse(target)
     Game.world:closeMenu()
     Game.world.timer:after(1/30, function()
-        Game.world:openMenu(ImageViewer("world/punchcard"))
+        ImageViewer("world/punchcard")
     end)
     return false
 end

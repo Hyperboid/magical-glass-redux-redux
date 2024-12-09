@@ -5,15 +5,25 @@ function ImageViewer:init(sprite, x, y)
     self.x = x or 0
     self.y = y or 0
 
-    self:setParallax(0, 0)
+    self:setParallax(0)
     self.draw_children_below = 0
     self:setScale(2)
+    Game.world:spawnObject(self, WORLD_LAYERS["top"])
+    
+    MagicalGlassLib.viewing_image = true
+    Game.lock_movement = true
 end
 
-function ImageViewer:onKeyPressed(key)
-    if Input.is("cancel", key) then
+function ImageViewer:update()
+    super.update(self)
+    if not (DebugSystem:isMenuOpen() or OVERLAY_OPEN) and (Input.pressed("confirm", false) or Input.pressed("cancel", false)) then
         self:remove()
-        Game.world:closeMenu()
+        
+        if not MagicalGlassLib.map_transitioning then
+            MagicalGlassLib.viewing_image = false
+        end
+            
+        Game.lock_movement = false
     end
 end
 

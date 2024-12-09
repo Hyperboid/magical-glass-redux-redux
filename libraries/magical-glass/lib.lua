@@ -375,11 +375,25 @@ function lib:init()
     
     Utils.hook(World, "mapTransition", function(orig, self, ...)
         orig(self, ...)
+        lib.map_transitioning = true
         lib.steps_until_encounter = nil
         if lib.initiating_random_encounter then
             Game.lock_movement = false
             lib.initiating_random_encounter = nil
         end
+    end)
+    
+    Utils.hook(World, "loadMap", function(orig, self, ...)
+        orig(self, ...)
+        lib.map_transitioning = false
+        if lib.viewing_image then -- Punch Card Exploit Emulation
+            local facing = Game.world and Game.world.player and Game.world.player.facing or "down"
+            for _,party in ipairs(Utils.mergeMultiple(Game.stage:getObjects(Player), Game.stage:getObjects(Follower))) do
+                party:remove()
+            end
+            self:spawnParty("spawn", nil, nil, facing)
+        end
+        lib.viewing_image = false
     end)
     
     Utils.hook(Game, "enterShop", function(orig, self, shop, options, light)
@@ -805,6 +819,9 @@ function lib:init()
         self.shop_magic = false
         -- Doesn't display stats for weapons and armors in light shops
         self.shop_dont_show_change = false
+        
+        -- Prevents the overworld selection for an item (Light World Only)
+        self.skip_overworld_selection = false
         
         -- Whether this equipment item can convert on light change
         self.equip_can_convert = nil
@@ -1399,7 +1416,7 @@ function lib:init()
                 self.option_selecting = self.option_selecting + 1
             end
     
-            -- this wraps in deltatraveler lmao
+            -- this wraps in deltatraveler
             self.option_selecting = Utils.clamp(self.option_selecting, 1, 3)
     
             if self.option_selecting ~= old_selecting then
@@ -1410,13 +1427,14 @@ function lib:init()
             if Input.pressed("confirm") then
                 local item = Game.inventory:getItem(self.storage, self.item_selecting)
                 if self.option_selecting == 1 and (item.usable_in == "world" or item.usable_in == "all") and not (item.target == "enemy" or item.target == "enemies") then
-                    if #Game.party > 1 and item.target == "ally" then
+                    local condition = #Game.party > 1 and not item.skip_overworld_selection
+                    if condition and item.target == "ally" then
                         self.ui_select:stop()
                         self.ui_select:play()
                         self.party_select_bg.visible = true
                         self.party_selecting = 1
                         self.state = "PARTYSELECT"
-                    elseif #Game.party > 1 and item.target == "party" then
+                    elseif condition and item.target == "party" then
                         self.ui_select:stop()
                         self.ui_select:play()
                         self.party_select_bg.visible = true
@@ -1450,11 +1468,13 @@ function lib:init()
                     self.party_selecting = self.party_selecting - 1
                 end
 
-                if self.party_selecting < 1 then
-                    self.party_selecting = #Game.party
-                elseif self.party_selecting > #Game.party then
-                    self.party_selecting = 1
-                end
+                -- this wraps in deltatraveler
+                -- if self.party_selecting < 1 then
+                    -- self.party_selecting = #Game.party
+                -- elseif self.party_selecting > #Game.party then
+                    -- self.party_selecting = 1
+                -- end
+                self.party_selecting = Utils.clamp(self.party_selecting, 1, #Game.party)
 
                 if self.party_selecting ~= old_selecting then
                     self.ui_move:stop()
