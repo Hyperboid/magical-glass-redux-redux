@@ -384,7 +384,7 @@ function lib:init()
     end)
     
     Utils.hook(World, "loadMap", function(orig, self, ...) -- Punch Card Exploit Emulation
-        if self:hasCutscene() and lib.exploit then
+        if lib.exploit then
             self:stopCutscene()
         end
         orig(self, ...)
