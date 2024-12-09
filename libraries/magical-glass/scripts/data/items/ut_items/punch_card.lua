@@ -1,6 +1,6 @@
 local item, super = Class(Item, "ut_items/punch_card")
 
-function item:init(inventory)
+function item:init()
     super.init(self)
 
     -- Display name
