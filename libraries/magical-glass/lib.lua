@@ -390,7 +390,7 @@ function lib:init()
         orig(self, ...)
         lib.map_transitioning = false
         if lib.viewing_image then
-            local facing = Game.world and Game.world.player and Game.world.player.facing or "down"
+            local facing = Game.world.player and Game.world.player.facing or "down"
             for _,party in ipairs(Utils.mergeMultiple(Game.stage:getObjects(Player), Game.stage:getObjects(Follower))) do
                 party:remove()
             end
