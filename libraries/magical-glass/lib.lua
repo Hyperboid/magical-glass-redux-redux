@@ -198,6 +198,9 @@ function lib:preInit()
         ["player_karma_health_bg"] = {192/255, 0, 0, 1},
         ["player_karma_health"] = COLORS.fuchsia,
         
+        ["player_health_bg_dark"] = PALETTE["action_health_bg"],
+        ["player_karma_health_dark"] = COLORS.silver,
+        
         ["player_defending_text"] = COLORS.aqua,
         ["player_action_text"] = COLORS.yellow,
         ["player_down_text"] = COLORS.red,

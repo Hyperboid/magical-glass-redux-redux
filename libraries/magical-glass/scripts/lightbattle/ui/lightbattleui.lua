@@ -17,7 +17,6 @@ function LightBattleUI:init()
     self.encounter_text.text.default_sound = "battle"
     self.encounter_text.text.hold_skip = false
     self.encounter_text.text.line_offset = 5
-    self.encounter_text.text.style = "none"
     self.encounter_text:setText("")
     self.encounter_text.debug_rect = {-30, -12, SCREEN_WIDTH - 45, 121}
     Game.battle.arena:addChild(self.encounter_text)

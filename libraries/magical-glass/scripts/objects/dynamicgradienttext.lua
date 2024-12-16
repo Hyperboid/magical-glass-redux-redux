@@ -12,7 +12,7 @@ function DynamicGradientText:init(text, x, y, w, h, colors, options)
     options = options or {}
 
     options["font"] = options["font"] or "main_mono"
-    options["style"] = options["style"] or (Game:isLight() and "none" or "dark")
+    options["style"] = options["style"] or "none"
 
     super.init(self, text, x or 0, y or 0, w or SCREEN_WIDTH, h or SCREEN_HEIGHT, options)
 

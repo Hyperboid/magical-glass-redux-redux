@@ -50,12 +50,12 @@ function LightStatusDisplay:drawStatusStripStory()
         love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 110 + size * 1.2 + 1 + 9 - karma_mode_offset, y + 5)
     end
 
-    love.graphics.setColor(karma_mode and MG_PALETTE["player_karma_health_bg"] or MG_PALETTE["player_health_bg"])
+    love.graphics.setColor(Game:isLight() and (karma_mode and MG_PALETTE["player_karma_health_bg"] or MG_PALETTE["player_health_bg"]) or MG_PALETTE["player_health_bg_dark"])
     love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, size * 1.2 + 1, 21)
     if current > 0 then
-        love.graphics.setColor(MG_PALETTE["player_karma_health"])
+        love.graphics.setColor(Game:isLight() and MG_PALETTE["player_karma_health"] or MG_PALETTE["player_karma_health_dark"])
         love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1), 21)
-        love.graphics.setColor(MG_PALETTE["player_health"])
+        love.graphics.setColor(Game:isLight() and MG_PALETTE["player_health"] or {Game.battle.party[1].chara:getColor()})
         love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + 10) * 1.2 + 1) - (karma_mode and 1 or 0), 21)
     end
 
@@ -116,12 +116,12 @@ function LightStatusDisplay:drawStatusStrip()
                 love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 245 + size * 1.2 + 1 + 9 - karma_mode_offset, y + 5)
             end
 
-            love.graphics.setColor(karma_mode and MG_PALETTE["player_karma_health_bg"] or MG_PALETTE["player_health_bg"])
+            love.graphics.setColor(Game:isLight() and (karma_mode and MG_PALETTE["player_karma_health_bg"] or MG_PALETTE["player_health_bg"]) or MG_PALETTE["player_health_bg_dark"])
             love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, size * 1.2 + 1, 21)
             if current > 0 then
-                love.graphics.setColor(MG_PALETTE["player_karma_health"])
+                love.graphics.setColor(Game:isLight() and MG_PALETTE["player_karma_health"] or MG_PALETTE["player_karma_health_dark"])
                 love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1), 21)
-                love.graphics.setColor(MG_PALETTE["player_health"])
+                love.graphics.setColor(Game:isLight() and MG_PALETTE["player_health"] or {battler.chara:getColor()})
                 love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) - (karma_mode and 1 or 0), 21)
             end
 
@@ -175,12 +175,12 @@ function LightStatusDisplay:drawStatusStrip()
                 love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 95 + (small and 20 or 32) * 1.2 + 1, y + 15)
             end
             
-            love.graphics.setColor(karma_mode and MG_PALETTE["player_karma_health_bg"] or MG_PALETTE["player_health_bg"])
+            love.graphics.setColor(Game:isLight() and (karma_mode and MG_PALETTE["player_karma_health_bg"] or MG_PALETTE["player_health_bg"]) or MG_PALETTE["player_health_bg_dark"])
             love.graphics.rectangle("fill", x + 92, y, (small and 20 or 32) * 1.2 + 1, 21)
             if current > 0 then
-                love.graphics.setColor(MG_PALETTE["player_karma_health"])
+                love.graphics.setColor(Game:isLight() and MG_PALETTE["player_karma_health"] or MG_PALETTE["player_karma_health_dark"])
                 love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.2 + 1, 21)
-                love.graphics.setColor(MG_PALETTE["player_health"])
+                love.graphics.setColor(Game:isLight() and MG_PALETTE["player_health"] or {battler.chara:getColor()})
                 love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current - karma, 0, max) / max) * (small and 20 or 32)) * 1.2 + 1 - (karma_mode and 1 or 0), 21)
             end
             
