@@ -737,6 +737,9 @@ end
 function LightEnemyBattler:onDefeat(damage, battler)
     if self.exit_on_defeat then
         Game.battle.timer:after(self.hurt_timer, function()
+            if self.hurt_timer > 0 or self.defeated then
+                return false
+            end
             if self.actor.use_light_battler_sprite then
                 self:toggleOverlay(true)
                 if self.actor:getAnimation("lightbattle_defeat") then
@@ -812,6 +815,7 @@ end
 
 function LightEnemyBattler:onDefeatFatal(damage, battler)
     self.hurt_timer = -1
+    self.defeated = true
 
     Assets.playSound("deathnoise")
 
