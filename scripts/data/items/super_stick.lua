@@ -38,7 +38,7 @@ function item:onLightAttack(battler, enemy, damage, stretch)
         src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
     
         local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
-        sprite.rotation = math.rad(self.counter == 1 and -45 or 45)
+        sprite.rotation = math.rad(self.counter % 2 == 1 and -45 or 45)
         sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, sprite)
         local scale = (stretch * 2) - 0.5
