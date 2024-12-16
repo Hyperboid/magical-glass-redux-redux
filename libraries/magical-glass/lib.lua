@@ -3138,7 +3138,7 @@ function lib:setSeriousMode(v)
 end
 
 function lib:onFootstep(char, num)
-    if self.encounters_enabled and Game.world.player and char == Game.world.player then
+    if self.encounters_enabled and self.in_encounter_zone and Game.world.player and char == Game.world.player then
         self.steps_until_encounter = self.steps_until_encounter - 1
     end
 end
@@ -3171,7 +3171,7 @@ function lib:postUpdate()
     end
     if not Game.battle then
         if lib.random_encounter then
-            lib:createRandomEncounter(lib.random_encounter):resetSteps()
+            lib:createRandomEncounter(lib.random_encounter):resetSteps(false)
             lib.random_encounter = nil
         end
     end

@@ -520,6 +520,9 @@ function LightEnemyBattler:isXActionShort(battler)
 end
 
 function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacked)
+    if self.defeated then
+        return
+    end
     if Game.battle:getCurrentAction() and Game.battle:getCurrentAction().action == "SPELL" then
         battler.delay_turn_end = true
     end
@@ -765,7 +768,6 @@ end
 
 function LightEnemyBattler:onDefeatRun(damage, battler)
     self.hurt_timer = -1
-    self.defeated = true
 
     Assets.playSound("defeatrun")
 
@@ -789,7 +791,6 @@ end
 
 function LightEnemyBattler:onDefeatVaporized(damage, battler)
     self.hurt_timer = -1
-    self.defeated = true
 
     Assets.playSound("vaporized", 1.2)
 
@@ -815,7 +816,6 @@ end
 
 function LightEnemyBattler:onDefeatFatal(damage, battler)
     self.hurt_timer = -1
-    self.defeated = true
 
     Assets.playSound("deathnoise")
 
@@ -967,6 +967,8 @@ end
 
 function LightEnemyBattler:defeat(reason, violent)
     self.done_state = reason or "DEFEATED"
+    
+    self.defeated = true
 
     if violent then
         Game.battle.used_violence = true

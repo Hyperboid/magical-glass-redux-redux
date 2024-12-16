@@ -13,7 +13,7 @@ function EncounterZone:init(data)
     self.group = MagicalGlassLib:createRandomEncounter(data.properties["encgroup"])
 
     if MagicalGlassLib.steps_until_encounter == nil or MagicalGlassLib.steps_until_encounter and MagicalGlassLib.steps_until_encounter < 0 then
-        self.group:resetSteps()
+        self.group:resetSteps(true)
     end
 
     local s = data.shape
@@ -25,6 +25,7 @@ function EncounterZone:init(data)
     end
 
     self.accepting = false
+    MagicalGlassLib.in_encounter_zone = false
 end
 
 function EncounterZone:update()
@@ -37,9 +38,10 @@ function EncounterZone:update()
             self.accepting = false
         end
     end
+    MagicalGlassLib.in_encounter_zone = self.accepting
 
     if MagicalGlassLib.steps_until_encounter and MagicalGlassLib.steps_until_encounter <= 0 and self.accepting then
-        self.group:resetSteps()
+        self.group:resetSteps(false)
         self.group:start()
     end
 
