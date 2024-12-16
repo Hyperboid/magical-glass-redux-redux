@@ -64,7 +64,7 @@ end
 
 function Moldsmal:onHurt(...)
     local body = self.sprite:getPart("body")
-    body.sprite.scale_y = 1
+    body.scale_y = 1
     body.scale_direction = 0.01
     super.onHurt(self, ...)
 end
