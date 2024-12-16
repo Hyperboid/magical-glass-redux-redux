@@ -7,7 +7,7 @@ function Noelle:init()
     self.text = "* Here comes Noelle!"
 
     -- Battle music ("battleut" is undertale)
-    self.music = "battleut"
+    -- self.music = "battleut"
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("noelle")

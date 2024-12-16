@@ -8,7 +8,7 @@ function Dummy:init()
 
     -- Battle music ("battleut" is undertale)
     self.music = nil
-    -- self.music = "prebattle1ut"
+    -- self.music = Game:isLight() and "prebattle1ut" or "prebattle1dt"
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("dummy")

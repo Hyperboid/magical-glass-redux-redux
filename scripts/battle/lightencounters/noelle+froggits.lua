@@ -7,7 +7,7 @@ function Noelle:init()
     self.text = "* Here they come!\n* (Undefined placement test :3)"
 
     -- Battle music ("battleut" is undertale)
-    self.music = "battleut"
+    -- self.music = "battleut"
     
     self.fast_transition = true
 

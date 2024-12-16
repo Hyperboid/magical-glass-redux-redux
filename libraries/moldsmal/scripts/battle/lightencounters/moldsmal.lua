@@ -5,8 +5,6 @@ function encounter:init()
 
     self.text = "* Moldsmal blocked the way!"
 
-    self.music = "battleut"
-
     self:addEnemy("moldsmal", SCREEN_WIDTH/2 - 54 + (Game.battle.tension and 40 or 0), 234)
 end
 
