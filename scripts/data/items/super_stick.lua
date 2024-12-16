@@ -41,8 +41,7 @@ function item:onLightAttack(battler, enemy, damage, stretch)
         sprite.rotation = math.rad(self.counter % 2 == 1 and -45 or 45)
         sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, sprite)
-        local scale = (stretch * 2) - 0.5
-        sprite:setScale(scale)
+        sprite:setScale(stretch * 2 - 0.5)
         sprite:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 8)
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
