@@ -7,8 +7,8 @@ function Dummy:init()
     self.text = "* You encountered the Dummy...?"
 
     -- Battle music ("battleut" is undertale)
-    self.music = nil
-    -- self.music = Game:isLight() and "prebattle1ut" or "prebattle1dt"
+    -- self.music = nil
+    self.music = Game:isLight() and "prebattle1ut" or "prebattle1dt"
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("dummy")
@@ -40,5 +40,10 @@ function Dummy:drawBackground()
         super.drawBackground(self)
     end
 end
+
+-- function Dummy:setBattleState()
+    -- super.setBattleState(self)
+    -- Game:getActiveMusic():stop()
+-- end
 
 return Dummy
