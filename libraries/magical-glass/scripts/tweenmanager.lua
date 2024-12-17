@@ -1,7 +1,7 @@
 local TweenManager = {}
 
-TweenManager.__TWEENS = {}
-TweenManager.__TWEENS_TO_REMOVE = {}
+TweenManager.TWEENS = {}
+TweenManager.TWEENS_TO_REMOVE = {}
 
 function TweenManager.tween(obj, prop, time, ease)
     local tween = {}
@@ -16,7 +16,7 @@ function TweenManager.tween(obj, prop, time, ease)
     tween.progress = 0
     tween.props_to_remove = {}
 
-    for _,itween in ipairs(TweenManager.__TWEENS) do
+    for _,itween in ipairs(TweenManager.TWEENS) do
         if itween.object == tween.object then
             for iprop in pairs(tween.properties) do
                 if itween.properties[iprop] then
@@ -26,11 +26,11 @@ function TweenManager.tween(obj, prop, time, ease)
         end
     end
 
-    table.insert(TweenManager.__TWEENS, tween)
+    table.insert(TweenManager.TWEENS, tween)
 end
 
 function TweenManager.updateTweens()
-    for _,tween in ipairs(TweenManager.__TWEENS) do
+    for _,tween in ipairs(TweenManager.TWEENS) do
         tween.progress = tween.progress + DTMULT
         for prop, value in pairs(tween.properties) do
             if tween.progress >= tween.time then
@@ -45,7 +45,7 @@ function TweenManager.updateTweens()
 end
 
 function TweenManager.updateTweensToRemove()
-    for _,tween in ipairs(TweenManager.__TWEENS) do
+    for _,tween in ipairs(TweenManager.TWEENS) do
 
         for _,prop in ipairs(tween.props_to_remove) do
             tween.properties[prop] = nil
@@ -59,16 +59,16 @@ function TweenManager.updateTweensToRemove()
         end
 
         if i == 0 then
-            table.insert(TweenManager.__TWEENS_TO_REMOVE, tween)
+            table.insert(TweenManager.TWEENS_TO_REMOVE, tween)
         end
     end
 
-    for _,tween in ipairs(TweenManager.__TWEENS_TO_REMOVE) do
+    for _,tween in ipairs(TweenManager.TWEENS_TO_REMOVE) do
         if tween.callback then
             tween.callback()
             tween.callback = nil
         end
-        Utils.removeFromTable(TweenManager.__TWEENS, tween)
+        Utils.removeFromTable(TweenManager.TWEENS, tween)
     end
 end
 
