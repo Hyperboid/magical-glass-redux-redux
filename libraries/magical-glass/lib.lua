@@ -1044,8 +1044,8 @@ function lib:init()
         end
         local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
         src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
-        -- local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or Game:isLight() and "effects/attack/strike")
-        local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or Game:isLight() and "effects/attack/strike" or battler.chara:getAttackSprite() or "effects/attack/cut") -- dark stuff here
+        -- local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
+        local sprite = Sprite(Game:isLight() and (self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike") or battler.chara:getAttackSprite() or "effects/attack/cut") -- dark stuff here
         sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, sprite)
         sprite:setOrigin(0.5)
@@ -1053,7 +1053,7 @@ function lib:init()
             sprite:setScale(stretch * 2 - 0.5)
             sprite.color = {battler.chara:getLightAttackColor()}
         else
-            sprite:setScale(2.5)
+            sprite:setScale(2)
         end
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 8)
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
