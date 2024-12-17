@@ -207,7 +207,7 @@ function LightArena:update()
 
     if NOCLIP then return end
 
-    local soul = Game.battle.soul
+    local soul = Game.battle and Game.battle.soul
     if soul and Game.battle.soul.collidable then
         Object.startCache()
         local angle_diff = self.clockwise and -(math.pi/2) or (math.pi/2)

@@ -1328,7 +1328,7 @@ function LightBattle:onStateChange(old,new)
             self.encounter:onBattleEnd()
         else
             self:battleText(win_text, function()
-                self:setState("TRANSITIONOUT")
+                self:setState("TRANSITIONOUT", "POSTFADE")
                 self.encounter:onBattleEnd()
                 return true
             end)
@@ -1349,7 +1349,12 @@ function LightBattle:onStateChange(old,new)
         end
         self.encounter:onReturnToWorld(enemies)
 
-        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = (self.encounter.fast_transition and 5 or 10)/30})
+        if self.state_reason == "POSTFADE" then
+            self:returnToWorld()
+            Game.fader:fadeIn(nil, {alpha = 1, speed = 12/30})
+        else
+            Game.fader:transition(function() self:returnToWorld() end, nil, {speed = (self.encounter.fast_transition and 5 or 10)/30})
+        end
     elseif new == "DEFENDINGBEGIN" then
         self.battle_ui:clearEncounterText()
     elseif new == "FLEEING" then
