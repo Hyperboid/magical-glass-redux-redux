@@ -1357,7 +1357,7 @@ function LightBattle:onStateChange(old,new)
             self:returnToWorld()
             Game.fader:fadeIn(nil, {alpha = 1, speed = 12/30})
         else
-            Game.fader:transition(function() self:returnToWorld() end, nil, {speed = (self.encounter.fast_transition and 5 or 10)/30})
+            Game.fader:transition(function() self:returnToWorld() end, nil, {speed = (self.encounter.fast_transition and 5 or 12)/30})
         end
     elseif new == "DEFENDINGBEGIN" then
         self.battle_ui:clearEncounterText()
