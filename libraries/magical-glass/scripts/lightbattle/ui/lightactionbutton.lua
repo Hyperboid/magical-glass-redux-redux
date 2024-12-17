@@ -191,7 +191,7 @@ function LightActionButton:select()
                 ["special"] = "defend",
                 ["callback"] = function(menu_item)
                     Game.battle:toggleSoul(false)
-                    Game.battle:pushAction("DEFEND", nil, {tp = Game.battle.tension_bar.visible and -16 or 0})
+                    Game.battle:pushAction("DEFEND", nil, {tp = Game.battle.tension and -16 or 0})
                 end
             })
         end

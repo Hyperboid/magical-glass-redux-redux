@@ -47,6 +47,20 @@ function LightArena:init(x, y, shape)
     self.target_position_callback = nil
 end
 
+function LightArena:disable()
+    self.collidable = false
+    self.active = false
+    self.visible = false
+    self.sprite_border.visible = false
+end
+
+function LightArena:enable()
+    self.collidable = true
+    self.active = true
+    self.visible = true
+    self.sprite_border.visible = true
+end
+
 function LightArena:setSize(width, height)
     self:setShape{{0, 0}, {width, 0}, {width, height}, {0, height}}
 end

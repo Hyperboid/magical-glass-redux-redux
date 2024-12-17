@@ -694,7 +694,7 @@ end
 function LightEnemyBattler:onHurt(damage, battler)
     self.hurt_timer = 1
     self:toggleOverlay(true)
-    if Game.battle.tension_bar.visible then
+    if Game.battle.tension then
         Game:giveTension(Utils.round(self:getAttackTension(battler.tp_gain or 0)))
     end
     battler.tp_gain = 0

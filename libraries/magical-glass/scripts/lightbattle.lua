@@ -258,9 +258,7 @@ function LightBattle:postInit(state, encounter)
     self:addChild(self.battle_ui)
 
     self.tension_bar = LightTensionBar(25, 53, true)
-    if self.tension then
-        self.tension_bar.visible = false
-    end
+    self.tension_bar.visible = self.tension
     self:addChild(self.tension_bar)
 
     if Game.encounter_enemies then
@@ -1113,6 +1111,7 @@ function LightBattle:onStateChange(old,new)
             local arena_x, arena_y, arena_h, arena_w
             local has_arena = false
             local has_soul = false
+            local fullscreen = false
             for _,wave in ipairs(self.waves) do
                 soul_x = wave.soul_start_x or soul_x
                 soul_y = wave.soul_start_y or soul_y
@@ -1128,24 +1127,29 @@ function LightBattle:onStateChange(old,new)
                 if wave.has_soul then
                     has_soul = true
                 end
+                if wave.fullscreen then
+                    fullscreen = true
+                end
             end
     
             arena_w, arena_h = arena_w or 160, arena_h or 130
             arena_x, arena_y = self.arena.home_x, self.arena.home_y
 
-            if has_arena then
+            if fullscreen and #self.waves > 0 then
+                if self.encounter.story then
+                    self.arena:changePosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+                    self.arena:setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+                else
+                    self.arena:changeShape({SCREEN_WIDTH-10, self.arena.height})
+                end
+            elseif has_arena then
                 if self.encounter.story then
                     self.arena:setSize(arena_w, arena_h)
                 else
                     self.arena:changeShape({arena_w, self.arena.height})
                 end
             elseif #self.waves > 0 then
-                if self.encounter.story then
-                    self.arena:changePosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
-                    self.arena:setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
-                else
-                    self.arena:changeShape({SCREEN_WIDTH-11, self.arena.height})
-                end
+                self.arena:disable()
             end
 
             local center_x, center_y = self.arena:getCenter()
@@ -1157,7 +1161,7 @@ function LightBattle:onStateChange(old,new)
                         soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
                         self.soul:setPosition(soul_x or center_x, soul_y or center_y)
                         self:toggleSoul(true)
-                        self.soul.can_move = false
+                        self.soul.can_move = self.debug_wave
                     end)
                 else
                     soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
@@ -1231,7 +1235,7 @@ function LightBattle:onStateChange(old,new)
 
             self.money = self.encounter:getVictoryMoney(self.money) or self.money
 
-            if self.tension_bar.visible then
+            if self.tension then
                 self.money = self.money + (math.floor((Game:getTension() * 2.5) / 30))
             end
 
@@ -1266,7 +1270,7 @@ function LightBattle:onStateChange(old,new)
 
             win_text = self.encounter:getVictoryText(win_text, self.money, self.xp) or win_text
         else
-            if self.tension_bar.visible then
+            if self.tension then
                 self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
             end
 
@@ -1364,6 +1368,9 @@ function LightBattle:onStateChange(old,new)
             battler:setSleeping(false)
             battler.defending = false
             battler.action = nil
+            
+            battler.chara:setHealth(battler.chara:getHealth() - battler.karma)
+            battler.karma = 0
 
             if battler.chara:getHealth() <= 0 then
                 battler:revive()
@@ -1382,7 +1389,7 @@ function LightBattle:onStateChange(old,new)
             self.encounter:onBattleEnd()
         else
             self:toggleSoul(false)
-            self.arena.sprite_border.visible = true
+            self.arena:enable()
             self.arena.rotation = 0
             if self.arena.height >= self.arena.init_height then
                 self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
@@ -1772,8 +1779,6 @@ function LightBattle:update()
     end
     self.enemies_to_remove = {}
 
-    self.tension_bar.visible = self.tension
-
     if self.cutscene then
         if not self.cutscene.ended then
             self.cutscene:update()
@@ -1835,6 +1840,7 @@ function LightBattle:update()
             local soul_x, soul_y, soul_offset_x, soul_offset_y
             local arena_x, arena_y, arena_h, arena_w
             local has_arena = true
+            local fullscreen = true
             for _,wave in ipairs(self.waves) do
                 soul_x = wave.soul_start_x or soul_x
                 soul_y = wave.soul_start_y or soul_y
@@ -1846,25 +1852,28 @@ function LightBattle:update()
                 if not wave.has_arena then
                     has_arena = false
                 end
+                if not wave.fullscreen then
+                    fullscreen = false
+                end
             end
 
             arena_h, arena_w  = arena_h or 130, arena_w or 160
             
             local center_x, center_y = self.arena:getCenter()
 
-            if has_arena then
-                if self.arena.height ~= arena_h then
-                    self.arena:changeShape({self.arena.width, arena_h})
-                end
-                if not (self.arena.x == arena_x and self.arena.y == arena_y) then
-                    self.arena:changePosition({arena_x, arena_y})
-                end
-            elseif #self.waves > 0 then
+            if fullscreen and #self.waves > 0 then
                 if (self.arena.width ~= SCREEN_WIDTH or self.arena.height ~= SCREEN_HEIGHT) then
                     self.arena:changeShape({SCREEN_WIDTH, SCREEN_HEIGHT})
                 end
                 if not (self.arena.x == SCREEN_WIDTH/2 and self.arena.y == SCREEN_HEIGHT/2) then
                     self.arena:changePosition({SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+                end
+            elseif has_arena then
+                if self.arena.height ~= arena_h then
+                    self.arena:changeShape({self.arena.width, arena_h})
+                end
+                if not (self.arena.x == arena_x and self.arena.y == arena_y) then
+                    self.arena:changePosition({arena_x, arena_y})
                 end
             end
         end

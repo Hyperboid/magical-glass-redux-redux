@@ -9,6 +9,7 @@ function LightWave:init()
     self.darken = false
     self.auto_clear = true
     self.has_arena = true
+    self.fullscreen = false
     
     self.soul_start_x = nil
     self.soul_start_y = nil

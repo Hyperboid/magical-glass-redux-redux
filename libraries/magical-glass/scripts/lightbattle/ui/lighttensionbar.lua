@@ -45,6 +45,14 @@ function LightTensionBar:init(x, y, dont_animate)
     self.shift_up = false
 end
 
+function LightTensionBar:show()
+    self.visible = true
+end
+
+function LightTensionBar:hide()
+    self.visible = false
+end
+
 function LightTensionBar:getDebugInfo()
     local info = super.getDebugInfo(self)
     table.insert(info, "Tension: "  .. Utils.round(self:getPercentageFor(Game:getTension()) * 100) .. "%")
