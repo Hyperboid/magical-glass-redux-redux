@@ -1865,9 +1865,6 @@ function LightBattle:update()
         end
 
         if self.arena:isNotTransitioning() then
-            if self.arena.width >= SCREEN_WIDTH and self.arena.height >= SCREEN_HEIGHT then
-                self.arena.sprite_border.visible = false
-            end
             self.soul.can_move = true
             self:setState("DEFENDING") 
         end

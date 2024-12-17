@@ -85,11 +85,19 @@ function LightArena:setShape(shape)
 
     self.collider.colliders = {}
     for i,v in ipairs(Utils.getPolygonEdges(self.shape)) do
-        if #Utils.getPolygonEdges(self.shape) == 4 then
+        if #Utils.getPolygonEdges(self.shape) == 4 then -- this looks like garbage, but I have no idea of any other better way to fix the issue of the soul colliding with the edges of the arena being inaccurate and asymmetric
             if i == 1 then
-                table.insert(self.collider.colliders, LineCollider(self, v[1][1] - 1, v[1][2] - 1, v[2][1] + 1, v[2][2] - 1))
+                if self.height % 2 == 1 then
+                    table.insert(self.collider.colliders, LineCollider(self, v[1][1] - 1, v[1][2], v[2][1] + 1, v[2][2]))
+                else
+                    table.insert(self.collider.colliders, LineCollider(self, v[1][1] - 1, v[1][2] - 1, v[2][1] + 1, v[2][2] - 1))
+                end
             elseif i == 2 then
-                table.insert(self.collider.colliders, LineCollider(self, v[1][1] + 1, v[1][2] - 1, v[2][1] + 1, v[2][2] + 1))
+                if self.width % 2 == 1 then
+                    table.insert(self.collider.colliders, LineCollider(self, v[1][1], v[1][2] - 1, v[2][1], v[2][2] + 1))
+                else
+                    table.insert(self.collider.colliders, LineCollider(self, v[1][1] + 1, v[1][2] - 1, v[2][1] + 1, v[2][2] + 1))
+                end
             elseif i == 3 then
                 table.insert(self.collider.colliders, LineCollider(self, v[1][1] + 1, v[1][2] + 1, v[2][1] - 1, v[2][2] + 1))
             elseif i == 4 then
