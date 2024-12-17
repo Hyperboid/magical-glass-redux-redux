@@ -310,7 +310,7 @@ end
 function LightEncounter:onFleeFail() end
 
 function LightEncounter:beforeStateChange(old, new) end
-function LightEncounter:onStateChange(old, new) print(old, new) end
+function LightEncounter:onStateChange(old, new) end
 
 function LightEncounter:onActionSelect(battler, button) end
 
