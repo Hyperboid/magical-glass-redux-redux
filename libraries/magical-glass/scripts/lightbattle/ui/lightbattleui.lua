@@ -101,6 +101,9 @@ function LightBattleUI:init()
     end
     
     self.flee_text = Text("", 62, 15, nil, nil, {["font"] = "main_mono"})
+    if not Game:isLight() then
+        self.flee_text.style = "dark"
+    end
     self.flee_text.line_offset = 4
     Game.battle.arena:addChild(self.flee_text)
     
