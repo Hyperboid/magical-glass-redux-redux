@@ -387,7 +387,7 @@ function LightBattle:processCharacterActions()
 
     self.current_action_index = 1
 
-    local order = {{"ACT", "SAVE"}, {"SPELL", "ITEM", "SPARE"}}
+    local order = {"SAVE", "ACT", {"SPELL", "ITEM", "SPARE"}}
 
     for lib_id,_ in pairs(Mod.libs) do
         order = Kristal.libCall(lib_id, "getActionOrder", order, self.encounter) or order

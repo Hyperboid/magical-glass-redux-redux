@@ -814,7 +814,7 @@ function LightBattleUI:drawState()
             Draw.draw(self.arrow_sprite, 45, 10 - (math.sin(Kristal.getTime()*6) * 2), 0, 1, -1)
         end
     elseif state == "FLEEING" or state == "TRANSITIONOUT" then
-        local message = Game.battle.encounter:getUsedFleeMessage() or ""
+        local message = Game.battle.encounter.used_flee_message or ""
         self.flee_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. message)
     end
 

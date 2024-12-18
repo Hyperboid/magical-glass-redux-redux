@@ -57,8 +57,6 @@ function LightEncounter:init()
         "* Don't slow me down.", --1/20
         "* Escaped..." --17/20
     }
-
-    self.used_flee_message = nil
 end
 
 function LightEncounter:onSoulTransition()
@@ -373,10 +371,6 @@ end
 
 function LightEncounter:getFleeMessage()
     return self.flee_messages[math.min(Utils.random(1, 20, 1), #self.flee_messages)]
-end
-
-function LightEncounter:getUsedFleeMessage()
-    return self.used_flee_message
 end
 
 function LightEncounter:getEncounterText()
