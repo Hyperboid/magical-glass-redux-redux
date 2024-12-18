@@ -1681,8 +1681,12 @@ function LightBattle:checkGameOver()
     if self.encounter:onGameOver() then
         return
     end
-    Game.battle.timer:after(1/15, function()
-        Game:gameOver(self:getSoulLocation())
+    self.timer:after(1/15, function()
+        if self.encounter.invincible then
+            MagicalGlassLib:gameNotOver(self:getSoulLocation())
+        else
+            Game:gameOver(self:getSoulLocation())
+        end
     end)
 end
 

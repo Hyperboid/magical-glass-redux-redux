@@ -3165,6 +3165,29 @@ function lib:setLightLV(level)
     end
 end
 
+function lib:gameNotOver(x, y)
+    Kristal.hideBorder(0)
+    
+    local reload
+    local encounter = Game.battle and Game.battle.encounter and Game.battle.encounter.id
+    local shop = Game.shop and Game.shop.id
+    if encounter then
+        reload = {"BATTLE", encounter}
+    elseif shop then
+        reload = {"SHOP", shop}
+    end
+
+    Game.state = "GAMEOVER"
+    if Game.battle   then Game.battle  :remove() end
+    if Game.world    then Game.world   :remove() end
+    if Game.shop     then Game.shop    :remove() end
+    if Game.gameover then Game.gameover:remove() end
+    if Game.legend   then Game.legend  :remove() end
+
+    Game.gameover = GameNotOver(x or 0, y or 0, reload)
+    Game.stage:addChild(Game.gameover)
+end
+
 function lib:postUpdate()
     Game.lw_xp = nil
     for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP
