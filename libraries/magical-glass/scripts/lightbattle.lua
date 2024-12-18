@@ -1207,22 +1207,7 @@ function LightBattle:onStateChange(old,new)
         self.current_selecting = 0
         self.forced_victory = true
 
-        for _,battler in ipairs(self.party) do
-            battler:setSleeping(false)
-            battler.defending = false
-            battler.action = nil
-            
-            battler.chara:setHealth(battler.chara:getHealth() - battler.karma)
-            battler.karma = 0
-
-            battler.chara:resetBuffs()
-
-            if battler.chara:getHealth() <= 0 then
-                battler:revive()
-                battler.chara:setHealth(battler.chara:autoHealAmount())
-            end
-
-        end
+        self:resetParty()
         
         local win_text = ""
         
@@ -1364,19 +1349,7 @@ function LightBattle:onStateChange(old,new)
     elseif new == "FLEEING" then
         self.current_selecting = 0
         
-        for _,battler in ipairs(self.party) do
-            battler:setSleeping(false)
-            battler.defending = false
-            battler.action = nil
-            
-            battler.chara:setHealth(battler.chara:getHealth() - battler.karma)
-            battler.karma = 0
-
-            if battler.chara:getHealth() <= 0 then
-                battler:revive()
-                battler.chara:setHealth(battler.chara:autoHealAmount())
-            end
-        end
+        self:resetParty()
         self.encounter:onFlee()
     elseif new == "FLEEFAIL" then
         self:toggleSoul(false)
@@ -1654,6 +1627,24 @@ function LightBattle:setActText(text, dont_finish)
         self:setState("ACTIONS", "BATTLETEXT")
         return true
     end)
+end
+
+function LightBattle:resetParty()
+    for _,battler in ipairs(self.party) do
+        battler:setSleeping(false)
+        battler.defending = false
+        battler.action = nil
+        
+        battler.chara:setHealth(battler.chara:getHealth() - battler.karma)
+        battler.karma = 0
+
+        battler.chara:resetBuffs()
+
+        if battler.chara:getHealth() <= 0 then
+            battler:revive()
+            battler.chara:setHealth(battler.chara:autoHealAmount())
+        end
+    end
 end
 
 function LightBattle:shortActText(text)
@@ -3026,18 +3017,9 @@ function LightBattle:onKeyPressed(key)
             self.music:stop()
             self.current_selecting = 0
 
-            for _, battler in ipairs(self.party) do
-                battler:setSleeping(false)
-                battler.defending = false
-                battler.action = nil
+            self:resetParty()
 
-                if battler.chara:getHealth() <= 0 then
-                    battler:revive()
-                    battler.chara:setHealth(battler.chara:autoHealAmount())
-                end
-            end
-
-            self:setState("TRANSITIONOUT")
+            self:setState("TRANSITIONOUT", "POSTFADE")
             self.encounter:onBattleEnd()
         end
 
