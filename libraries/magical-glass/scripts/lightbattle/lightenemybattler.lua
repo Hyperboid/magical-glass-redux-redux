@@ -48,6 +48,9 @@ function LightEnemyBattler:init(actor, use_overlay)
     -- Whether this enemy can be selected or not
     self.selectable = true
     
+    -- Whether selecting the enemy using SAVE will skip the turn (similar to the end of the Asirel fight in UT)
+    self.save_no_acts = false
+    
     -- Whether this enemy display name will have a wavy-rainbow effect like Asriel Dreemurr
     self.rainbow_name = false
     
@@ -395,6 +398,8 @@ function LightEnemyBattler:onMercy(battler)
         end
     end
 end
+
+function LightEnemyBattler:onSave(battler) end
 
 function LightEnemyBattler:getNameColors()
     local result = {}

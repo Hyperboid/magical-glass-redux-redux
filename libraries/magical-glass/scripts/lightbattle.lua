@@ -387,7 +387,7 @@ function LightBattle:processCharacterActions()
 
     self.current_action_index = 1
 
-    local order = {"ACT", {"SPELL", "ITEM", "SPARE"}}
+    local order = {{"ACT", "SAVE"}, {"SPELL", "ITEM", "SPARE"}}
 
     for lib_id,_ in pairs(Mod.libs) do
         order = Kristal.libCall(lib_id, "getActionOrder", order, self.encounter) or order
@@ -589,6 +589,11 @@ function LightBattle:processAction(action)
         
         return false
 
+    elseif action.action == "SAVE" then
+        enemy:onSave(battler)
+        self:finishAction(action)
+        
+        return false
     elseif action.action == "ATTACK" then
         local lane
         for _,ilane in ipairs(self.battle_ui.attack_box.lanes) do
@@ -3040,6 +3045,8 @@ function LightBattle:onKeyPressed(key)
                 self:pushAction("XACT", self.enemies_index[self.selected_enemy], xaction)
             elseif self.state_reason == "SPARE" then
                 self:pushAction("SPARE", self.enemies_index[self.selected_enemy])
+            elseif self.state_reason == "ACT" and self.party[self.current_selecting].has_save and self.enemies_index[self.selected_enemy].save_no_acts then
+                self:pushAction("SAVE", self.enemies_index[self.selected_enemy])
             elseif self.state_reason == "ACT" then
                 self:clearMenuItems()
                 local enemy = self.enemies_index[self.selected_enemy]

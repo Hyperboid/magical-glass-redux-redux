@@ -16,6 +16,8 @@ function LightPartyBattler:init(chara)
 
     self.targeted = false
     
+    self.has_save = false
+    
     -- Karma (KR) calculations
     self.karma = 0
     self.karma_timer = 0
@@ -237,6 +239,7 @@ function LightPartyBattler:addKarma(amount)
 end
 
 function LightPartyBattler:toggleSaveButton(value)
+    self.has_save = value and true or false
     for _,action_box in ipairs(Game.battle.battle_ui.action_boxes) do
         if action_box.battler == self then
             for _,button in ipairs(action_box.buttons) do
