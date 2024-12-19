@@ -7,7 +7,7 @@
         "Bor",                          // contributor
         "Just Another Random User",     // contributor
     ],
-    "version": "v2.11.0",
+    "version": "v2.11.1",
     "engineVer": "v0.9.0-dev",
 
     "config": {
@@ -50,7 +50,7 @@
         // First Value: Whether you can skip it in the dark world.
         // Second Value: Whether you can skip it in the light world.
         /////
-        "gameover_skipping": [true, false],
+        "gameover_skipping": [true, true],
         
         ///// UNDERTALE Movement Can Run
         // Enables the ability to run when using the Undertale player movement.
