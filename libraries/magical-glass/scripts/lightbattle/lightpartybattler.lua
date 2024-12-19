@@ -36,9 +36,10 @@ function LightPartyBattler:onTurnStart()
     end
 end
 
-function LightPartyBattler:calculateDamage(amount, min, cap)
+function LightPartyBattler:calculateDamage(amount)
     local def = self.chara:getStat("defense")
     local max_hp = self.chara:getStat("health")
+    
     if Game:isLight() then
         for i = 21, math.min(max_hp, 99) do
             if i % 10 == 0 or i == 21 then
@@ -62,14 +63,6 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
                 break
             end
         end
-    end
-    
-    if min and amount < min then
-        amount = min
-    end
-
-    if cap and amount > cap then
-        amount = cap
     end
 
     return math.max(amount, 1)

@@ -77,8 +77,8 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.spareable_text = nil
 
     self.tired_percentage = 0
-    self.spare_percentage = 1/3
-    self.low_health_percentage = 1/3
+    self.spare_percentage = 0.25
+    self.low_health_percentage = 0.25
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
