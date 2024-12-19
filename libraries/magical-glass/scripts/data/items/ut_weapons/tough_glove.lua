@@ -92,10 +92,6 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         sprite.color = {battler.chara:getLightMultiboltAttackColor()}
         enemy.parent:addChild(sprite)
 
-        if crit then
-            Assets.stopAndPlaySound("saber3", 0.7)
-        end
-
         Game.battle.timer:during(1, function()
             sprite.x = sprite.x - 2 * DTMULT
             sprite.y = sprite.y - 2 * DTMULT
@@ -166,7 +162,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                 if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
                     Assets.stopAndPlaySound(sound)
                 end
-                local new_damage = math.ceil(damage * (punches / self.attack_punches))
+                local new_damage = math.ceil((crit and Utils.round(damage * (21/22)) or damage) * (punches / self.attack_punches))
                 enemy:hurt(new_damage, battler)
         
                 if punches < self.attack_punches and damage <= 0 then

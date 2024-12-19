@@ -274,7 +274,7 @@ function LightAttackBox:update()
             end
         end
 
-        if Game.battle.cancel_attack or self.fading then
+        if Game.battle and (Game.battle.cancel_attack or self.fading) then
             if self.shoe_finished < #self.attackers or #self.attackers == 0 then
                 self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
             end
