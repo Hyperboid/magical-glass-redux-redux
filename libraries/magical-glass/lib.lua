@@ -2440,7 +2440,7 @@ function lib:init()
                 show_magic = true
             end
         end
-        if self.always_show_magic or show_magic then
+        if self.always_show_magic or show_magic and self.undertale_stat_display then
             offset = 16
             love.graphics.print("MG  ", 4, 228 - offset)
             love.graphics.print(mg  .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228 - offset) -- alinging the numbers with the rest of the stats
@@ -2788,6 +2788,22 @@ function lib:init()
     Utils.hook(Game, "gameOver", function(orig, self, x, y)
         orig(self, x, y)
         lib:setGameOvers((lib:getGameOvers() or 0) + 1)
+    end)
+    
+    Utils.hook(GameOver, "init", function(orig, self, x, y)
+        orig(self, x, y)
+        if not Kristal.getLibConfig("magical-glass", "gameover_skipping")[1] and not Game:isLight() or not Kristal.getLibConfig("magical-glass", "gameover_skipping")[2] and Game:isLight() then
+            self.skipping = -math.huge
+        end
+        if Game.battle then -- Battle type correction
+            if Game.battle.light then
+                self.screenshot = nil
+                self.timer = 28
+            else
+                self.screenshot = love.graphics.newImage(SCREEN_CANVAS:newImageData())
+                self.timer = 0
+            end
+        end
     end)
     
     Utils.hook(ActionBoxDisplay, "draw", function(orig, self) -- Fixes an issue with HP higher than normal

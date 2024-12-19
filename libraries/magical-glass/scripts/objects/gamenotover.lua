@@ -31,6 +31,16 @@ function GameNotOver:init(x, y, reload)
     if Game:isLight() then
         self.timer = 28 -- We only wanna show one frame if we're in Undertale mode
     end
+    
+    if Game.battle then -- Battle type correction
+        if Game.battle.light then
+            self.screenshot = nil
+            self.timer = 28
+        else
+            self.screenshot = love.graphics.newImage(SCREEN_CANVAS:newImageData())
+            self.timer = 0
+        end
+    end
 end
 
 function GameNotOver:onRemove(parent)
@@ -72,7 +82,7 @@ function GameNotOver:update()
         self.current_stage = self.current_stage + 1 -- 3 // 12
     end
     if (self.timer >= 200) and (self.current_stage == 3) then
-        self.dialogue = DialogueText("[noskip][speed:0.5][voice:none]* But it refused.", 205, 120)
+        self.dialogue = DialogueText("[noskip][speed:0.5][voice:none]* But it refused.", 205, 120, {style = "none"})
         self:addChild(self.dialogue)
         self.current_stage = 4
     end
