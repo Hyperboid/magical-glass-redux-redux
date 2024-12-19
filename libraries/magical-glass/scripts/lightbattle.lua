@@ -89,6 +89,7 @@ function LightBattle:init()
     self.cancel_attack = false
     self.auto_attack_timer = 0
     self.auto_attacker_index = 0
+    self.finished_full_auto = false
 
     self.post_battletext_func = nil
     self.post_battletext_state = "ACTIONSELECT"
@@ -329,6 +330,7 @@ function LightBattle:resetAttackers()
         self.normal_attackers = {}
         self.auto_attackers = {}
         self.auto_attacker_index = 0
+        self.finished_full_auto = false
         if self.battle_ui.attacking then
             self.battle_ui:endAttack()
         end
@@ -1947,6 +1949,16 @@ function LightBattle:updateChildren()
     end
 end
 
+function LightBattle:shakeAttackSprite(sprite)
+    local function sprite_exist() return sprite.parent end
+    self.timer:doWhile(sprite_exist, function()
+        sprite.x = sprite.x - 2 * DTMULT
+        sprite.y = sprite.y - 2 * DTMULT
+        sprite.x = sprite.x + Utils.random(4) * DTMULT
+        sprite.y = sprite.y + Utils.random(4) * DTMULT
+    end)
+end
+
 function LightBattle:updateAttacking()
     if self.cancel_attack then
         self:finishAllActions()
@@ -1968,7 +1980,8 @@ function LightBattle:updateAttacking()
                         self:processAction(next_action)
                     end
                     if #self.auto_attackers <= self.auto_attacker_index then
-                        if only_auto then
+                        if only_auto and not self.finished_full_auto then
+                            self.finished_full_auto = true
                             self.timer:after(43/30, function()
                                 self.battle_ui.attack_box.fading = true
                                 self:setState("ACTIONSDONE")

@@ -91,21 +91,16 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
-    Game.battle:shakeCamera(3, 3, 2)
+    Game.battle:shakeCamera(2, 2, 0.35, 1)
 
     if crit then
         sprite:setColor(1, 1, 130/255)
         Assets.stopAndPlaySound("saber3", 0.7)
     end
 
-    Game.battle.timer:during(1, function() -- can't even tell if this is accurate
-        sprite.x = sprite.x - 2 * DTMULT
-        sprite.y = sprite.y - 2 * DTMULT
-        sprite.x = sprite.x + Utils.random(4) * DTMULT
-        sprite.y = sprite.y + Utils.random(4) * DTMULT
-    end)
+    Game.battle:shakeAttackSprite(sprite)
 
-    sprite:play(2/30, false, function(this) -- timing may still be incorrect    
+    sprite:play(2/30, false, function(this) 
         local sound = enemy:getDamageSound() or "damage"
         if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
             Assets.stopAndPlaySound(sound)

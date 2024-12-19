@@ -5,8 +5,8 @@ function item:init()
 
     -- Display name
     self.name = "Tough Glove EX"
-    self.short_name = "TuffGloveEX"
-    self.serious_name = "Glove EX"
+    self.short_name = "TuffGlvEX"
+    self.serious_name = "GlvEX"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -92,6 +92,7 @@ function item:onLightBoltHit(lane)
         small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
         small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
         small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
+        Game.battle:shakeAttackSprite(small_punch)
         enemy.parent:addChild(small_punch)
         small_punch:play(2/30, false, function(s) s:remove(); Utils.removeFromTable(enemy.dmg_sprites, small_punch) end)
     end
@@ -118,12 +119,8 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         Assets.stopAndPlaySound("saber3", 0.7)
     end
 
-    Game.battle.timer:during(1, function()
-        sprite.x = sprite.x - 2 * DTMULT
-        sprite.y = sprite.y - 2 * DTMULT
-        sprite.x = sprite.x + Utils.random(4) * DTMULT
-        sprite.y = sprite.y + Utils.random(4) * DTMULT
-    end)
+    Game.battle:shakeCamera(2, 2, 0.35, 1)
+    Game.battle:shakeAttackSprite(sprite)
 
     sprite:play(2/30, false, function(this)   
         local sound = enemy:getDamageSound() or "damage"

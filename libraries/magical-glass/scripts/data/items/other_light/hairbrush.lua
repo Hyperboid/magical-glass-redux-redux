@@ -5,7 +5,6 @@ function item:init()
 
     -- Display name
     self.name = "Hairbrush"
-    self.short_name = "Hirbrush"
     self.serious_name = "Brush"
 
     -- Item type (item, key, weapon, armor)

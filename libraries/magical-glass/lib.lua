@@ -998,7 +998,7 @@ function lib:init()
         return ""
     end)
 
-    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.serious_name or self.name end)
+    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.name end)
     Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
 
     Utils.hook(Item, "getUseName", function(orig, self)

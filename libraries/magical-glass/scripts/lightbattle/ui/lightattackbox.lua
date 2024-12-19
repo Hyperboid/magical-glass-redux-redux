@@ -238,6 +238,9 @@ function LightAttackBox:miss(battler)
 end
 
 function LightAttackBox:update()
+    super.update(self)
+
+    if not Game.battle then return end -- prevents a crash
 
     self.timer = self.timer + DTMULT
 
@@ -274,7 +277,7 @@ function LightAttackBox:update()
             end
         end
 
-        if Game.battle and (Game.battle.cancel_attack or self.fading) then
+        if Game.battle.cancel_attack or self.fading then
             if self.shoe_finished < #self.attackers or #self.attackers == 0 then
                 self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
             end
@@ -286,8 +289,6 @@ function LightAttackBox:update()
             end
         end
     end
-
-    super.update(self)
 end
 
 function LightAttackBox:draw()
