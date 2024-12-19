@@ -1508,12 +1508,6 @@ function LightBattle:nextTurn()
         enemy:onTurnStart()
     end
 
-    if self.battle_ui then
-        for _,party in ipairs(self.party) do
-            party.chara:onTurnStart(party)
-        end
-    end
-
     if self.current_selecting ~= 0 and self.state ~= "ACTIONSELECT" then
         self:setState("ACTIONSELECT")
     end

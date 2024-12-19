@@ -1368,10 +1368,18 @@ function lib:init()
 
     Utils.hook(Bullet, "init", function(orig, self, x, y, texture)
         orig(self, x, y, texture)
-        if Game.battle.light then
+        if Game:isLight() then
             self.inv_timer = 1
         end
+        self.bonus_damage = true -- Whether the bullet deals bonus damage when having more HP (Light Battles only)
         self.remove_outside_of_arena = false
+    end)
+    
+    Utils.hook(Bullet, "onDamage", function(orig, self, soul)
+        lib.bonus_damage = self.bonus_damage
+        local battlers = orig(self, soul)
+        lib.bonus_damage = nil
+        return battlers
     end)
 
     Utils.hook(Bullet, "update", function(orig, self)
@@ -1772,22 +1780,10 @@ function lib:init()
     Utils.hook(PartyBattler, "calculateDamage", function(orig, self, amount)
         if Game:isLight() then
             local def = self.chara:getStat("defense")
-            local max_hp = self.chara:getStat("health")
+            local hp = self.chara:getHealth()
             
-            for i = 21, math.min(max_hp, 99) do
-                if i % 10 == 0 or i == 21 then
-                    amount = amount + 1
-                end
-            end
-            amount = Utils.round((amount - def) / 5)
-            
-            if min and amount < min then
-                amount = min
-            end
-
-            if cap and amount > cap then
-                amount = cap
-            end
+            local bonus = lib.bonus_damage ~= false and hp > 20 and math.min(1 + math.floor((hp - 20) / 10), 8) or 0
+            amount = Utils.round(amount / 5 + bonus - def / 5)
             
             return math.max(amount, 1)
         else

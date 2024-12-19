@@ -13,6 +13,9 @@ function bullet:init(x, y)
 
     self.physics.speed = 2.5
     self.physics.direction = math.rad(90)
+    
+    -- Whether the bullet deals bonus damage when having more HP (Light Battles only)
+    self.bonus_damage = false
 end
 
 function bullet:update()
