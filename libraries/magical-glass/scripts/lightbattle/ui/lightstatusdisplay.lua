@@ -66,8 +66,6 @@ function LightStatusDisplay:drawStatusStripStory()
     if current < 10 and current >= 0 then
         current = "0" .. tostring(current)
     end
-    
-    if Game.battle.hp_display then current = Game.battle.hp_display end
 
     local color = COLORS.white
     if not Game.battle.party[1].is_down then
@@ -79,6 +77,9 @@ function LightStatusDisplay:drawStatusStripStory()
             color = MG_PALETTE["player_karma_text"]
         end
     end
+    
+    if Game.battle.hp_display then current = Game.battle.hp_display end
+    
     love.graphics.setColor(color)
     love.graphics.print(current .. " / " .. max, x + 115 + size * 1.2 + 1 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
 end
@@ -134,8 +135,6 @@ function LightStatusDisplay:drawStatusStrip()
             if current < 10 and current >= 0 then
                 current = "0" .. tostring(current)
             end
-            
-            if Game.battle.hp_display then current = Game.battle.hp_display end
 
             local color = COLORS.white
             if not battler.is_down then
@@ -147,6 +146,9 @@ function LightStatusDisplay:drawStatusStrip()
                     color = MG_PALETTE["player_karma_text"]
                 end
             end
+            
+            if Game.battle.hp_display then current = Game.battle.hp_display end
+            
             love.graphics.setColor(color)
             love.graphics.print(current .. " / " .. max, x + 245 + size * 1.2 + 1 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
         else
