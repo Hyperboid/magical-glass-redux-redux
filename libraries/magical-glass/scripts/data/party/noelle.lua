@@ -36,6 +36,15 @@ function character:init()
 
 end
 
+if Kristal.getLibConfig("magical-glass", "debug") then
+    function character:onTurnStart(battler)
+        super.onTurnStart(self, battler)
+        if self:getFlag("auto_attack", false) then
+            Game.battle:pushForcedAction(battler, "AUTOATTACK", Game.battle:getActiveEnemies()[1], nil, {points = 150})
+        end
+    end
+end
+
 function character:lightLVStats()
     self.lw_stats = {
         health = self:getLightLV() == 20 and 99 or 16 + self:getLightLV() * 4,
