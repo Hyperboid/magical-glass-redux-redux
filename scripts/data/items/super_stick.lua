@@ -25,6 +25,8 @@ function item:init()
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
+    
+    self.attacks_amount = 2
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch)
@@ -59,11 +61,11 @@ function item:onLightAttack(battler, enemy, damage, stretch)
             this:remove()
             Utils.removeFromTable(enemy.dmg_sprites, this)
             
-            if self.counter >= 2 then
+            if self.counter >= self.attacks_amount then
                 Game.battle:finishActionBy(battler)
             end
         end)
-    end, 2)
+    end, self.attacks_amount)
 
     return false
 end
