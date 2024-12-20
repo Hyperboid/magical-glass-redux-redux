@@ -826,9 +826,9 @@ end
 function LightBattleUI:update()
     if self.help_window then
         if math.ceil(self.help_window.y) < 280 then
-            self.help_window.visible = true
+            self.help_window:toggleVisibility(true)
         else
-            self.help_window.visible = false
+            self.help_window:toggleVisibility(false)
         end
     end
 end

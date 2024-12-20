@@ -6,7 +6,7 @@ function LightTensionBar:init(x, y, dont_animate)
         x = x2 - 25
     end
 
-    super.init(self, x or -25, y or 40)
+    super.init(self, x or 25, y or 55)
 
     self.layer = BATTLE_LAYERS["ui"] - 1
 
@@ -26,8 +26,7 @@ function LightTensionBar:init(x, y, dont_animate)
 
     self.parallax_y = 0
 
-    -- still dont understand nil logic
-    if dont_animate then
+    if dont_animate ~= false then
         self.animating_in = false
     else
         self.animating_in = true

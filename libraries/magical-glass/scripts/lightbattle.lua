@@ -259,7 +259,7 @@ function LightBattle:postInit(state, encounter)
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
 
-    self.tension_bar = LightTensionBar(25, 53, true)
+    self.tension_bar = LightTensionBar(25, 55, true)
     self.tension_bar.visible = self.tension
     self:addChild(self.tension_bar)
 

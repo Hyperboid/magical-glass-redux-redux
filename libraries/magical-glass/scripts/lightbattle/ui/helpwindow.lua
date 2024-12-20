@@ -16,10 +16,10 @@ function HelpWindow:init(x, y)
     self.box_line.color = Game.battle.arena.color
     self.box_fill:addChild(self.box_line)
 
-    self.description_text = Text("", 15, 1, 400, 32, {color = COLORS.gray, font = "main_mono"})
+    self.description_text = Text("", 14, 1, 400, 32, {color = COLORS.gray, font = "main_mono"})
     self.box_fill:addChild(self.description_text)
 
-    self.cost_text = Text("", 12, 1, 539, 32, {color = PALETTE["tension_desc"], align = "right", font = "main_mono"})
+    self.cost_text = Text("", 10, 1, 539, 32, {color = PALETTE["tension_desc"], align = "right", font = "main_mono"})
     self.box_fill:addChild(self.cost_text)
 end
 
@@ -39,6 +39,7 @@ end
 
 function HelpWindow:update()
     local battle = Game.battle
+    self.box_line.color = Game.battle.arena.color
     if (battle.state == "MENUSELECT" and #battle.menu_items > 0) then
         local item = battle.state == "MENUSELECT" and Game.battle.menu_items[Game.battle:getItemIndex()]
         if (#item.description > 0 or (item.tp and item.tp > 0)) then
@@ -46,10 +47,10 @@ function HelpWindow:update()
                 self.showing = true
                 TweenManager.tween(self, {y = 237}, 6, "outCubic")
                 if Game.battle.tension_bar then
-                    TweenManager.tween(Game.battle.tension_bar, {y = 26}, 6, "outCubic")
+                    TweenManager.tween(Game.battle.tension_bar, {y = 17}, 6, "outCubic")
                 end
 				if Mod.libs["enemy_tension_bar"] and Game.battle.enemy_tension_bar then
-					TweenManager.tween(Game.battle.enemy_tension_bar, {y = 26}, 6, "outCubic")
+					TweenManager.tween(Game.battle.enemy_tension_bar, {y = 17}, 6, "outCubic")
 				end
             end
         else
@@ -57,10 +58,10 @@ function HelpWindow:update()
                 self.showing = false
                 TweenManager.tween(self, {y = 280}, 6, "outCubic")
                 if Game.battle.tension_bar then
-                    TweenManager.tween(Game.battle.tension_bar, {y = 53}, 6, "outCubic")
+                    TweenManager.tween(Game.battle.tension_bar, {y = 56}, 6, "outCubic")
                 end
 				if Mod.libs["enemy_tension_bar"] and Game.battle.enemy_tension_bar then
-					TweenManager.tween(Game.battle.enemy_tension_bar, {y = 53}, 6, "outCubic")
+					TweenManager.tween(Game.battle.enemy_tension_bar, {y = 56}, 6, "outCubic")
 				end
             end
         end
@@ -69,10 +70,10 @@ function HelpWindow:update()
             self.showing = false
             TweenManager.tween(self, {y = 280}, 6, "outCubic")
             if Game.battle.tension_bar then
-                TweenManager.tween(Game.battle.tension_bar, {y = 53}, 6, "outCubic")
+                TweenManager.tween(Game.battle.tension_bar, {y = 56}, 6, "outCubic")
             end
 			if Mod.libs["enemy_tension_bar"] and Game.battle.enemy_tension_bar then
-				TweenManager.tween(Game.battle.enemy_tension_bar, {y = 53}, 6, "outCubic")
+				TweenManager.tween(Game.battle.enemy_tension_bar, {y = 56}, 6, "outCubic")
 			end
         end
     end
