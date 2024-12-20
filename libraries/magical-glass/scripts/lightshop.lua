@@ -608,25 +608,29 @@ function LightShop:draw()
                     if current_item.item.type == "weapon" then
                         equip = party:getWeapon()
                         if current_item.item:getLightShopShowMagic() then
-                            difference = current_item.item:getStatBonus("magic") - equip:getStatBonus("magic")
+                            difference = current_item.item:getStatBonus("magic") - (equip and equip:getStatBonus("magic") or 0)
                             stat = "MG"
                         else
-                            difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
+                            difference = current_item.item:getStatBonus("attack") - (equip and equip:getStatBonus("attack") or 0)
                             stat = "AT"
                         end
                     elseif current_item.item.type == "armor" then
                         equip = party:getArmor(1)
                         if current_item.item:getLightShopShowMagic() then
-                            difference = current_item.item:getStatBonus("magic") - equip:getStatBonus("magic")
+                            difference = current_item.item:getStatBonus("magic") - (equip and equip:getStatBonus("magic") or 0)
                             stat = "MG"
                         else
-                            difference = current_item.item:getStatBonus("defense") - equip:getStatBonus("defense")
+                            difference = current_item.item:getStatBonus("defense") - (equip and equip:getStatBonus("defense") or 0)
                             stat = "DF"
                         end
                     end
 
                     if difference >= 0 then
                         difference = "+" .. difference
+                    end
+                    
+                    if not current_item.item:canEquip(party) then
+                        difference = "XX"
                     end
                     
                     table.insert(stats_diff, difference .. " ")
