@@ -40,7 +40,7 @@ function item:init()
     self.light_bolt_count = 4
     self.light_bolt_speed = 8
     self.light_bolt_speed_variance = nil
-    self.light_bolt_direction = "random"
+    self.light_bolt_direction = "right"
     self.light_bolt_miss_threshold = 4
     self.light_multibolt_variance = {{15}, {50}, {85}}
     
@@ -116,7 +116,8 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     enemy.parent:addChild(sprite)
 
     if crit then
-        Assets.stopAndPlaySound("saber3", 0.7)
+        sprite:setColor(1, 1, 130/255)
+        Assets.stopAndPlaySound("saber3")
     end
 
     Game.battle:shakeCamera(2, 2, 0.35, 1)

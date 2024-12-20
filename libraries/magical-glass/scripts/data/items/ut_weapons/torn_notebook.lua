@@ -92,9 +92,9 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         elseif timer > 15 then
             if not hit then
                 sprite:setScale(2, 2)
-                Assets.stopAndPlaySound("punchstrong", 1.3)
+                Assets.stopAndPlaySound("punchstrong")
                 if crit then
-                    Assets.stopAndPlaySound("saber3", 0.8)
+                    Assets.stopAndPlaySound("saber3")
                 end
                 sprite:setAnimation({impact, 1/30, true})
                 hit = true

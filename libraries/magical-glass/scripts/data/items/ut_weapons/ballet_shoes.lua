@@ -95,7 +95,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
     if crit then
         sprite:setColor(1, 1, 130/255)
-        Assets.stopAndPlaySound("saber3", 0.7)
+        Assets.stopAndPlaySound("saber3")
     end
 
     Game.battle:shakeAttackSprite(sprite)

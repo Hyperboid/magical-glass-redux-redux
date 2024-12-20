@@ -98,7 +98,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             star.color = {battler.chara:getLightMultiboltAttackColor()}
             if crit then
                 star:setColor(1, 1, 130/255)
-                Assets.stopAndPlaySound("saber3", 0.8)
+                Assets.stopAndPlaySound("saber3")
             end
             star.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
             table.insert(enemy.dmg_sprites, star)
