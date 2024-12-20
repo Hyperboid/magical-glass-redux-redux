@@ -1772,7 +1772,7 @@ function LightBattle:sortChildren()
     end)
 end
 
-function LightBattle:displayCustomHealth(health)
+function LightBattle:customHealthDisplay(health) -- Won't do anything in multi mode due to lack of space
     self.hp_display = health
 end
 
