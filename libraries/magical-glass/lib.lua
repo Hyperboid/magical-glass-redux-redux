@@ -367,6 +367,16 @@ function lib:init()
                     self:refresh()
                 end
             end
+            for state,menus in pairs(self.exclusive_world_menus) do
+                if state == "DARKWORLD" then
+                    state = false
+                elseif state == "LIGHTWORLD" then
+                    state = true
+                end
+                if Utils.containsValue(menus, self.current_menu) and type(state) == "boolean" and Game:isLight() ~= state then
+                    self:refresh()
+                end
+            end
         end
     end)
     
@@ -2953,6 +2963,9 @@ function lib:registerDebugOptions(debug)
     debug.exclusive_battle_menus = {}
     debug.exclusive_battle_menus["LIGHTBATTLE"] = {"light_wave_select"}
     debug.exclusive_battle_menus["DARKBATTLE"] = {"wave_select"}
+    debug.exclusive_world_menus = {}
+    debug.exclusive_world_menus["LIGHTWORLD"] = {"light_select_shop"}
+    debug.exclusive_world_menus["DARKWORLD"] = {"dark_select_shop"}
 
     debug:registerMenu("encounter_select", "Encounter Select")
     
