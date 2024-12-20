@@ -100,6 +100,7 @@ function LightShop:init()
 
     self.item_offset = 0
     self.sold_items = 0
+    self.sell_page = 1
 
     self.font = Assets.getFont("main")
     self.heart_sprite = Assets.getTexture("player/heart_menu")
@@ -270,6 +271,7 @@ function LightShop:onStateChange(old,new)
         self:setDialogueText(self.shop_text)
         self:setRightText("")
         self.sold_items = 0
+        self.sell_page = 1
     elseif new == "BUYMENU" then
         self.draw_divider = true
         self:setDialogueText("")
@@ -693,7 +695,6 @@ function LightShop:draw()
     elseif self.state == "SELLING" then
         local inventory = Game.inventory:getStorage(self.state_reason[2])
         local page = math.ceil(self.sell_current_selecting_x / 2) - 1
-        local max_page = math.ceil(#inventory / 2 * 4) - 1
 
         Draw.setColor(Game:getSoulColor())
 
@@ -706,7 +707,8 @@ function LightShop:draw()
         else
             Draw.draw(self.heart_sprite, 30 + (self.sell_current_selecting_x - 1 - (page*2)) * 280, 228 + ((self.sell_current_selecting_y) * 40), 0, 2)
             if inventory then
-                for i = 1, 8 do
+                local current_page = 8 * (self.sell_page - 1)
+                for i = 1 + current_page, 8 + current_page do
                     local item = inventory[i]
                     love.graphics.setFont(self.font)
 
@@ -724,25 +726,23 @@ function LightShop:draw()
                         else
                             display_item = "  NO! - " .. item:getShortName()
                         end
+                        i = i - current_page
                         love.graphics.print(display_item, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), math.rad(self.sell_item_rotation))
                     end
                 end
-                for i = 8, 9 - self.sold_items, -1 do
-                    Draw.setColor(COLORS.gray)
-                    love.graphics.print(self.sold_text, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20))
+                if self.sell_page >= self:getSellMaxPage() then
+                    for i = 8, 9 - self.sold_items, -1 do
+                        Draw.setColor(COLORS.gray)
+                        love.graphics.print(self.sold_text, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20))
+                    end
                 end
                 
                 Draw.setColor(COLORS.white)
 
-                love.graphics.print("Exit", 60, SCREEN_HEIGHT - 60)
-
-                local max = inventory.max
-                if inventory.sorted then
-                    max = #inventory
-                end
-
-                if max > 8 then
-                    -- draw page text
+                love.graphics.print("Exit", 60, 420)
+                
+                if self:getSellMaxPage() > 1 then
+                    love.graphics.print("PAGE " .. self.sell_page, 285, 420)
                 end
             else
                 love.graphics.print("Invalid storage", 60, 220 + (1 * 40))
@@ -864,7 +864,6 @@ function LightShop:onKeyPressed(key, is_repeat)
         end
     elseif self.state == "SELLING" then
         local inventory = Game.inventory:getStorage(self.state_reason[2])
-        local max_page = math.ceil(#inventory / 2 * 4) - 1
 
         if inventory then
             if self.sell_confirming then
@@ -874,7 +873,17 @@ function LightShop:onKeyPressed(key, is_repeat)
                     local current_item = inventory[self:getSellMenuIndex()]
                     if self.current_selecting_choice == 1 then
                         self:sellItem(current_item)
-                        if not self:isValidMenuLocation() then
+                        if #inventory % 8 == 0 then
+                            self.sold_items = 0
+                        else
+                            self.sold_items = self.sold_items + 1
+                        end
+                        if self.sell_page > self:getSellMaxPage() then
+                            self.sell_page = self.sell_page - 1
+                            self.sell_current_selecting_x = 2
+                            self.sell_current_selecting_y = 4
+                            
+                        elseif not self:isValidMenuLocation() then
                             if self.sell_current_selecting_x > 1 then
                                 self.sell_current_selecting_x = self.sell_current_selecting_x - 1
                             else
@@ -882,7 +891,6 @@ function LightShop:onKeyPressed(key, is_repeat)
                                 self.sell_current_selecting_y = self.sell_current_selecting_y - 1
                             end
                         end
-                        self.sold_items = self.sold_items + 1
                         if #Game.inventory:getStorage("items") <= 0 then
                             self:setState("MAINMENU")
                         end
@@ -913,7 +921,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                     end
                 elseif Input.isCancel(key) and not is_repeat then
                     self:setState("MAINMENU")
-                elseif Input.is("up", key) then
+                elseif Input.is("up", key) and not is_repeat then
                     local old = self.sell_current_selecting_y
                     
                     if self.sell_current_selecting_y == 5 then
@@ -926,7 +934,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                             self.sell_current_selecting_y = old
                         end
                     end
-                elseif Input.is("down", key) then
+                elseif Input.is("down", key) and not is_repeat then
                     local old = self.sell_current_selecting_y
                     self.sell_current_selecting_y = self.sell_current_selecting_y + 1
                     if not self:isValidMenuLocation() then
@@ -937,19 +945,32 @@ function LightShop:onKeyPressed(key, is_repeat)
                             self.sell_current_selecting_y = old
                         end
                     end
-                elseif Input.is("right", key) then
+                elseif Input.is("right", key) and not is_repeat and self.sell_current_selecting_y < 5 then
                     local old = self.sell_current_selecting_x
                     self.sell_current_selecting_x = self.sell_current_selecting_x + 1
                     if not self:isValidMenuLocation() then
-                        self.sell_current_selecting_x = old
+                        if self:getSellMaxPage() > 1 and self.sell_page < self:getSellMaxPage() then
+                            self.sell_page = self.sell_page + 1
+                            self.sell_current_selecting_x = 1
+                            while not self:isValidMenuLocation() do
+                                self.sell_current_selecting_y = self.sell_current_selecting_y - 1
+                            end
+                        else
+                            self.sell_current_selecting_x = old
+                        end
                     end
 
-                elseif Input.is("left", key) then
+                elseif Input.is("left", key) and not is_repeat and self.sell_current_selecting_y < 5 then
                     local old = self.sell_current_selecting_x
                     self.sell_current_selecting_x = self.sell_current_selecting_x - 1
 
                     if self.sell_current_selecting_x < 1 or not self:isValidMenuLocation() then
-                        self.sell_current_selecting_x = old
+                        if self:getSellMaxPage() > 1 and self.sell_page >= self:getSellMaxPage() then
+                            self.sell_page = self.sell_page - 1
+                            self.sell_current_selecting_x = 2
+                        else
+                            self.sell_current_selecting_x = old
+                        end
                     end
 
                 end
@@ -997,9 +1018,13 @@ function LightShop:isValidMenuLocation()
     return true
 end
 
+function LightShop:getSellMaxPage()
+    return math.ceil(#Game.inventory:getStorage(self.state_reason[2]) / 8)
+end
+
 function LightShop:getSellMenuIndex()
     local page = math.ceil(self.sell_current_selecting_x / 2) - 1
-    return (2 * (self.sell_current_selecting_y - 1) + (self.sell_current_selecting_x + (page * 2)))
+    return (2 * (self.sell_current_selecting_y - 1) + (self.sell_current_selecting_x + (page * 2))) + (self.sell_page - 1) * 8
 end
 
 function LightShop:enterSellMenu(sell_data)
