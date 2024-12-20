@@ -2870,7 +2870,7 @@ function LightBattle:onKeyPressed(key)
         if key == "y" then
             Input.clear(nil, true)
             self.forced_victory = true
-            if self.state == "DEFENDING" then
+            if Utils.containsValue({"DEFENDING", "DEFENDINGBEGIN", "ENEMYDIALOGUE"}, self.state) then
                 self.encounter:onWavesDone()
             end
             self:setState("VICTORY")

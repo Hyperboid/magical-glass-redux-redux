@@ -424,7 +424,7 @@ function lib:init()
     
     Utils.hook(Battle, "onKeyPressed", function(orig, self, key)
         if Kristal.Config["debug"] and Input.ctrl() then
-            if key == "y" and self.state == "DEFENDING" and Game:isLight() then
+            if key == "y" and Utils.containsValue({"DEFENDING", "DEFENDINGBEGIN"}, self.state) and Game:isLight() then
                 Game.battle:setState("DEFENDINGEND", "NONE")
             end
         end
@@ -3055,7 +3055,7 @@ function lib:registerDebugOptions(debug)
     end, in_dark_battle)
 
     debug:registerOption("main", "End Battle", "Instantly complete a battle.", function ()
-        if Game.battle.state == "DEFENDING" and Game:isLight() then
+        if Utils.containsValue({"DEFENDING", "DEFENDINGBEGIN"}, Game.battle.state) and Game:isLight() then
             Game.battle:setState("DEFENDINGEND", "NONE")
         end
         Game.battle:setState("VICTORY")
@@ -3068,7 +3068,7 @@ function lib:registerDebugOptions(debug)
 
     debug:registerOption("main", "End Battle", "Instantly complete a battle.", function ()
         Game.battle.forced_victory = true
-        if Game.battle.state == "DEFENDING" then
+        if Utils.containsValue({"DEFENDING", "DEFENDINGBEGIN", "ENEMYDIALOGUE"}, Game.battle.state) then
             Game.battle.encounter:onWavesDone()
         end
         Game.battle:setState("VICTORY")
