@@ -3013,25 +3013,15 @@ function lib:registerDebugOptions(debug)
         end)
     end
 
-    debug:registerMenu("select_shop", "Enter Shop")
-    
-    debug:registerOption("select_shop", "Enter Dark Shop", "Enter a dark shop.", function()
-        debug:enterMenu("dark_select_shop", 0)
-    end)
-
-    debug:registerOption("select_shop", "Enter Light Shop", "Enter a light shop.", function()
-        debug:enterMenu("light_select_shop", 0)
-    end)
-
     debug:registerMenu("light_select_shop", "Enter Light Shop", "search")
     for id,_ in pairs(self.light_shops) do
-        debug:registerOption("light_select_shop", id, "Enter this light shop.", function()
+        debug:registerOption("light_select_shop", id, "Enter this shop.", function()
             Game:enterShop(id, nil, true)
             debug:closeMenu()
         end)
     end
 
-    debug:registerMenu("dark_select_shop", "Enter Shop", "search")
+    debug:registerMenu("dark_select_shop", "Enter Dark Shop", "search")
     for id,_ in pairs(Registry.shops) do
         debug:registerOption("dark_select_shop", id, "Enter this shop.", function()
             Game:enterShop(id, nil, false)
@@ -3040,13 +3030,34 @@ function lib:registerDebugOptions(debug)
     end
     
     local in_game = function () return Kristal.getState() == Game end
+    local in_overworld = function () return in_game() and Game.state == "OVERWORLD" end
     local in_dark_battle = function () return in_game() and Game.state == "BATTLE" and not Game.battle.light end
     local in_light_battle = function () return in_game() and Game.state == "BATTLE" and Game.battle.light end
+    local in_dark_world = function () return in_game() and not Game:isLight() end
+    local in_light_world = function () return in_game() and Game:isLight() end
     
+    local index = 1
     for i = #debug.menus["main"].options, 1, -1 do
         local option = debug.menus["main"].options[i]
-        if Utils.containsValue({"Start Wave", "End Battle"}, option.name) then
+        if option.name == "Enter Shop" then -- Gets the index of the "Enter Shop" in the main debug menu
+            index = i
+        end
+        if Utils.containsValue({"Start Wave", "End Battle", "Enter Shop"}, option.name) then
             table.remove(debug.menus["main"].options, i)
+        end
+    end
+    
+    debug:registerOption("main", "Enter Shop", "Enter a dark shop.", function()
+        debug:enterMenu("dark_select_shop", 0)
+    end, function() return in_overworld() and in_dark_world() end)
+    
+    debug:registerOption("main", "Enter Shop", "Enter a light shop.", function()
+        debug:enterMenu("light_select_shop", 0)
+    end, function() return in_overworld() and in_light_world() end)
+    
+    for i,option in ipairs(debug.menus["main"].options) do -- Positions the "Enter Shop" at the usual place (both of them)
+        if option.name == "Enter Shop" then
+            table.insert(debug.menus["main"].options, index, table.remove(debug.menus["main"].options, i))
         end
     end
     
