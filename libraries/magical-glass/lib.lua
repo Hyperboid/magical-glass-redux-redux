@@ -1059,8 +1059,8 @@ function lib:init()
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
         enemy.parent:addChild(sprite)
-        -- sprite:play((math.sqrt(stretch) / 4) / 1.5, false, function(this)
-        sprite:play(Game:isLight() and ((math.sqrt(stretch) / 4) / 1.5) or 1/8, false, function(this) -- dark stuff here
+        -- sprite:play((stretch^(1/1.5) / 4) / 1.5, false, function(this)
+        sprite:play(Game:isLight() and ((stretch^(1/1.5) / 4) / 1.5) or 1/8, false, function(this) -- dark stuff here
             local sound = enemy:getDamageSound() or "damage"
             if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
                 Assets.stopAndPlaySound(sound)
