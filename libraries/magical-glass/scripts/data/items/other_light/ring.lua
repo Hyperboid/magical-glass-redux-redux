@@ -32,6 +32,8 @@ function item:init()
     -- Attack sprite (only used for simple animations)
     self.attack_sprite = "effects/attack/slap"
     
+    self.attack_pitch = 1.5
+    
     self.can_equip = {
         ["susie"] = false
     }

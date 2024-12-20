@@ -1052,8 +1052,10 @@ function lib:init()
         if damage <= 0 then
             enemy:onDodge(battler, true)
         end
-        local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
-        src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
+        -- local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c")
+        local src = Assets.stopAndPlaySound(Game:isLight() and (self.getLightAttackSound and self:getLightAttackSound() or "laz_c") or battler.chara:getAttackSound() or "laz_c")
+        -- src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
+        src:setPitch(Game:isLight() and (self.getLightAttackPitch and self:getLightAttackPitch() or 1) or battler.chara:getAttackPitch() or 1)
         -- local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
         local sprite = Sprite(Game:isLight() and (self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike") or battler.chara:getAttackSprite() or "effects/attack/cut") -- dark stuff here
         sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
