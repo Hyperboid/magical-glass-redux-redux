@@ -23,6 +23,8 @@ function item:init()
     self.price = 100
     
     self.shop_magic = true
+    
+    self.light_bolt_direction = "random"
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {
