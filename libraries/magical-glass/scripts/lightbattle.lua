@@ -22,6 +22,7 @@ function LightBattle:init()
     self.post_battletext_state = "ACTIONSELECT"
 
     self.tension = false
+    self.hp_display = nil
 
     self.fader = Fader()
     self.fader.layer = 1000
@@ -1769,6 +1770,10 @@ function LightBattle:sortChildren()
     table.stable_sort(self.children, function(a, b)
         return a.layer < b.layer or (a.layer == b.layer and (a:includes(Battler) and b:includes(Battler)) and a.y < b.y)
     end)
+end
+
+function LightBattle:displayCustomHealth(health)
+    self.hp_display = health
 end
 
 function LightBattle:update()

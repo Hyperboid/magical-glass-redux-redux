@@ -66,6 +66,8 @@ function LightStatusDisplay:drawStatusStripStory()
     if current < 10 and current >= 0 then
         current = "0" .. tostring(current)
     end
+    
+    if Game.battle.hp_display then current = Game.battle.hp_display end
 
     local color = COLORS.white
     if not Game.battle.party[1].is_down then
@@ -132,6 +134,8 @@ function LightStatusDisplay:drawStatusStrip()
             if current < 10 and current >= 0 then
                 current = "0" .. tostring(current)
             end
+            
+            if Game.battle.hp_display then current = Game.battle.hp_display end
 
             local color = COLORS.white
             if not battler.is_down then
