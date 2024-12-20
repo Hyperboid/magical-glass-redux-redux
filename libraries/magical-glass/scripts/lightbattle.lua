@@ -1982,7 +1982,8 @@ function LightBattle:updateAttacking()
                     if #self.auto_attackers <= self.auto_attacker_index then
                         if only_auto and not self.finished_full_auto then
                             self.finished_full_auto = true
-                            self.timer:after(43/30, function()
+                            local function all_actions_done() return self:allActionsDone() end
+                            self.timer:afterCond(all_actions_done, function()
                                 self.battle_ui.attack_box.fading = true
                                 self:setState("ACTIONSDONE")
                             end)
