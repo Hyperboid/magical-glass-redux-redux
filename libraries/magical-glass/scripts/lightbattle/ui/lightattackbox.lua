@@ -240,7 +240,7 @@ end
 function LightAttackBox:update()
     super.update(self)
 
-    if not Game.battle then return end -- prevents a crash
+    if Game.battle == nil then return end -- prevents a crash
 
     self.timer = self.timer + DTMULT
 
