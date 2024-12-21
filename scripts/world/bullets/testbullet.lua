@@ -18,7 +18,7 @@ function TestBullet:init(x, y, flip)
     
     self.destroy_on_hit = true
     
-    self.light_hazard_encounter = "hazardtest"
+    self.hazard_encounter = "hazardtest"
 end
 
 function TestBullet:update()
