@@ -9,15 +9,12 @@ function LightWorldBullet:getDebugInfo()
 end
 
 function LightWorldBullet:onCollide(soul)
-    if self.light_hazard_encounter then
-        if soul.inv_timer == 0 then
-            soul.inv_timer = self.inv_timer
-            if self.destroy_on_hit then
-                self:remove()
-            end
-            Game:encounter(self.light_hazard_encounter, true, nil, nil, true)
-        end
-    elseif self.destroy_on_hit then
+    if self.light_hazard_encounter and soul.inv_timer == 0 then
+        soul.inv_timer = self.inv_timer
+        Game:encounter(self.light_hazard_encounter, true, nil, nil, true)
+    end
+    
+    if soul.inv_timer ~= nil and self.destroy_on_hit then
         self:remove()
     end
 end
