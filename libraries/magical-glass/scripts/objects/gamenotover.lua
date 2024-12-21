@@ -105,7 +105,7 @@ function GameNotOver:update()
                 if Game.battle.light then
                     local function has_soul() return Game.battle.soul end
                     Game.battle.timer:afterCond(has_soul, function() -- apply inv frames
-                        Game.battle.soul.inv_timer = 1
+                        Game.battle.soul.inv_timer = Game:isLight() and 1 or (4/3)
                         for _,party in ipairs(Game.battle.party) do
                             for _,equip in ipairs(party.chara:getEquipment()) do
                                 if equip.applyInvBonus then
