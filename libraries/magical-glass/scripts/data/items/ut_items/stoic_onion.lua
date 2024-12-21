@@ -50,8 +50,8 @@ end
 
 function item:getLightBattleText(user, target)
     local message = ""
-    local picker = Utils.random(10)
-    if picker > 8 then
+    local picker = Utils.random(1, 10, 1)
+    if picker <= 2 then
         message = "\n* "..target.chara:getNameOrYou().." didn't cry..."
     end
     return "* "..target.chara:getNameOrYou().." ate the Stoic Onion."..message

@@ -50,7 +50,7 @@ function item:init(inventory)
 end
 
 function item:getShortName()
-    local name = Kristal.Config["defaultName"]
+    local name = Game.save_name and Game.save_name:upper()
     if name == "DRAK" or name == "GIGI" or name == "GUGU" or name == "SAM" then
         return "Fsteak"
     else

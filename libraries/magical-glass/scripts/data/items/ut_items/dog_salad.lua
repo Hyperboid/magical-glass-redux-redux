@@ -67,7 +67,7 @@ end
 
 function item:onWorldUse(target)
     local amount = 1
-    local dogsad = math.floor(Utils.random(4))
+    local dogsad = Utils.random(0, 3, 1)
     local text = self:getWorldUseText(target, dogsad)
 
     if dogsad == 0 then

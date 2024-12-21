@@ -41,7 +41,7 @@ function item:init(inventory)
 end
 
 function item:getWorldUseText(target)
-    local picker = math.floor(Utils.random(8))
+    local picker = Utils.random(1, 8, 1)
     local message = {
         "* You're just great!",
         "* You look nice today!",
@@ -56,7 +56,7 @@ function item:getWorldUseText(target)
 end
 
 function item:getLightBattleText(user, target)
-    local picker = math.floor(Utils.random(8))
+    local picker = Utils.random(1, 8, 1)
     local message = {
         "* You're just great!",
         "* You look nice today!",

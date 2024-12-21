@@ -63,7 +63,7 @@ function item:onLightBattleUse(user, target)
             text = text .. "\n" .. self:getLightBattleHealingText(user, target, amount)
         end
 
-        target:heal(amount)
+        target:heal(amount, nil, nil, false)
         return text
     end
 

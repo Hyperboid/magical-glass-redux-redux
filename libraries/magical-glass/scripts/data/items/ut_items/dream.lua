@@ -39,7 +39,7 @@ function item:init(inventory)
 end
 
 function item:getWorldUseText(target)
-    if not Game:getFlag("#dream_used") then
+    if not Game:getFlag("#dream_used", false) then
         Game:setFlag("#dream_used", true)
         return "* Through DETERMINATION,[wait:10] the\ndream became true."
     else
@@ -48,7 +48,7 @@ function item:getWorldUseText(target)
 end
 
 function item:getLightBattleText(user, target)
-    if not Game:getFlag("#dream_used") then
+    if not Game:getFlag("#dream_used", false) then
         Game:setFlag("#dream_used", true)
         return "* Through DETERMINATION,[wait:10] the\ndream became true."
     else

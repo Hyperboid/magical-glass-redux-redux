@@ -44,4 +44,9 @@ function item:onToss()
     return true
 end
 
+function item:onWorldUse(target)
+    Game.world:showText("* You deployed the dog.")
+    return true
+end
+
 return item
