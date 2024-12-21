@@ -1519,10 +1519,15 @@ function lib:init()
                 Draw.setColor(PALETTE["world_text_unusable"])
             end
             if self.state == "PARTYSELECT" then
-                love.graphics.setScissor(self.x, self.y, SCREEN_WIDTH, 218)
+                local function party_box_area()
+                    local party_box = self.party_select_bg
+                    love.graphics.rectangle("fill", party_box.x - 24, party_box.y - 24, party_box.width + 48, party_box.height + 48)
+                end
+                love.graphics.stencil(party_box_area, "replace", 1)
+                love.graphics.setStencilTest("equal", 0)
             end
             love.graphics.print(item:getName(), 20, -28 + (index * 32))
-            love.graphics.setScissor()
+            love.graphics.setStencilTest()
         end
 
         if self.state ~= "PARTYSELECT" then
@@ -2271,6 +2276,15 @@ function lib:init()
 
     Utils.hook(LightMenu, "draw", function(orig, self)
         Object.draw(self)
+        
+        if self.box and self.box.state == "PARTYSELECT" then
+            local function party_box_area()
+                local party_box = self.box.party_select_bg
+                love.graphics.rectangle("fill", party_box.x + 188, party_box.y + 52, party_box.width + 48, party_box.height + 48)
+            end
+            love.graphics.stencil(party_box_area, "replace", 1)
+            love.graphics.setStencilTest("equal", 0)
+        end
 
         local offset = 0
         if self.top then
@@ -2327,6 +2341,8 @@ function lib:init()
             Draw.setColor(Game:getSoulColor())
             Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
         end
+        
+        love.graphics.setStencilTest()
     end)
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
