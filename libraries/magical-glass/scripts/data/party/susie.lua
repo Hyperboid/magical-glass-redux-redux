@@ -18,7 +18,9 @@ function character:init()
     -- Default light world equipment item IDs (saves current equipment)
     self.lw_weapon_default = "light/hairbrush"
     self.lw_armor_default = "light/bandage"
-
+    
+    -- What weapon animation the character will use when attacking without a weapon
+    self.no_weapon_attacking_animation_weapon = "ut_weapons/tough_glove_ex"
 end
 
 function character:lightLVStats()

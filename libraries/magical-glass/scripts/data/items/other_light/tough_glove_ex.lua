@@ -115,12 +115,14 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
 
-    if crit then
-        sprite:setColor(1, 1, 130/255)
-        Assets.stopAndPlaySound("saber3")
-    end
+    if battler.chara:getWeapon() then -- attacking without a weapon
+        if crit then
+            sprite:setColor(1, 1, 130/255)
+            Assets.stopAndPlaySound("saber3")
+        end
 
-    Game.battle:shakeCamera(2, 2, 0.35, 1)
+        Game.battle:shakeCamera(2, 2, 0.35, 1)
+    end
     Game.battle:shakeAttackSprite(sprite)
 
     sprite:play(2/30, false, function(this)   

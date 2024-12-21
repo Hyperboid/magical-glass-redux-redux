@@ -618,7 +618,7 @@ function LightBattle:processAction(action)
                 end
             end
 
-            local weapon = battler.chara:getWeapon() or Registry.createItem("light/ring") -- allows attacking without a weapon (uses the Ring attacking animation and pitch)
+            local weapon = battler.chara:getWeapon() or Registry.createItem(battler.chara.no_weapon_attacking_animation_weapon) -- allows attacking without a weapon
             local damage = 0
             local crit
 
@@ -658,7 +658,7 @@ function LightBattle:processAction(action)
             end
         end
         
-        local weapon = battler.chara:getWeapon() or Registry.createItem("light/ring") -- allows attacking without a weapon (uses the Ring attacking animation and pitch)
+        local weapon = battler.chara:getWeapon() or Registry.createItem(battler.chara.no_weapon_attacking_animation_weapon) -- allows attacking without a weapon
         local damage = 0
         local crit
         
