@@ -14,19 +14,19 @@ function item:init()
     self.light = true
 
     -- Shop description
-    self.shop = "Slap 'em."
+    self.shop = "Slap 'em,\nbetter!"
     -- Default shop price (sell price is halved)
-    self.price = 50
+    self.price = 180
     -- Default shop sell price
-    self.sell_price = 50
+    self.sell_price = 60
     -- Whether the item can be sold
     self.can_sell = true
 
     -- Item description text (unused by light items outside of debug menu)
-    self.description = "A worn pink leather glove.\nFor five-fingered folk."
+    self.description = "A worn pink leather glove.\nFor five-fingered folk.\nAttacks with multiple bolts, which allows it to deal more damage."
 
     -- Light world check text
-    self.check = "Weapon AT 5\n* A worn pink leather glove.[wait:10]\nFor five-fingered folk."
+    self.check = {"Weapon AT 5\n* A worn pink leather glove.[wait:10]\nFor five-fingered folk.", "* Attacks with multiple bolts, which allows it to deal more damage."}
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -39,14 +39,13 @@ function item:init()
 
     self.light_bolt_count = 4
     self.light_bolt_speed = 8
-    self.light_bolt_speed_variance = nil
     self.light_bolt_direction = "right"
     self.light_bolt_miss_threshold = 4
-    self.light_multibolt_variance = {{15}, {50}, {85}}
+    self.light_multibolt_variance = {{15, 50}, {85, 120}, {155, 190}}
     
     self.bolt_count = 4
     self.bolt_speed = 4
-    self.multibolt_variance = 30
+    self.multibolt_variance = {{30, 60}}
 
     self.attack_sound = "punchstrong"
 

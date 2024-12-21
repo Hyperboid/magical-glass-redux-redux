@@ -36,6 +36,7 @@ function TestShop:init()
     self:registerItem("ut_items/legendary_hero")
     self:registerItem("ut_armors/temy_armor")
     self:registerItem("ut_items/annoying_dog")
+    self:registerItem("ut_weapons/tough_glove_ex")
 
     self:registerTalk("Reflect")
     self:registerTalk("Where I Am")
