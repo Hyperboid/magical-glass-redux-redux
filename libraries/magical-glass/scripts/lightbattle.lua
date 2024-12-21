@@ -1516,7 +1516,7 @@ function LightBattle:nextTurn()
                 end
             end
             if not found then
-                action_box.selected_button = 1
+                action_box.selected_button = action_box.last_button or 1
             end
         end
         
@@ -2811,7 +2811,7 @@ function LightBattle:nextParty()
                 end
             end
             if not found then
-                action_box.selected_button = 1
+                action_box.selected_button = action_box.last_button or 1
             end
             break
         end
