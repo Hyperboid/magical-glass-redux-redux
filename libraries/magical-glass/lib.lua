@@ -1559,7 +1559,7 @@ function lib:init()
         elseif self.state == "PARTYSELECT" then
             local item = Game.inventory:getItem(self.storage, self.item_selecting)
             Draw.setColor(PALETTE["world_text"])
-
+            
             Draw.printAlign("Use " .. item:getName() .. " on", 150, 233, "center")
 
             local z = Mod.libs["moreparty"] and Kristal.getLibConfig("moreparty", "classic_mode") and 3 or 4
