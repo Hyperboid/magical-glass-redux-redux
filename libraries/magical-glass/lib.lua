@@ -1447,7 +1447,6 @@ function lib:init()
                 self.option_selecting = self.option_selecting + 1
             end
     
-            -- this wraps in deltatraveler
             self.option_selecting = Utils.clamp(self.option_selecting, 1, 3)
     
             if self.option_selecting ~= old_selecting then
@@ -1490,12 +1489,6 @@ function lib:init()
                 self.party_selecting = self.party_selecting - 1
             end
 
-            -- this wraps in deltatraveler
-            -- if self.party_selecting < 1 then
-                -- self.party_selecting = #Game.party
-            -- elseif self.party_selecting > #Game.party then
-                -- self.party_selecting = 1
-            -- end
             self.party_selecting = Utils.clamp(self.party_selecting, 1, #Game.party)
 
             if self.party_selecting ~= old_selecting then
