@@ -1526,7 +1526,7 @@ function lib:init()
                 Draw.setColor(PALETTE["world_text_unusable"])
             end
             if self.state == "PARTYSELECT" then
-                love.graphics.setScissor(self.x, self.y, 300, 220)
+                love.graphics.setScissor(self.x, self.y, SCREEN_WIDTH, 218)
             end
             love.graphics.print(item:getName(), 20, -28 + (index * 32))
             love.graphics.setScissor()

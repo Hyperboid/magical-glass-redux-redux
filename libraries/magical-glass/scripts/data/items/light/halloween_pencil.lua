@@ -4,7 +4,7 @@ function item:init()
     super.init(self)
 
     -- Display name
-    self.show_name = "HallowPencil"
+    self.short_name = "HllwPencil"
 
     self.price = 6
 end
