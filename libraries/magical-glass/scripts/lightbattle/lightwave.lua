@@ -3,7 +3,7 @@ local LightWave, super = Class(Wave)
 function LightWave:init()
     super.init(self)
     
-    self.allow_duplicates = false
+    self.allow_duplicates = true
 
     self.has_soul = true
     self.darken = false

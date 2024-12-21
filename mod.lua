@@ -17,5 +17,16 @@ function Mod:load(data, new_file)
 end
 
 -- function Mod:getLightActionButtons(battler, buttons)
-    -- return {"fight", "act"}
+    -- if battler.chara.id == "susie" then
+        -- return {false, "fight"}
+    -- end
+-- end
+
+-- function Mod:getLightActionButtonPairs(pairs)
+    -- for _,pair in ipairs(pairs) do
+        -- if Utils.containsValue(pair, "act") then
+            -- table.insert(pair, "mercy")
+            -- break
+        -- end
+    -- end
 -- end

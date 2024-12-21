@@ -81,6 +81,7 @@ function LightBattle:init()
     self.current_action_index = 1
     self.processed_action = {}
     self.processing_action = false
+    self.last_button_type = ""
 
     self.attackers = {}
     self.normal_attackers = {}
@@ -973,12 +974,7 @@ function LightBattle:onStateChange(old,new)
         end
         self.battle_ui:clearEncounterText()
 
-        if self.state_reason == "ACT" then
-            self.current_menu_columns = 2
-            self.current_menu_rows = 3
-        end
-
-        if self.menuselect_cursor_memory[self.state_reason] then
+        if self.menuselect_cursor_memory[self.state_reason] and self.current_menu_columns == 1 then
             self.current_menu_x = self.menuselect_cursor_memory[self.state_reason].x
             self.current_menu_y = self.menuselect_cursor_memory[self.state_reason].y
         else
@@ -1487,16 +1483,43 @@ function LightBattle:nextTurn()
         end
     end
 
-    self.current_button = 1
-
     self.character_actions = {}
     self.current_actions = {}
     self.processed_action = {}
 
     if self.battle_ui then
-        for _,box in ipairs(self.battle_ui.action_boxes) do
-            box.selected_button = box.last_button or 1
+        local found = false
+        for _,action_box in ipairs(self.battle_ui.action_boxes) do
+            for i,button in ipairs(action_box.buttons or {}) do
+                if button.type == self.last_button_type then
+                    action_box.selected_button = i
+                    found = true
+                    break
+                end
+            end
+            if not found then
+                local group
+                for _,pair in ipairs(self:actionButtonPairs()) do
+                    if Utils.containsValue(pair, self.last_button_type) then
+                        group = pair
+                        break
+                    end
+                end
+                if group then
+                    for i,button in ipairs(action_box.buttons or {}) do
+                        if Utils.containsValue(group, button.type) then
+                            action_box.selected_button = i
+                            found = true
+                            break
+                        end
+                    end
+                end
+            end
+            if not found then
+                action_box.selected_button = 1
+            end
         end
+        
         if not self.seen_encounter_text then
             self.seen_encounter_text = true
             self.battle_ui.current_encounter_text = self.encounter.text
@@ -2722,12 +2745,22 @@ function LightBattle:setSelectedParty(index)
     self.current_selecting = index or 0
 end
 
+function LightBattle:actionButtonPairs()
+    local pairs = {{"act", "magic"}}
+    for lib_id,_ in Kristal.iterLibraries() do
+        pairs = Kristal.libCall(lib_id, "getLightActionButtonPairs", pairs) or pairs
+    end
+    pairs = Kristal.modCall("getLightActionButtonPairs", pairs) or pairs
+    return pairs
+end
+
 function LightBattle:nextParty()
     table.insert(self.selected_character_stack, self.current_selecting)
     table.insert(self.selected_action_stack, Utils.copy(self.character_actions))
 
     local all_done = true
     local last_selected = self.current_selecting
+    
     self.current_selecting = (self.current_selecting % #self.party) + 1
     while self.current_selecting ~= last_selected do
         if not self:hasAction(self.current_selecting) and self.party[self.current_selecting]:isActive() then
@@ -2736,12 +2769,60 @@ function LightBattle:nextParty()
         end
         self.current_selecting = (self.current_selecting % #self.party) + 1
     end
+    
+    local last_button_type = ""
+    local found = false
+    for _,action_box in ipairs(self.battle_ui.action_boxes) do
+        if action_box.battler == self.party[last_selected] then
+            for i,button in ipairs(action_box.buttons or {}) do
+                if i == action_box.last_button then
+                    last_button_type = button.type
+                    break
+                end
+            end
+            break
+        end
+    end
+    for _,action_box in ipairs(self.battle_ui.action_boxes) do
+        if action_box.battler == self.party[self.current_selecting] then
+            for i,button in ipairs(action_box.buttons or {}) do
+                if button.type == last_button_type then
+                    action_box.selected_button = i
+                    found = true
+                    break
+                end
+            end
+            if not found then
+                local group
+                for _,pair in ipairs(self:actionButtonPairs()) do
+                    if Utils.containsValue(pair, last_button_type) then
+                        group = pair
+                        break
+                    end
+                end
+                if group then
+                    for i,button in ipairs(action_box.buttons or {}) do
+                        if Utils.containsValue(group, button.type) then
+                            action_box.selected_button = i
+                            found = true
+                            break
+                        end
+                    end
+                end
+            end
+            if not found then
+                action_box.selected_button = 1
+            end
+            break
+        end
+    end
 
     if all_done then
         self.selected_character_stack = {}
         self.selected_action_stack = {}
         self.current_action_processing = 1
         self.current_selecting = 0
+        self.last_button_type = last_button_type
         self:startProcessing()
     else
         if self:getState() ~= "ACTIONSELECT" then
@@ -3069,6 +3150,8 @@ function LightBattle:onKeyPressed(key)
                 self:pushAction("SAVE", self.enemies_index[self.selected_enemy])
             elseif self.state_reason == "ACT" then
                 self:clearMenuItems()
+                self.current_menu_columns = 2
+                self.current_menu_rows = 3
                 local enemy = self.enemies_index[self.selected_enemy]
                 for _,v in ipairs(enemy.acts) do
                     local insert = not v.hidden

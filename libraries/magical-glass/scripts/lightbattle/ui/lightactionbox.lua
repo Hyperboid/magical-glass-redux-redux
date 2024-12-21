@@ -9,10 +9,6 @@ function LightActionBox:init(x, y, index, battler)
     self.selected_button = 1
     self.last_button = 1
 
-    self.revert_to = 40
-
-    self.data_offset = 0
-
     if not Game.battle.encounter.story then
         self:createButtons()
     end

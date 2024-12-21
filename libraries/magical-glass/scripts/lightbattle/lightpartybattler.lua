@@ -225,7 +225,7 @@ function LightPartyBattler:toggleSaveButton(value)
     self.has_save = value and true or false
     for _,action_box in ipairs(Game.battle.battle_ui.action_boxes) do
         if action_box.battler == self then
-            for _,button in ipairs(action_box.buttons) do
+            for _,button in ipairs(action_box.buttons or {}) do
                 if button.type == "act" then
                     button.rainbow = value and true or false
                     if value then
@@ -238,6 +238,7 @@ function LightPartyBattler:toggleSaveButton(value)
                     button:setColor(1, 1, 1, 1)
                 end
             end
+            break
         end
     end
 end
