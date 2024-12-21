@@ -193,6 +193,7 @@ function LightEncounter:storyWave()
 end
 
 function LightEncounter:setBattleState()
+    if Game.battle.forced_victory then return end
     if self.story then
         Game.battle:setState("ENEMYDIALOGUE")
         Game.battle.soul.can_move = true

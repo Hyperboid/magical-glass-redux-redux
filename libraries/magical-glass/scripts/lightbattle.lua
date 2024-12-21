@@ -1989,6 +1989,7 @@ function LightBattle:updateAttacking()
                             self.finished_full_auto = true
                             local function all_actions_done() return self:allActionsDone() end
                             self.timer:afterCond(all_actions_done, function()
+                                if self.forced_victory then return false end
                                 self.battle_ui.attack_box.fading = true
                                 self:setState("ACTIONSDONE")
                             end)

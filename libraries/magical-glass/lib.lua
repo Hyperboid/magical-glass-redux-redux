@@ -1417,7 +1417,7 @@ function lib:init()
 
         if Mod.libs["moreparty"] and #Game.party > 3 then
             if not Kristal.getLibConfig("moreparty", "classic_mode") then
-                self.party_select_bg = UIBox(-92, 242, 482, 90)
+                self.party_select_bg = UIBox(-92, 242, 482, #Game.party == 4 and 52 or 90)
             else
                 self.party_select_bg = UIBox(-36, 242, 370, 90)
             end
@@ -1432,8 +1432,6 @@ function lib:init()
     end)
     
     Utils.hook(LightItemMenu, "update", function(orig, self)
-        lib.is_light_menu_partyselect = false
-    
         if self.state == "ITEMOPTION" then
             if Input.pressed("cancel") then
                 self.state = "ITEMSELECT"
@@ -1460,18 +1458,11 @@ function lib:init()
             if Input.pressed("confirm") then
                 local item = Game.inventory:getItem(self.storage, self.item_selecting)
                 if self.option_selecting == 1 and (item.usable_in == "world" or item.usable_in == "all") and not (item.target == "enemy" or item.target == "enemies") then
-                    local condition = #Game.party > 1 and not item.skip_overworld_selection
-                    if condition and item.target == "ally" then
+                    self.party_selecting = 1
+                    if #Game.party > 1 and not item.skip_overworld_selection and item.target == "ally" then
                         self.ui_select:stop()
                         self.ui_select:play()
                         self.party_select_bg.visible = true
-                        self.party_selecting = 1
-                        self.state = "PARTYSELECT"
-                    elseif condition and item.target == "party" then
-                        self.ui_select:stop()
-                        self.ui_select:play()
-                        self.party_select_bg.visible = true
-                        self.party_selecting = "all"
                         self.state = "PARTYSELECT"
                     else
                         self:useItem(item)
@@ -1483,46 +1474,38 @@ function lib:init()
                 end
             end
         elseif self.state == "PARTYSELECT" then
-            lib.is_light_menu_partyselect = true
             if Input.pressed("cancel") then
                 self.party_select_bg.visible = false
                 self.state = "ITEMOPTION"
                 return
             end
     
-            if self.party_selecting ~= "all" then
-                local old_selecting = self.party_selecting
+            local old_selecting = self.party_selecting
 
-                if Input.pressed("right") then
-                    self.party_selecting = self.party_selecting + 1
-                end
-        
-                if Input.pressed("left") then
-                    self.party_selecting = self.party_selecting - 1
-                end
+            if Input.pressed("right") then
+                self.party_selecting = self.party_selecting + 1
+            end
+    
+            if Input.pressed("left") then
+                self.party_selecting = self.party_selecting - 1
+            end
 
-                -- this wraps in deltatraveler
-                -- if self.party_selecting < 1 then
-                    -- self.party_selecting = #Game.party
-                -- elseif self.party_selecting > #Game.party then
-                    -- self.party_selecting = 1
-                -- end
-                self.party_selecting = Utils.clamp(self.party_selecting, 1, #Game.party)
+            -- this wraps in deltatraveler
+            -- if self.party_selecting < 1 then
+                -- self.party_selecting = #Game.party
+            -- elseif self.party_selecting > #Game.party then
+                -- self.party_selecting = 1
+            -- end
+            self.party_selecting = Utils.clamp(self.party_selecting, 1, #Game.party)
 
-                if self.party_selecting ~= old_selecting then
-                    self.ui_move:stop()
-                    self.ui_move:play()
-                end
+            if self.party_selecting ~= old_selecting then
+                self.ui_move:stop()
+                self.ui_move:play()
+            end
 
-                if Input.pressed("confirm") then
-                    local item = Game.inventory:getItem(self.storage, self.item_selecting)
-                    self:useItem(item, self.party_selecting)
-                end
-            else
-                if Input.pressed("confirm") then
-                    local item = Game.inventory:getItem(self.storage, self.item_selecting)
-                    self:useItem(item, Game.party)
-                end
+            if Input.pressed("confirm") then
+                local item = Game.inventory:getItem(self.storage, self.item_selecting)
+                self:useItem(item)
             end
 
         else
@@ -1591,11 +1574,11 @@ function lib:init()
 
             Draw.setColor(Game:getSoulColor())
             for i,party in ipairs(Game.party) do
-                if i == self.party_selecting or self.party_selecting == "all" then
+                if i == self.party_selecting then
                     if i <= z then
-                        Draw.draw(self.heart_sprite, 40 - (math.min(#Game.party,z) - 2) * 70 + (i - 1) * 122, 277, 0, 2, 2)
+                        Draw.draw(self.heart_sprite, 38 - (math.min(#Game.party,z) - 2) * 70 + (i - 1) * 122, 277, 0, 2, 2)
                     else
-                        Draw.draw(self.heart_sprite, 40 - (math.min(#Game.party - z,z) - 2) * 70 + (i - 1 - z) * 122, 277 + 36, 0, 2, 2)
+                        Draw.draw(self.heart_sprite, 38 - (math.min(#Game.party - z,z) - 2) * 70 + (i - 1 - z) * 122, 277 + 36, 0, 2, 2)
                     end
                 end
             end
@@ -1620,7 +1603,6 @@ function lib:init()
                 Game.inventory:removeItem(item)
             end
         end
-
     end)
 
     Utils.hook(World, "heal", function(orig, self, target, amount, text, item)
@@ -2300,9 +2282,6 @@ function lib:init()
         local offset = 0
         if self.top then
             offset = 270
-            if lib.is_light_menu_partyselect and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
-                love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
-            end
         end
 
         local chara = Game.party[1]
@@ -2320,8 +2299,6 @@ function lib:init()
         else
             love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4)..Game.lw_money, 46, 136 + offset)
         end
-        
-        love.graphics.setScissor()
 
         love.graphics.setFont(self.font)
         if Game.inventory:getItemCount(self.storage, false) <= 0 then
