@@ -1840,7 +1840,7 @@ function lib:init()
         self.undertale_movement = false
         
         -- What weapon animation the character will use when attacking without a weapon
-        self.no_weapon_attacking_animation_weapon = "light/ring"
+        self.no_weapon_attacking_animation_weapon = "custom/ring"
         
         self.lw_stats_bonus = {
             health = 0,
