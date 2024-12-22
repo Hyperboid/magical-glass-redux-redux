@@ -843,6 +843,24 @@ function lib:init()
         self.equip_can_convert = nil
     end)
     
+    Utils.hook(Item, "getName", function(orig, self)
+        if self.light and #orig(self) > 15 and Game.state == "BATTLE" and not Game.battle.light and self.short_name then
+            return self.short_name
+        else
+            return orig(self)
+        end
+    end)
+    
+    Utils.hook(Item, "getUseName", function(orig, self)
+        if self.light and Game.state == "BATTLE" and not Game.battle.light and self:getName() == self.short_name then
+            return self.use_name and self.use_name:upper() or self.name:upper()
+        elseif (Game.state == "OVERWORLD" and Game:isLight()) or (Game.state == "BATTLE" and Game.battle.light)  then
+            return self.use_name or self:getName()
+        else
+            return self.light and self.use_name and self.use_name:upper() or orig(self)
+        end
+    end)
+    
     Utils.hook(Item, "canEquip", function(orig, self, character, slot_type, slot_index)
         if self.light then
             return self.can_equip[character.id] ~= false
@@ -1010,14 +1028,6 @@ function lib:init()
 
     Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.name end)
     Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
-
-    Utils.hook(Item, "getUseName", function(orig, self)
-        if (Game.state == "OVERWORLD" and Game:isLight()) or (Game.state == "BATTLE" and Game.battle.light)  then
-            return self.light and self.use_name or self:getName()
-        else
-            return not self.light and self.use_name or self.use_name and self.use_name:upper() or self:getName():upper()
-        end
-    end)
 
     Utils.hook(Item, "getUseMethod", function(orig, self, target)
         if type(target) == "string" then

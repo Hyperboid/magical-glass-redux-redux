@@ -46,14 +46,14 @@ end
 
 function item:getLightBattleText(user, target)
     local message = ""
-    if not self.dumbass then
+    if not self.cooked then
         message = "\n* They're better dry."
     end
     return "* " .. target.chara:getNameOrYou() .. " "..self:getUseMethod(target.chara).." the Instant Noodles."..message
 end
 
 function item:onLightBattleUse(user, target)
-    self.dumbass = false
+    self.cooked = false
     local function heal()
         local text = self:getLightBattleText(user, target)
         self:battleUseSound(user, target)
@@ -86,7 +86,7 @@ function item:onLightBattleUse(user, target)
             cutscene:text("[noskip]* That's better.")
             cutscene:text("[noskip]* Not great,[wait:10] but better.")
             Game.battle.music:resume()
-            self.dumbass = true
+            self.cooked = true
             self.heal_amount = 4 
             cutscene:text(heal())
         end)
@@ -95,6 +95,13 @@ function item:onLightBattleUse(user, target)
         super.onLightBattleUse(self, user, target)
     end
     return true
+end
+
+function item:onBattleUse(user, target)
+    if not MagicalGlassLib.serious_mode then
+        self.heal_amount = 4
+    end
+    return super.onBattleUse(self, user, target)
 end
 
 return item

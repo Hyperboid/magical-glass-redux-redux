@@ -701,7 +701,7 @@ function LightShop:draw()
         if self.sell_confirming then
             Draw.draw(self.heart_sprite, -90 + (self.current_selecting_choice * 220), 360 + 10, 0, 2)
             Draw.setColor(COLORS.white)
-            love.graphics.print(string.format(self.sell_confirmation_text, inventory[self:getSellMenuIndex()]:getShortName(), string.format(self.currency_text, inventory[self:getSellMenuIndex()]:getSellPrice())), 60 + 50, 300)
+            love.graphics.print(string.format(self.sell_confirmation_text, MagicalGlassLib.serious_mode and inventory[self:getSellMenuIndex()]:getSeriousName() or inventory[self:getSellMenuIndex()]:getShortName(), string.format(self.currency_text, inventory[self:getSellMenuIndex()]:getSellPrice())), 60 + 50, 300)
             love.graphics.print(self.sell_confirmation_yes_text, 60 + 100, 360)
             love.graphics.print(self.sell_confirmation_no_text,  60 + 100 + 220, 360)
         else
@@ -716,7 +716,7 @@ function LightShop:draw()
                         local display_item
                         Draw.setColor(COLORS.white)
                         if item:isSellable() then
-                            display_item = string.format(self.currency_text, item:getSellPrice()) .. " - " .. item:getShortName()
+                            display_item = string.format(self.currency_text, item:getSellPrice()) .. " - " .. (MagicalGlassLib.serious_mode and item:getSeriousName() or item:getShortName())
                             if item:getSellPrice() < 10 then
                                 display_item = "  " .. display_item
                             end
@@ -724,7 +724,7 @@ function LightShop:draw()
                                 display_item = "  " .. display_item
                             end
                         else
-                            display_item = "  NO! - " .. item:getShortName()
+                            display_item = "  NO! - " .. (MagicalGlassLib.serious_mode and item:getSeriousName() or item:getShortName())
                         end
                         i = i - current_page
                         love.graphics.print(display_item, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), math.rad(self.sell_item_rotation))
