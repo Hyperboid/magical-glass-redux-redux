@@ -1026,8 +1026,8 @@ function lib:init()
         return ""
     end)
 
-    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.name end)
-    Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
+    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self:getName() end)
+    Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self:getShortName() end)
 
     Utils.hook(Item, "getUseMethod", function(orig, self, target)
         if type(target) == "string" then
