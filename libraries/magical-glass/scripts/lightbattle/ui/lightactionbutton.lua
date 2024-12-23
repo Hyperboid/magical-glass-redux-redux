@@ -181,17 +181,13 @@ function LightActionButton:select()
                 end
             end
         })
-        local battler_can_defend = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
-        if self.battler.chara.light_can_defend ~= nil then
-            battler_can_defend = self.battler.chara.light_can_defend
-        end
-        if battler_can_defend then
+        if Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight() then
             Game.battle:addMenuItem({
                 ["name"] = "Defend",
                 ["special"] = "defend",
                 ["callback"] = function(menu_item)
                     Game.battle:toggleSoul(false)
-                    Game.battle:pushAction("DEFEND", nil, {tp = Game.battle.tension and -16 or 0})
+                    Game.battle:pushAction("DEFEND", nil, {tp = -16})
                 end
             })
         end
@@ -228,11 +224,16 @@ function LightActionButton:select()
             })
         end
         Game.battle:setState("MENUSELECT", "MERCY")
+    elseif self.type == "spare" then
+        self.battler.spare_button = true
+        Game.battle:setState("ENEMYSELECT", "SPARE")
+    elseif self.type == "defend" then
+        Game.battle:pushAction("DEFEND", nil, {tp = -16})
     end
 end
 
 function LightActionButton:unselect()
-    -- Do nothing ?
+    self.battler.spare_button = false
 end
 
 function LightActionButton:draw()

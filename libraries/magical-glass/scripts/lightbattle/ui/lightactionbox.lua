@@ -23,7 +23,7 @@ function LightActionBox:createButtons()
 
     self.buttons = {}
 
-    local btn_types = {"fight", "act", "magic", "item", "mercy"}
+    local btn_types = {"fight", "act", "magic", "item", "mercy"} -- There's also "defend" and "spare" as a seperated buttons instead of being part of "mercy"
 
     if not self.battler.chara:hasAct() then Utils.removeFromTable(btn_types, "act") end
     if not self.battler.chara:hasSpells() then Utils.removeFromTable(btn_types, "magic") end

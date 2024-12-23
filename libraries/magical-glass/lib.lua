@@ -206,6 +206,10 @@ function lib:preInit()
         ["player_down_text"] = COLORS.red,
         ["player_sleeping_text"] = COLORS.blue,
         ["player_karma_text"] = COLORS.fuchsia,
+        
+        ["light_world_dark_battle_color"] = COLORS.white,
+        ["light_world_dark_battle_color_attackbar"] = COLORS.lime,
+        ["light_world_dark_battle_color_attackbox"] = {0.5, 0, 0, 1},
     }
     
     self.random_encounters = {}
@@ -243,7 +247,6 @@ function lib:preInit()
         light_shop.id = light_shop.id or path
         self.light_shops[light_shop.id] = light_shop
     end
-    
 end
 
 function lib:init()
@@ -432,6 +435,14 @@ function lib:init()
         self.soul_speed_bonus = 0
     end)
     
+    Utils.hook(Battle, "postInit", function(orig, self, state, encounter)
+        orig(self, state, encounter)
+        if not Kristal.getLibConfig("magical-glass", "light_world_dark_battle_tension") and Game:isLight() then
+            self.tension_bar:remove()
+            self.tension_bar = nil
+        end
+    end)
+    
     Utils.hook(Battle, "onKeyPressed", function(orig, self, key)
         if Kristal.Config["debug"] and Input.ctrl() then
             if key == "y" and Utils.containsValue({"DEFENDING", "DEFENDINGBEGIN"}, self.state) and Game:isLight() then
@@ -508,7 +519,9 @@ function lib:init()
                 box:resetHeadIcon()
             end
 
-            self.money = self.money + (math.floor((Game:getTension() * 2.5) / 30))
+            if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_tension") then
+                self.money = self.money + (math.floor((Game:getTension() * 2.5) / 30))
+            end
 
             for _,battler in ipairs(self.party) do
                 for _,equipment in ipairs(battler.chara:getEquipment()) do
@@ -562,7 +575,7 @@ function lib:init()
         end
     end)
     
-    Utils.hook(Soul, "onDamage", function(orig, self)
+    Utils.hook(Soul, "onDamage", function(orig, self, bullet, amount)
         for _,party in ipairs(Game.battle.party) do
             for _,equip in ipairs(party.chara:getEquipment()) do
                 if equip.applyInvBonus then
@@ -570,12 +583,15 @@ function lib:init()
                 end
             end
         end
-        orig(self)
+        orig(self, bullet, amount)
     end)
     
     Utils.hook(Soul, "init", function(orig, self, x, y, color)
         orig(self, x, y, color)
         self.speed = self.speed + Game.battle.soul_speed_bonus
+        if not Kristal.getLibConfig("magical-glass", "light_world_dark_battle_tension") and Game:isLight() then
+            self.graze_collider = nil
+        end
     end)
 
     Utils.hook(TensionItem, "onBattleSelect", function(orig, self, user, target)
@@ -1824,13 +1840,8 @@ function lib:init()
         orig(self)
 
         self.short_name = nil
-
-        self.light_can_defend = nil
         
         self.undertale_movement = false
-        
-        -- What weapon animation the character will use when attacking without a weapon
-        self.no_weapon_attacking_animation_weapon = "custom/ring"
         
         self.lw_stats_bonus = {
             health = 0,
@@ -2155,13 +2166,53 @@ function lib:init()
     
     -- Main Color
     Utils.hook(PartyMember, "getColor", function(orig, self)
-        if self.light_color and Game:isLight() then
+        if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") == true and Game:isLight() and Game.battle and not Game.battle.light then
+            return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color"])
+        elseif self.light_color and Game:isLight() then
             return Utils.unpackColor(self.light_color)
         else
             return orig(self)
         end
     end)
+    
+    -- Dark Battle Colors
+    Utils.hook(PartyMember, "getAttackBarColor", function(orig, self)
+        if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") == true and Game:isLight() then
+            return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color_attackbar"])
+        else
+            return orig(self)
+        end
+    end)
 
+    Utils.hook(PartyMember, "getAttackBoxColor", function(orig, self)
+        if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") == true and Game:isLight() then
+            return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color_attackbox"])
+        else
+            return orig(self)
+        end
+    end)
+    
+    Utils.hook(PartyMember, "getDamageColor", function(orig, self)
+        if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") == true and Game:isLight() and #Game.battle.party == 1 then
+            return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color"])
+        else
+            return orig(self)
+        end
+    end)
+    
+    Utils.hook(ActionBox, "init", function(orig, self, x, y, index, battler)
+        orig(self, x, y, index, battler)
+        if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") and Game:isLight() then
+            self.head_sprite:addFX(ShaderFX(lib:colorShader(MG_PALETTE["light_world_dark_battle_color"])))
+        end
+    end)
+    
+    Utils.hook(AttackBox, "init", function(orig, self, battler, offset, index, x, y)
+        orig(self, battler, offset, index, x, y)
+        if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") and Game:isLight() then
+            self.head_sprite:addFX(ShaderFX(lib:colorShader(MG_PALETTE["light_world_dark_battle_color"])))
+        end
+    end)
 
     -- Light Battle Colors
     Utils.hook(PartyMember, "getLightDamageColor", function(orig, self)
@@ -2814,14 +2865,7 @@ function lib:init()
     end)
     
     Utils.hook(ActionBoxDisplay, "draw", function(orig, self) -- Fixes an issue with HP higher than normal
-        local overwrite = false
-        for _,battler in ipairs(Game.battle.party) do
-            if battler.chara:getHealth() > battler.chara:getStat("health") then
-                overwrite = true
-                break
-            end
-        end
-        if overwrite and Game:isLight() and #Game.battle.party <= 3 then
+        if Game:isLight() and #Game.battle.party <= 3 then
             if Game.battle.current_selecting == self.actbox.index then
                 Draw.setColor(self.actbox.battler.chara:getColor())
             else
@@ -2840,13 +2884,17 @@ function lib:init()
             Draw.setColor(PALETTE["action_fill"])
             love.graphics.rectangle("fill", 2, Game:getConfig("oldUIPositions") and 3 or 2, 209, Game:getConfig("oldUIPositions") and 34 or 35)
 
-            Draw.setColor(PALETTE["action_health_bg"])
+            Draw.setColor(Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") and MG_PALETTE["player_health_bg"] or PALETTE["action_health_bg"])
             love.graphics.rectangle("fill", 128, 22 - self.actbox.data_offset, 76, 9)
 
             local health = (self.actbox.battler.chara:getHealth() / self.actbox.battler.chara:getStat("health")) * 76
 
             if health > 0 then
-                Draw.setColor(self.actbox.battler.chara:getColor())
+                if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") then
+                    Draw.setColor(MG_PALETTE["player_health"])
+                else
+                    Draw.setColor(self.actbox.battler.chara:getColor())
+                end
                 love.graphics.rectangle("fill", 128, 22 - self.actbox.data_offset, math.min(math.ceil(health), 76), 9) -- here
             end
 
@@ -3185,8 +3233,12 @@ function lib:setSeriousMode(v)
 end
 
 function lib:onFootstep(char, num)
-    if self.encounters_enabled and self.in_encounter_zone and Game.world.player and char == Game.world.player then
-        self.steps_until_encounter = self.steps_until_encounter - 1
+    if self.encounters_enabled and self.in_encounter_zone and Game.world.player and char:includes(Player) then
+        local amount = 1
+        if Mod.libs["multiplayer"] then
+            amount = amount / (#Game.world.other_players + 1) / 0.75
+        end
+        self.steps_until_encounter = self.steps_until_encounter - amount
     end
 end
 
@@ -3223,6 +3275,23 @@ function lib:gameNotOver(x, y)
 
     Game.gameover = GameNotOver(x or 0, y or 0, reload)
     Game.stage:addChild(Game.gameover)
+end
+
+function lib:colorShader(color)
+    local targetColor = color or {1, 1, 1, 1}
+    local nonBlackToColorShader = love.graphics.newShader([[
+        extern vec4 targetColor;
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+            vec4 texcolor = Texel(texture, texture_coords);
+            if (texcolor.r > 0.0 || texcolor.g > 0.0 || texcolor.b > 0.0) {
+                return targetColor * color; // Non-black pixels to target color
+            } else {
+                return texcolor * color; // Keep black pixels unchanged
+            }
+        }
+    ]])
+    nonBlackToColorShader:send("targetColor", targetColor)
+    return nonBlackToColorShader
 end
 
 function lib:postUpdate()

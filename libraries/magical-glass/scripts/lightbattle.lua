@@ -540,7 +540,7 @@ function LightBattle:processAction(action)
 
     if action.action == "SPARE" then
 
-        if Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode then
+        if Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode or battler.spare_button then
             enemy:onMercy(battler)
             self:battleText(enemy:getSpareText(battler, enemy:canSpare()))
             self:finishAction(action)
@@ -619,7 +619,7 @@ function LightBattle:processAction(action)
                 end
             end
 
-            local weapon = battler.chara:getWeapon() or Registry.createItem(battler.chara.no_weapon_attacking_animation_weapon) -- allows attacking without a weapon
+            local weapon = battler.chara:getWeapon() or Registry.createItem(self:getNoWeaponAnimation(battler)) -- allows attacking without a weapon
             local damage = 0
             local crit
 
@@ -659,7 +659,7 @@ function LightBattle:processAction(action)
             end
         end
         
-        local weapon = battler.chara:getWeapon() or Registry.createItem(battler.chara.no_weapon_attacking_animation_weapon) -- allows attacking without a weapon
+        local weapon = battler.chara:getWeapon() or Registry.createItem(self:getNoWeaponAnimation(battler)) -- allows attacking without a weapon
         local damage = 0
         local crit
         
@@ -761,6 +761,10 @@ function LightBattle:processAction(action)
         Kristal.Console:warn("Unhandled battle action: " .. tostring(action.action))
         return true
     end
+end
+
+function LightBattle:getNoWeaponAnimation(battler)
+    return "custom/ring"
 end
 
 function LightBattle:getCurrentAction()
@@ -1460,6 +1464,7 @@ function LightBattle:nextTurn()
     for _,battler in ipairs(self.party) do
         battler.hit_count = 0
         battler.delay_turn_end = false
+        battler.spare_button = false
         if (battler.chara:getHealth() <= 0) and battler.chara:canAutoHeal() then
             battler:heal(battler.chara:autoHealAmount(), nil, true)
         end
@@ -2226,6 +2231,13 @@ function LightBattle:pushAction(action_type, target, data, character_id, extra)
     local battler = self.party[character_id]
 
     local current_state = self:getState()
+    
+    for _,action_box in ipairs(self.battle_ui.action_boxes) do
+        if action_box.battler == battler then
+            action_box.last_button = action_box.selected_button
+            break
+        end
+    end 
 
     self:commitAction(battler, action_type, target, data, extra)
 
@@ -2746,7 +2758,7 @@ function LightBattle:setSelectedParty(index)
 end
 
 function LightBattle:actionButtonPairs()
-    local pairs = {{"act", "magic"}}
+    local pairs = {{"act", "magic"}, {"mercy", "spare", "defend"}}
     for lib_id,_ in Kristal.iterLibraries() do
         pairs = Kristal.libCall(lib_id, "getLightActionButtonPairs", pairs) or pairs
     end

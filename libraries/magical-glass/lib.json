@@ -7,7 +7,7 @@
         "Bor",                          // contributor
         "Just Another Random User",     // contributor
     ],
-    "version": "v2.14.7",
+    "version": "v2.15.0",
     "engineVer": "v0.10.0-dev",
 
     "config": {
@@ -51,6 +51,20 @@
         // Second Value: Whether you can skip it in the light world.
         /////
         "gameover_skipping": [true, true],
+        
+        ///// Dark Battles In The Light World Color Mode
+        // Controls what color palette will be used for dark battles in the light world.
+        /////
+        // false = Normal
+        // "semi" = Colors the head icon and the health bar
+        // true = Colors the head icon, the health bar, the attack box and battle strips (in solo party member, also colors the damage)
+        /////
+        "light_world_dark_battle_color_override": "semi",
+        
+        ///// Dark Battles In The Light World Tension
+        // Whether dark battles in the light world will have tension.
+        /////
+        "light_world_dark_battle_tension": true,
         
         ///// UNDERTALE Movement Can Run
         // Enables the ability to run when using the Undertale player movement.
