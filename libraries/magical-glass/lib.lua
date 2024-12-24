@@ -210,6 +210,7 @@ function lib:preInit()
         ["light_world_dark_battle_color"] = COLORS.white,
         ["light_world_dark_battle_color_attackbar"] = COLORS.lime,
         ["light_world_dark_battle_color_attackbox"] = {0.5, 0, 0, 1},
+        ["light_world_dark_battle_color_damage_single"] = COLORS.white,
     }
     
     self.random_encounters = {}
@@ -2194,7 +2195,7 @@ function lib:init()
     
     Utils.hook(PartyMember, "getDamageColor", function(orig, self)
         if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") == true and Game:isLight() and #Game.battle.party == 1 then
-            return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color"])
+            return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color_damage_single"])
         else
             return orig(self)
         end
