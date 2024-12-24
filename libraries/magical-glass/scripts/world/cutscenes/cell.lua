@@ -13,6 +13,8 @@ return {
     end,
     config = function(cutscene)
         Assets.stopSound("phone")
-        Game.world:openMenu(LightConfigMenu())
+        Assets.stopAndPlaySound("ui_select")
+        cutscene:wait(1/30)
+        cutscene:after(function() Game.world:openMenu(LightConfigMenu()) end)
     end,
 }
