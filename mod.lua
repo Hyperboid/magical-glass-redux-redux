@@ -12,8 +12,9 @@ function Mod:load(data, new_file)
         -- party:setLightEXP(69420)
         -- party.lw_health = party.lw_stats.health
     end
-    Game.world:registerCall("Dimensional Box A", "cell.box_a", false)
-    Game.world:registerCall("Dimensional Box B", "cell.box_b", false)
+    Game.world:registerCall("Dimensional Box A", "cell.box_a")
+    Game.world:registerCall("Dimensional Box B", "cell.box_b")
+    Game.world:registerCall("Settings", "cell.config")
 end
 
 -- function Mod:getLightActionButtons(battler, buttons)

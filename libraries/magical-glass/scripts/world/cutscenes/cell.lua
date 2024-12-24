@@ -10,5 +10,9 @@ return {
         Assets.stopAndPlaySound("dimbox")
         cutscene:wait(7/30)
         cutscene:after(function() Game.world:openMenu(LightStorageMenu("items", "box_b")) end)
-    end
+    end,
+    config = function(cutscene)
+        Assets.stopSound("phone")
+        Game.world:openMenu(LightConfigMenu())
+    end,
 }
