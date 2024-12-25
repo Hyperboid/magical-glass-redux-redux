@@ -147,9 +147,9 @@ function LightConfigMenu:draw()
         Draw.setColor(Game:getSoulColor())
 
         if dualshock then
-            Draw.draw(self.heart_sprite, -1, 32 + ((self.currently_selected - 1) * 29), 0, 2, 2)
+            Draw.draw(self.heart_sprite, -1, 34 + ((self.currently_selected - 1) * 29), 0, 2, 2)
         else
-            Draw.draw(self.heart_sprite, -1, 32 + ((self.currently_selected - 1) * 28) + 2, 0, 2, 2)
+            Draw.draw(self.heart_sprite, -1, 34 + ((self.currently_selected - 1) * 28) + 2, 0, 2, 2)
         end
     end
 
