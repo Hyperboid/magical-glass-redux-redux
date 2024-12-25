@@ -1,6 +1,6 @@
 local LightEnemySprite, super = Class(Object)
 
-function LightEnemySprite:init(actor)
+function LightEnemySprite:init(actor, enemy)
     if type(actor) == "string" then
         actor = Registry.createActor(actor)
     end
@@ -8,6 +8,7 @@ function LightEnemySprite:init(actor)
     super.init(self)
 
     self.actor = actor
+    self.enemy = enemy
     self.parts = self.actor.light_battler_parts
     
     for _,part in pairs(self.parts) do
@@ -84,6 +85,18 @@ function LightEnemySprite:resetSprite(ignore_actor_callback)
     end
 
     self.actor:onResetSprite(self)
+end
+
+function LightEnemySprite:flash(offset_x, offset_y, layer)
+    if Utils.getClassName(self.enemy:getActiveSprite()) == "LightEnemySprite" then
+        local flashed_sprites = {}
+        for _,part in pairs(self.parts) do
+            table.insert(flashed_sprites, part.sprite:flash(offset_x, offset_y, layer))
+        end
+        return flashed_sprites
+    else
+        return self.enemy:getActiveSprite():flash(offset_x, offset_y, layer)
+    end
 end
 
 function LightEnemySprite:getPart(part_id, parent)

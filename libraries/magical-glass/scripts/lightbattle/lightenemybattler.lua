@@ -399,6 +399,21 @@ function LightEnemyBattler:onMercy(battler)
     end
 end
 
+function LightEnemyBattler:mercyFlash(color)
+    color = color or MagicalGlassLib.spare_color or {1, 1, 0}
+
+    local recolor = self:addFX(RecolorFX())
+    Game.battle.timer:during(8/30, function()
+        recolor.color = Utils.lerp(recolor.color, color, 0.12 * DTMULT)
+    end, function()
+        Game.battle.timer:during(8/30, function()
+            recolor.color = Utils.lerp(recolor.color, {1, 1, 1}, 0.16 * DTMULT)
+        end, function()
+            self:removeFX(recolor)
+        end)
+    end)
+end
+
 function LightEnemyBattler:onSave(battler) end
 
 function LightEnemyBattler:getNameColors()
@@ -1005,7 +1020,7 @@ function LightEnemyBattler:setActor(actor, use_overlay)
     if self.overlay_sprite then self:removeChild(self.overlay_sprite) end
 
     if self.actor.use_light_battler_sprite then
-        self.sprite = self.actor:createLightBattleSprite()
+        self.sprite = self.actor:createLightBattleSprite(self)
     else
         self.sprite = self.actor:createSprite()
     end

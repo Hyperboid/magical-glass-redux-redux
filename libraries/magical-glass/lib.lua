@@ -643,8 +643,8 @@ function lib:init()
         return self.light_battler_parts[part]
     end)
 
-    Utils.hook(Actor, "createLightBattleSprite", function(orig, self)
-        return LightEnemySprite(self)
+    Utils.hook(Actor, "createLightBattleSprite", function(orig, self, enemy)
+        return LightEnemySprite(self, enemy)
     end)
 
     Utils.hook(ActorSprite, "init", function(orig, self, actor)
@@ -2703,6 +2703,7 @@ function lib:init()
                     if enemy then
                         enemy.hit_count = 0
                         enemy:hurt(self.damage + Utils.round(math.random(100)), self.caster)
+                        enemy:flash()
                         if enemy.health <= 0 then
                             enemy.can_die = true
                         end

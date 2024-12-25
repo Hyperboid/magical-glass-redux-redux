@@ -541,8 +541,12 @@ function LightBattle:processAction(action)
     if action.action == "SPARE" then
 
         if Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode or battler.spare_button then
+            local worked = enemy:canSpare()
             enemy:onMercy(battler)
-            self:battleText(enemy:getSpareText(battler, enemy:canSpare()))
+            if not worked then
+                enemy:mercyFlash()
+            end
+            self:battleText(enemy:getSpareText(battler, worked))
             self:finishAction(action)
         else
             self:toggleSoul(false)
