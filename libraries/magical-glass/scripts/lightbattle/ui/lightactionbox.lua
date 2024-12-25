@@ -32,11 +32,19 @@ function LightActionBox:createButtons()
         btn_types = Kristal.libCall(lib_id, "getLightActionButtons", self.battler, btn_types) or btn_types
     end
     btn_types = Kristal.modCall("getLightActionButtons", self.battler, btn_types) or btn_types
+    
+    if #btn_types == 1 then
+        btn_types = {false, false, btn_types[1], false, false}
+    elseif #btn_types == 2 then
+        btn_types = {false, btn_types[1], false, btn_types[2], false}
+    elseif #btn_types == 3 then
+        btn_types = {btn_types[1], false, btn_types[2], false, btn_types[3]}
+    end
 
     for i,btn in ipairs(btn_types) do
         if type(btn) == "string" then
             local x
-            if #btn_types <= 4 then
+            if #btn_types == 4 then
                 x = math.floor(67 + ((i - 1) * 156))
                 if i == 2 then
                     x = x - 3
@@ -44,7 +52,7 @@ function LightActionBox:createButtons()
                     x = x + 1
                 end
             else
-                x = math.floor(67 + ((i - 1) * 117))
+                x = math.floor(67 + ((i - 1) * 117) - (#btn_types-5) * 117 / 2)
             end
             
             local button = LightActionButton(btn, self.battler, x, 175)

@@ -19,7 +19,7 @@ end
 
 -- function Mod:getLightActionButtons(battler, buttons)
     -- if battler.chara.id == "susie" then
-        -- return {false, "fight"}
+        -- return {"fight", "mercy"}
     -- end
 -- end
 
