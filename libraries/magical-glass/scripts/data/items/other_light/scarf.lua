@@ -15,12 +15,12 @@ function item:init()
     self.description = "A magical pink scarf.\nVery fluffy."
 
     -- Light world check text
-    self.check = "Weapon 3 MG\n* A magical pink scarf.\n* Very fluffy."
+    self.check = "Weapon 2 MG\n* A magical pink scarf.\n* Very fluffy."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     
-    self.price = 100
+    self.price = 70
     
     self.shop_magic = true
     
@@ -28,7 +28,7 @@ function item:init()
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {
-        magic = 3
+        magic = 2
     }
 end
 
