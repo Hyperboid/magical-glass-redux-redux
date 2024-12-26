@@ -430,19 +430,6 @@ function lib:init()
         end)
     end)
     
-    Utils.hook(WorldCutscene, "showShop", function(orig, self)
-        if Game:isLight() then
-            if self.shopbox then self.shopbox:remove() end
-
-            self.shopbox = LightShopbox()
-            self.shopbox.layer = WORLD_LAYERS["textbox"]
-            self.world:addChild(self.shopbox)
-            self.shopbox:setParallax(0, 0)
-        else
-            orig(self)
-        end
-    end)
-    
     Utils.hook(Battle, "init", function(orig, self)
         orig(self)
         self.light = false
@@ -955,29 +942,28 @@ function lib:init()
 
             return new_inventory
         end)
+        
+        Utils.hook(LightInventory, "tryGiveItem", function(orig, self, item, ignore_dark)
+            if Game.inventory:hasItem("light/ball_of_junk") then
+                return orig(self, item, ignore_dark)
+            else
+                if type(item) == "string" then
+                    item = Registry.createItem(item)
+                end
+                if ignore_dark or item.light then
+                    return Inventory.tryGiveItem(self, item, ignore_dark)
+                else
+                    local dark_inv = self:getDarkInventory()
+                    local result = dark_inv:addItem(item)
+                    if result then
+                        return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]DARK ITEMs[color:reset].)"
+                    else
+                        return false, "* (You have too many [color:yellow]DARK ITEMs[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
+                    end
+                end
+            end
+        end)
     end
-    
-    Utils.hook(LightInventory, "tryGiveItem", function(orig, self, item, ignore_dark)
-        if ignore_dark or item.light then
-            local result = self:addItem(item, ignore_convert)
-            if result then
-                return true, "* (You got the "..item:getName()..".)"
-            else
-                return false, "* You are carrying too\nmany items."
-            end
-        elseif Kristal.getLibConfig("magical-glass", "key_item_conversion") or Game.inventory:hasItem("light/ball_of_junk") then
-            return orig(self, item, ignore_dark)
-        else
-            local dark_inv = self:getDarkInventory()
-            local result = dark_inv:addItem(item)
-            if result then
-                return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]DARK ITEMs[color:reset].)"
-            else
-                return false, "* (You have too many [color:yellow]DARK ITEMs[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
-            end
-        end
-    end)
-    
     Utils.hook(LightEquipItem, "convertToDark", function(orig, self, inventory) return false end)
     
     Utils.hook(Item, "getLightBattleText", function(orig, self, user, target)
