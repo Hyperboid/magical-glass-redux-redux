@@ -88,7 +88,7 @@ end
 
 function HelpWindow:setTension(tension)
     if tension ~= 0 then
-        self.cost_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. tostring(tension).."% TP")
+        self.cost_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. tostring(tension).."% "..Kristal.getLibConfig("magical-glass", "light_battle_tp_name"))
     else
         self.cost_text:setText("")
     end

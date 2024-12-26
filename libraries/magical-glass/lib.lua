@@ -554,7 +554,7 @@ function lib:init()
                 member.chara:addLightEXP(self.xp)
 
                 if lv ~= member.chara:getLightLV() then
-                    win_text = "* You won!\n* Got " .. self.xp .. " EXP and " .. self.money .. " "..Game:getConfig("lightCurrency"):lower()..".\n* Your LOVE increased."
+                    win_text = "* You won!\n* Got " .. self.xp .. " EXP and " .. self.money .. " "..Game:getConfig("lightCurrency"):lower()..".\n* Your "..Kristal.getLibConfig("magical-glass", "light_level_name").." increased."
                     Assets.stopAndPlaySound("levelup")
                 end
             end
@@ -1318,7 +1318,7 @@ function lib:init()
 
         if not OVERLAY_OPEN then
 
-            if Kristal.getLibConfig("magical-glass", "undertale_text_skipping") then
+            if Kristal.getLibConfig("magical-glass", "undertale_text_skipping") == true then
 
                 local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
 
@@ -2360,7 +2360,7 @@ function lib:init()
         love.graphics.print(chara:getName(), 46, 60 + offset)
 
         love.graphics.setFont(self.font_small)
-        love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
+        love.graphics.print(Kristal.getLibConfig("magical-glass", "light_level_name_short").."  "..chara:getLightLV(), 46, 100 + offset)
         love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
         if Kristal.getLibConfig("magical-glass", "undertale_menu_display") then
             love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
@@ -2504,7 +2504,7 @@ function lib:init()
             love.graphics.print("MG  ", 4, 228 - offset)
             love.graphics.print(mg  .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228 - offset) -- alinging the numbers with the rest of the stats
         end
-        love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
+        love.graphics.print(Kristal.getLibConfig("magical-glass", "light_level_name_short").."  "..chara:getLightLV(), 4, 68)
         love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
         love.graphics.print("AT  "  .. at  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164 - offset)
         love.graphics.print("DF  "  .. df  .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196 - offset)
@@ -2650,7 +2650,7 @@ function lib:init()
         local room_name = data.room_name         or "--"
     
         love.graphics.print(name,         self.box.x + 8,        self.box.y - 10 + 8)
-        love.graphics.print("LV "..level, self.box.x + 210 - 42, self.box.y - 10 + 8)
+        love.graphics.print(Kristal.getLibConfig("magical-glass", "light_level_name_short").." "..level, self.box.x + 210 - 42, self.box.y - 10 + 8)
     
         local minutes = math.floor(playtime / 60)
         local seconds = math.floor(playtime % 60)
