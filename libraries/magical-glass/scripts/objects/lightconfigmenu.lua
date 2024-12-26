@@ -3,8 +3,7 @@ local LightConfigMenu, super = Class(DarkConfigMenu, "LightConfigMenu")
 function LightConfigMenu:init()
     super.init(self)
     
-    self.parallax_x = 0
-    self.parallax_y = 0
+    self:setParallax(0, 0)
     self.heart_sprite = Assets.getTexture("player/heart_menu")
 end
 

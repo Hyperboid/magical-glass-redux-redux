@@ -65,5 +65,28 @@ return {
         textbox:setAdvance(true)
         cutscene:wait(wait)
         susie_sprite:remove()
-    end
+    end,
+    
+    shop = function (cutscene)
+        local candy = Registry.createItem("ut_items/monster_candy")
+        cutscene:showShop()
+        cutscene:text("* Hello![wait:5] It's a me Super Mario on the PS4.[wait:5] Whohooo!")
+        cutscene:text(string.format("* I got some spare candies to sell.\nThey're %dG,[wait:5] interested?", 10))
+
+        local buying = cutscene:textChoicer("* Buy the Monster Candy for 10G?", {"Yes", "No"}) == 1
+        if not buying then
+            cutscene:text("* Mamma mia...")
+        elseif Game.lw_money < 10 then
+            cutscene:text("* Oh no...[wait:5] You don't have the money...")
+        else
+            local success, result_text = Game.inventory:tryGiveItem(candy)
+            if success then
+                Game.lw_money = Game.lw_money - 10
+                cutscene:text("* Whohooo![wait:5] Here's your candy.\n"..result_text)
+            else
+                cutscene:text("* Oh no...[wait:5] You don't have enough space...")
+            end
+        end
+        cutscene:hideShop()
+    end,
 }
