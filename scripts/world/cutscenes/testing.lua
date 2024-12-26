@@ -84,7 +84,7 @@ return {
                 Game.lw_money = Game.lw_money - 10
                 cutscene:text("* Whohooo![wait:5] Here's your candy.\n"..result_text)
             else
-                cutscene:text("* Oh no...[wait:5] You don't have enough space...")
+                cutscene:text("* Oh no...[wait:5] no space...\n"..result_text)
             end
         end
         cutscene:hideShop()
