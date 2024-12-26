@@ -23,6 +23,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * [MoreParty](https://gamebanana.com/mods/436685)
 * [ExpandedAttackLib](https://github.com/FireRainV/ExpandedAttackLib)
 * [Multiplayer](https://gamebanana.com/mods/522814)
+* [Super Shops](https://gamebanana.com/mods/489404)
 * And probably more!
 
 ## Credits:
