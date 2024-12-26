@@ -3344,11 +3344,8 @@ function LightBattle:handleActionSelectInput(key)
             self:previousParty()
 
             if self.current_selecting ~= old_selecting then
-                self:playMoveSound()
+                -- self:playMoveSound()
                 self.battle_ui.action_boxes[self.current_selecting]:unselect()
-            end
-            if self.current_selecting ~= old_selecting then
-                self:playMoveSound()
             end
             return
         elseif Input.is("left", key) and #self.battle_ui.action_boxes[1].buttons > 1 then
