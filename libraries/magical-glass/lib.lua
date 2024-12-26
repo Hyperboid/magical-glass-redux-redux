@@ -185,6 +185,8 @@ function lib:preInit()
         ["tension_fill"] = PALETTE["tension_fill"],
         ["tension_max"] = PALETTE["tension_max"],
         
+        ["tension_desc"] = PALETTE["tension_desc"],
+        
         ["action_health_bg"] = COLORS.red,
         ["action_health"] = COLORS.lime,
         ["action_health_text"] = PALETTE["action_health_text"],

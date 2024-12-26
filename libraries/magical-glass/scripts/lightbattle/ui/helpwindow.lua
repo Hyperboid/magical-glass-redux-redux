@@ -19,7 +19,7 @@ function HelpWindow:init(x, y)
     self.description_text = Text("", 14, 1, 400, 32, {color = COLORS.gray, font = "main_mono"})
     self.box_fill:addChild(self.description_text)
 
-    self.cost_text = Text("", 10, 1, 539, 32, {color = PALETTE["tension_desc"], align = "right", font = "main_mono"})
+    self.cost_text = Text("", 10, 1, 539, 32, {color = MG_PALETTE["tension_desc"], align = "right", font = "main_mono"})
     self.box_fill:addChild(self.cost_text)
 end
 
