@@ -19,6 +19,8 @@ function Dummy:init()
     self.money = 0
     self.experience = 0
     
+    -- self.spare_points = 1
+    
     self.dialogue_bubble = "ut_large"
 
     -- List of possible wave ids, randomly picked each turn

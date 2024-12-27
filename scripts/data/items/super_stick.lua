@@ -45,7 +45,7 @@ function item:onLightAttack(battler, enemy, damage, stretch)
         table.insert(enemy.dmg_sprites, sprite)
         sprite:setScale(stretch * 2 - 0.5)
         sprite:setOrigin(0.5)
-        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 8)
+        local relative_pos_x, relative_pos_y = enemy:getOldPosition(-(#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, -8)
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
         sprite.color = {battler.chara:getLightAttackColor()}

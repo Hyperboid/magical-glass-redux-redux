@@ -104,11 +104,11 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.comment = ""
     self.icons = {}
     self.defeated = false
-    self.old_position = nil
     
     self.active_msg = 0
     self.light_hit_count = 0
     self.x_number_offset = 0
+    self.old_position = nil
 
     self.current_target = "ANY"
 
@@ -903,10 +903,22 @@ function LightEnemyBattler:freeze()
     self:defeat("FROZEN", true)
 end
 
+function LightEnemyBattler:getOldPosition(x, y)
+    if not x then
+        x = 0
+    end
+    if not y then
+        y = 0
+    end
+    if self.old_position then
+        return Utils.unpack({self.old_position[1] + x, self.old_position[2] + y})
+    end
+end
+
 function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
     local x, y = self:getRelativePos(self.width/2, self.height/2 - 10)
-    if self.old_position then
-        x, y = Utils.unpack(self.old_position)
+    if self:getOldPosition() then
+        x, y = self:getOldPosition(0, -10)
     end
     
     if self.active_msg <= 0 then

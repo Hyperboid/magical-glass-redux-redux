@@ -388,6 +388,12 @@ function LightBattle:processCharacterActions()
     if self.state ~= "ACTIONS" then
         self:setState("ACTIONS", "DONTPROCESS")
     end
+    
+    for _,enemy in ipairs(self:getActiveEnemies()) do
+        if enemy.old_position == nil then
+            enemy.old_position = {enemy:getRelativePos(enemy.width/2, enemy.height/2)}
+        end
+    end
 
     self.current_action_index = 1
 
@@ -511,9 +517,6 @@ function LightBattle:processAction(action)
     local enemy = action.target
 
     self.current_processing_action = action
-    if self:enemyExists(enemy) and enemy.old_position == nil then
-        enemy.old_position = {enemy:getRelativePos(enemy.width/2, enemy.height/2 - 10)}
-    end
 
     if self:enemyExists(enemy) and enemy.done_state then
         enemy = self:retargetEnemy()
