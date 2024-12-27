@@ -393,6 +393,9 @@ function LightBattle:processCharacterActions()
         if enemy.old_position == nil then
             enemy.old_position = {enemy:getRelativePos(enemy.width/2, enemy.height/2)}
         end
+        if enemy.old_position_battle == nil then
+            enemy.old_position_battle = {enemy:getRelativePos(enemy.width/2, enemy.height/2, self)}
+        end
     end
 
     self.current_action_index = 1
@@ -1470,6 +1473,7 @@ function LightBattle:nextTurn()
         enemy.x_number_offset = 0
         enemy.post_health = nil
         enemy.old_position = nil
+        enemy.old_position_battle = nil
     end
 
     for _,battler in ipairs(self.party) do

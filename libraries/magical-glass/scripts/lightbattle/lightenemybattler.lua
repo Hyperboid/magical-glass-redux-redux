@@ -113,6 +113,7 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.light_hit_count = 0
     self.x_number_offset = 0
     self.old_position = nil
+    self.old_position_battle = nil
 
     self.current_target = "ANY"
 
@@ -914,15 +915,19 @@ function LightEnemyBattler:freeze()
 end
 
 function LightEnemyBattler:getRelativePos(x, y, other)
-    if self.old_position then
-        return self:getOldPosition((x or 0) - self.width/2, (y or 0) - self.height/2)
+    if other == Game.battle and self.old_position_battle then
+        return self:getOldPosition((x or 0) - self.width/2, (y or 0) - self.height/2, true)
+    elseif self.old_position then
+        return self:getOldPosition((x or 0) - self.width/2, (y or 0) - self.height/2, false)
     else
         return super.getRelativePos(self, x, y, other)
     end
 end
 
-function LightEnemyBattler:getOldPosition(x, y)
-    if self.old_position then
+function LightEnemyBattler:getOldPosition(x, y, battle)
+    if battle and self.old_position_battle then
+        return self.old_position_battle[1] + (x or 0), self.old_position_battle[2] + (y or 0)
+    elseif self.old_position then
         return self.old_position[1] + (x or 0), self.old_position[2] + (y or 0)
     else
         return self:getRelativePos(self.width/2 + (x or 0), self.height/2 + (y or 0))
