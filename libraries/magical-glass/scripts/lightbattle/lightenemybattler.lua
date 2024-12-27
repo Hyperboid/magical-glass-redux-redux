@@ -549,17 +549,17 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacke
     if self.defeated then
         return
     end
+    if attacked ~= false then
+        attacked = true
+    end
     if self.immune_to_damage then
         amount = 0
-        if Game.battle:getCurrentAction() and not Utils.containsValue({"SPELL", "ATTACK", "AUTOATTACK"}, Game.battle:getCurrentAction().action) then
+        if attacked and Game.battle:getCurrentAction() and not Utils.containsValue({"SPELL", "ATTACK", "AUTOATTACK"}, Game.battle:getCurrentAction().action) then
             self:onDodge(battler, true)
         end
     end
     if Game.battle:getCurrentAction() and Game.battle:getCurrentAction().action == "SPELL" then
         battler.delay_turn_end = true
-    end
-    if attacked ~= false then
-        attacked = true
     end
     local message
     if amount <= 0 then
