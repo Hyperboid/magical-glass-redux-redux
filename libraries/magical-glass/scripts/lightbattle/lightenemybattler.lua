@@ -55,7 +55,7 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.rainbow_name = false
     
     -- Whether this enemy will always take 0 damage (MISS on attack)
-    -- In addition, calls self:onDodge() when using a damage spell
+    -- In addition, calls self:onDodge() when using a damage spell, item or act (or anything else)
     self.immune_to_damage = false
     
     -- The the enemy's damage sprites
@@ -551,6 +551,9 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacke
     end
     if self.immune_to_damage then
         amount = 0
+        if Game.battle:getCurrentAction() and not Utils.containsValue({"SPELL", "ATTACK", "AUTOATTACK"}, Game.battle:getCurrentAction().action) then
+            self:onDodge(battler, true)
+        end
     end
     if Game.battle:getCurrentAction() and Game.battle:getCurrentAction().action == "SPELL" then
         battler.delay_turn_end = true
