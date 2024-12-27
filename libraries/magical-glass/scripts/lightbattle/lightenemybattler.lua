@@ -915,7 +915,7 @@ function LightEnemyBattler:freeze()
 end
 
 function LightEnemyBattler:getRelativePos(x, y, other)
-    if other == Game.battle and self.old_position_battle then
+    if self.old_position_battle and other == Game.battle then
         return self:getOldPosition((x or 0) - self.width/2, (y or 0) - self.height/2, true)
     elseif self.old_position then
         return self:getOldPosition((x or 0) - self.width/2, (y or 0) - self.height/2, false)
@@ -925,7 +925,7 @@ function LightEnemyBattler:getRelativePos(x, y, other)
 end
 
 function LightEnemyBattler:getOldPosition(x, y, battle)
-    if battle and self.old_position_battle then
+    if self.old_position_battle and battle then
         return self.old_position_battle[1] + (x or 0), self.old_position_battle[2] + (y or 0)
     elseif self.old_position then
         return self.old_position[1] + (x or 0), self.old_position[2] + (y or 0)
