@@ -511,6 +511,9 @@ function LightBattle:processAction(action)
     local enemy = action.target
 
     self.current_processing_action = action
+    if self:enemyExists(enemy) and enemy.old_position == nil then
+        enemy.old_position = {enemy:getRelativePos(enemy.width/2, enemy.height/2 - 10)}
+    end
 
     if self:enemyExists(enemy) and enemy.done_state then
         enemy = self:retargetEnemy()
@@ -1463,6 +1466,7 @@ function LightBattle:nextTurn()
         enemy.active_msg = 0
         enemy.x_number_offset = 0
         enemy.post_health = nil
+        enemy.old_position = nil
     end
 
     for _,battler in ipairs(self.party) do
