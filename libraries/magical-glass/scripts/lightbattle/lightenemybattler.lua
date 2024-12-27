@@ -715,10 +715,12 @@ end
 function LightEnemyBattler:onHurt(damage, battler)
     self.hurt_timer = 1
     self:toggleOverlay(true)
-    if Game.battle.tension then
-        Game:giveTension(Utils.round(self:getAttackTension(battler.tp_gain or 0)))
+    if battler then
+        if Game.battle.tension then
+            Game:giveTension(Utils.round(self:getAttackTension(battler.tp_gain or 0)))
+        end
+        battler.tp_gain = 0
     end
-    battler.tp_gain = 0
     if self.actor.use_light_battler_sprite then
         if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
             self:toggleOverlay(false)
@@ -912,14 +914,13 @@ function LightEnemyBattler:getOldPosition(x, y)
     end
     if self.old_position then
         return self.old_position[1] + x, self.old_position[2] + y
+    else
+        return self:getRelativePos(self.width/2 + x, self.height/2 + y)
     end
 end
 
 function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
-    local x, y = self:getRelativePos(self.width/2, self.height/2 - 10)
-    if self:getOldPosition() then
-        x, y = self:getOldPosition(0, -10)
-    end
+    local x, y = self:getOldPosition(0, -10)
     
     if self.active_msg <= 0 then
         self.active_msg = 0
