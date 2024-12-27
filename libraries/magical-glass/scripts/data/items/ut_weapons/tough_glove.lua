@@ -86,7 +86,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, sprite)
         sprite:setOrigin(0.5)
-        local relative_pos_x, relative_pos_y = enemy:getOldPosition(-(#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, 0)
+        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
         sprite.color = {battler.chara:getLightMultiboltAttackColor()}
@@ -120,21 +120,21 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             confirm_button = Sprite(Input.getTexture("confirm"))
             confirm_button:setScale(2)
             confirm_button:setOrigin(0.5)
-            relative_pos_x, relative_pos_y = enemy:getOldPosition(0, 6)
+            relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2), (enemy.height / 2) + 6)
         elseif confirm_key ~= "Z" then
             confirm_button = Text(confirm_key)
             confirm_button:setColor(0,1,0)
             confirm_button:addFX(OutlineFX({0,0,0}))
-            relative_pos_x, relative_pos_y = enemy:getOldPosition(-3 - (#confirm_key - 1) * 3.5, -3)
+            relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - 3 - (#confirm_key - 1) * 3.5, (enemy.height / 2) - 3)
         else
             confirm_button = Sprite("ui/lightbattle/pressz_z")
             confirm_button:setOrigin(0.5)
-            relative_pos_x, relative_pos_y = enemy:getOldPosition(0, 0)
+            relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2), (enemy.height / 2))
         end
         confirm_button:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         local press_timer = 3
         press:setOrigin(0.5)
-        local relative_pos_x, relative_pos_y = enemy:getOldPosition(0, 0)
+        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2), (enemy.height / 2))
         press:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         press:setLayer(BATTLE_LAYERS["above_ui"] + 5)
         press.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
@@ -216,7 +216,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                         small_punch:setOrigin(0.5)
                         small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
                         small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
-                        small_punch:setPosition(enemy:getOldPosition(love.math.random(enemy.width) - enemy.width/2, love.math.random(enemy.height) - enemy.height/2))
+                        small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
                         enemy.parent:addChild(small_punch)
                         Game.battle:shakeAttackSprite(small_punch)
                         small_punch:play(2/30, false, function(s) s:remove(); Utils.removeFromTable(enemy.dmg_sprites, small_punch) end)
@@ -235,7 +235,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                         punch:setOrigin(0.5)
                         punch.layer = BATTLE_LAYERS["above_ui"] + 5
                         punch.color = {battler.chara:getLightMultiboltAttackColor()}
-                        local relative_pos_x, relative_pos_y = enemy:getOldPosition(-(#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, 0)
+                        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
                         punch:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
                         enemy.parent:addChild(punch)
                         Game.battle:shakeAttackSprite(punch)

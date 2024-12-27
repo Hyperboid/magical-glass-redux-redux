@@ -64,7 +64,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     local size = 2
     sprite:setScale(2)
     sprite:setOrigin(0.5)
-    local relative_pos_x, relative_pos_y = enemy:getOldPosition(-(#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, 0)
+    local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
     sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}
@@ -79,7 +79,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     for i = 0, 8 do
         local star = Sprite("effects/attack/frypan_star")
         star:setOrigin(0.5)
-        local relative_pos_x, relative_pos_y = enemy:getOldPosition(-(#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, 0)
+        local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
         star:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
         star.layer = BATTLE_LAYERS["above_ui"] + 4
         star.physics.direction = math.rad(360 * i) / 8
