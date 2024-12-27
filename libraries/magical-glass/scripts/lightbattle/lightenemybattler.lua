@@ -903,17 +903,19 @@ function LightEnemyBattler:freeze()
     self:defeat("FROZEN", true)
 end
 
-function LightEnemyBattler:getOldPosition(x, y)
-    if not x then
-        x = 0
-    end
-    if not y then
-        y = 0
-    end
+function LightEnemyBattler:getRelativePos(x, y, other)
     if self.old_position then
-        return self.old_position[1] + x, self.old_position[2] + y
+        return self:getOldPosition((x or 0) - self.width/2, (y or 0) - self.height/2)
     else
-        return self:getRelativePos(self.width/2 + x, self.height/2 + y)
+        return super.getRelativePos(self, x, y, other)
+    end
+end
+
+function LightEnemyBattler:getOldPosition(x, y)
+    if self.old_position then
+        return self.old_position[1] + (x or 0), self.old_position[2] + (y or 0)
+    else
+        return self:getRelativePos(self.width/2 + (x or 0), self.height/2 + (y or 0))
     end
 end
 

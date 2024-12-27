@@ -272,7 +272,7 @@ function LightBattle:postInit(state, encounter)
                 self.enemy_world_characters[enemy] = from[2]
             else
                 for _,enemy in ipairs(self.enemies) do
-                    if enemy.actor and from.actor and (enemy.actor.id == from.actor.id or enemy.actor.name == from.actor.name) then
+                    if enemy.actor and from.actor and (enemy.actor.id == from.actor.id or enemy.actor:getName() == from.actor:getName()) then
                         from.battler = enemy
                         self.enemy_world_characters[enemy] = from
                         break
