@@ -2236,7 +2236,7 @@ function lib:init()
             return Utils.unpackColor(COLORS.red)
         elseif self.light_dmg_color_dw and not Game:isLight() then
             return Utils.unpackColor(self.light_dmg_color_dw)
-        elseif self.light_dmg_color then
+        elseif self.light_dmg_color and Game:isLight() then
             return Utils.unpackColor(self.light_dmg_color)
         else
             return self:getColor()
@@ -2248,7 +2248,7 @@ function lib:init()
             return Utils.unpackColor(COLORS.silver)
         elseif self.light_miss_color_dw and not Game:isLight() then
             return Utils.unpackColor(self.light_miss_color_dw)
-        elseif self.light_miss_color then
+        elseif self.light_miss_color and Game:isLight() then
             return Utils.unpackColor(self.light_miss_color)
         else
             return self:getColor()
@@ -2260,7 +2260,7 @@ function lib:init()
             return Utils.unpackColor({1, 105/255, 105/255})
         elseif self.light_attack_color_dw and not Game:isLight() then
             return Utils.unpackColor(self.light_attack_color_dw)
-        elseif self.light_attack_color then
+        elseif self.light_attack_color and Game:isLight() then
             return Utils.unpackColor(self.light_attack_color)
         else
             return self:getColor()
@@ -2272,7 +2272,7 @@ function lib:init()
             return Utils.unpackColor(COLORS.white)
         elseif self.light_multibolt_attack_color_dw and not Game:isLight() then
             return Utils.unpackColor(self.light_multibolt_attack_color_dw)
-        elseif self.light_multibolt_attack_color then
+        elseif self.light_multibolt_attack_color and Game:isLight() then
             return self.light_multibolt_attack_color
         else
             return self:getColor()
@@ -2284,7 +2284,7 @@ function lib:init()
             return Utils.unpackColor(COLORS.white)
         elseif self.light_attack_bar_color_dw and not Game:isLight() then
             return Utils.unpackColor(self.light_attack_bar_color_dw)
-        elseif self.light_attack_bar_color then
+        elseif self.light_attack_bar_color and Game:isLight() then
             return Utils.unpackColor(self.light_attack_bar_color)
         else
             return self:getColor()
@@ -2294,7 +2294,7 @@ function lib:init()
     Utils.hook(PartyMember, "getLightXActColor", function(orig, self)
         if self.light_xact_color_dw and not Game:isLight() then
             return Utils.unpackColor(self.light_xact_color_dw)
-        elseif self.light_xact_color then
+        elseif self.light_xact_color and Game:isLight() then
             return Utils.unpackColor(self.light_xact_color)
         else
             return self:getXActColor()
