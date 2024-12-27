@@ -2615,7 +2615,7 @@ function lib:init()
         orig(self, x, y, properties)
         Game.world.timer:after(1/30, function()
             if Game:isLight() then
-                self:setSprite("world/events/lightsavepoint", 4/30)
+                self:setSprite("world/events/lightsavepoint", 1/6)
             end
         end)
     end)
