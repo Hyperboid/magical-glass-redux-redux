@@ -920,7 +920,7 @@ function LightEnemyBattler:getOldPosition(x, y)
 end
 
 function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
-    local x, y = self:getOldPosition(0, -10)
+    local x, y = self:getRelativePos(self.width/2, self.height/2 - 10)
     
     if self.active_msg <= 0 then
         self.active_msg = 0
