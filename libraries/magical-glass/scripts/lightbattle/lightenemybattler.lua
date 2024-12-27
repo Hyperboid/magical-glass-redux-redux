@@ -54,6 +54,10 @@ function LightEnemyBattler:init(actor, use_overlay)
     -- Whether this enemy display name will have a wavy-rainbow effect like Asriel Dreemurr
     self.rainbow_name = false
     
+    -- Whether this enemy will always take 0 damage (MISS on attack)
+    -- In addition, calls self:onDodge() when using a damage spell
+    self.immune_to_damage = false
+    
     -- The the enemy's damage sprites
     self.dmg_sprites = {}
     -- The offset of this enemy's damage sprites
@@ -544,6 +548,9 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacke
     if self.defeated then
         return
     end
+    if self.immune_to_damage then
+        amount = 0
+    end
     if Game.battle:getCurrentAction() and Game.battle:getCurrentAction().action == "SPELL" then
         battler.delay_turn_end = true
     end
@@ -694,6 +701,9 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         else
             lane.battler.tp_gain = 3
         end
+    end
+    if self.immune_to_damage then
+        total_damage = 0
     end
     if not self.post_health then
         self.post_health = self.health

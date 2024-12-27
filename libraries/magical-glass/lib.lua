@@ -2691,6 +2691,19 @@ function lib:init()
 
     Utils.hook(Spell, "onLightStart", function(orig, self, user, target)
         lib.heal_amount = nil
+        if Utils.containsValue(self.tags, "damage") then
+            if isClass(target) then
+                if target:includes(LightEnemyBattler) and target.immune_to_damage then
+                    target:onDodge(user, true)
+                end
+            else
+                for _,enemy in ipairs(target) do
+                    if enemy:includes(LightEnemyBattler) and enemy.immune_to_damage then
+                        enemy:onDodge(user, true)
+                    end
+                end
+            end
+        end
         local result = self:onLightCast(user, target)
         Game.battle:battleText(self:getLightCastMessage(user, target))
         if result or result == nil then
