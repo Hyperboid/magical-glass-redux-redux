@@ -911,7 +911,7 @@ function LightEnemyBattler:getOldPosition(x, y)
         y = 0
     end
     if self.old_position then
-        return Utils.unpack({self.old_position[1] + x, self.old_position[2] + y})
+        return self.old_position[1] + x, self.old_position[2] + y
     end
 end
 
