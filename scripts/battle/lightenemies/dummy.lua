@@ -72,7 +72,7 @@ function Dummy:init()
 end
 
 function Dummy:onDodge(battler, attacked)
-    print("Missed!", battler.chara.id, attacked)
+    print("Missed!", battler and battler.chara.id or "nil", attacked)
 end
 
 function Dummy:onAct(battler, name)
