@@ -8,7 +8,7 @@
         "Just Another Random User",     // contributor
     ],
 
-    "version": "v2.15.30",
+    "version": "v2.15.31",
     "engineVer": "v0.10.0-dev",
 
     "config": {
@@ -50,6 +50,7 @@
         /////
         "light_level_name": "LOVE",
         "light_level_name_short": "LV",
+        "light_level_name_dark": "LV",
 
         ///// UNDERTALE Text Skipping
         // Disables text skipping in ANY textbox when holding down cancel or menu.

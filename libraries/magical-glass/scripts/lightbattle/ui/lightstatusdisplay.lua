@@ -28,7 +28,7 @@ function LightStatusDisplay:drawStatusStripStory()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
     love.graphics.setColor(COLORS["white"])
-    love.graphics.print((Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or "LV").." " .. level, x - karma_mode_offset - (#tostring(level) > 2 and (#tostring(level) * 15) - 30 or 0), y)
+    love.graphics.print((Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or Kristal.getLibConfig("magical-glass", "light_level_name_dark")).." " .. level, x - karma_mode_offset - (#tostring(level) > 2 and (#tostring(level) * 15) - 30 or 0), y)
 
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 74 - karma_mode_offset, y + 5)
 
@@ -101,7 +101,7 @@ function LightStatusDisplay:drawStatusStrip()
 
             love.graphics.setFont(Assets.getFont("namelv", 24))
             love.graphics.setColor(COLORS["white"])
-            love.graphics.print(name .. "   "..(Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or "LV").." " .. level, x, y)
+            love.graphics.print(name .. "   "..(Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or Kristal.getLibConfig("magical-glass", "light_level_name_dark")).." " .. level, x, y)
             
             love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 214 - karma_mode_offset, y + 5)
             
@@ -165,7 +165,7 @@ function LightStatusDisplay:drawStatusStrip()
             love.graphics.setColor(COLORS["white"])
             love.graphics.print(name, x, y - 7)
             love.graphics.setFont(Assets.getFont("namelv", 16))
-            love.graphics.print((Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or "LV").." " .. level, x, y + 13)
+            love.graphics.print((Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or Kristal.getLibConfig("magical-glass", "light_level_name_dark")).." " .. level, x, y + 13)
             
             love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 66, y + 15)
             
