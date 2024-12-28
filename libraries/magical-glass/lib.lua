@@ -2273,7 +2273,7 @@ function lib:init()
         elseif self.light_multibolt_attack_color_dw and not Game:isLight() then
             return Utils.unpackColor(self.light_multibolt_attack_color_dw)
         elseif self.light_multibolt_attack_color and Game:isLight() then
-            return self.light_multibolt_attack_color
+            return Utils.unpackColor(self.light_multibolt_attack_color)
         else
             return self:getColor()
         end
