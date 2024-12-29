@@ -474,8 +474,8 @@ function LightBattleUI:drawState()
                 if enemy.rainbow_name then
                     enemy_special_text:setColor(1, 1, 1)
                     local colors = {}
-                    for i = 1, 5 do
-                        table.insert(colors, {Utils.hslToRgb((Kristal.getTime() / 1 + (i-1) * 0.2) % 1, 1, 0.7)})
+                    for i = 1, 4 do
+                        table.insert(colors, {Utils.hslToRgb((Kristal.getTime() / 1 + (i-1) * 0.25) % 1, 1, 0.73)})
                     end
                     enemy_special_text:setGradientColors(colors)
                     if enemy_special_text.enemy ~= enemy or enemy_special_text.enemy_name ~= enemy.name .. (enemy.index and " " .. enemy.index or "") then
@@ -547,8 +547,8 @@ function LightBattleUI:drawState()
                 if self.style == "undertale" then
                     local name_length = 0
                     for _,enemy in ipairs(enemies) do
-                        if enemy and string.len(enemy.name) > name_length then
-                            name_length = string.len(enemy.name)
+                        if enemy and string.len(enemy.name) + (enemy.rainbow_name and 2 or 0) > name_length then
+                            name_length = string.len(enemy.name) + (enemy.rainbow_name and 2 or 0)
                         end
                     end
                     local hp_x = 190 + (name_length * 16)

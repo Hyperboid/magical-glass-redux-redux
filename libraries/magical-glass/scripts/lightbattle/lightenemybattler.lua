@@ -112,8 +112,6 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.active_msg = 0
     self.light_hit_count = 0
     self.x_number_offset = 0
-    self.old_position = nil
-    self.old_position_battle = nil
 
     self.current_target = "ANY"
 
@@ -917,26 +915,6 @@ function LightEnemyBattler:freeze()
     self:defeat("FROZEN", true)
 end
 
-function LightEnemyBattler:getRelativePos(x, y, other)
-    if self.old_position_battle and other == Game.battle then
-        return self:getOldPosition((x or 0) - self.width/2, (y or 0) - self.height/2, true)
-    elseif self.old_position then
-        return self:getOldPosition((x or 0) - self.width/2, (y or 0) - self.height/2, false)
-    else
-        return super.getRelativePos(self, x, y, other)
-    end
-end
-
-function LightEnemyBattler:getOldPosition(x, y, battle)
-    if self.old_position_battle and battle then
-        return self.old_position_battle[1] + (x or 0), self.old_position_battle[2] + (y or 0)
-    elseif self.old_position then
-        return self.old_position[1] + (x or 0), self.old_position[2] + (y or 0)
-    else
-        return self:getRelativePos(self.width/2 + (x or 0), self.height/2 + (y or 0))
-    end
-end
-
 function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
     local x, y = self:getRelativePos(self.width/2, self.height/2 - 10)
     
@@ -1094,6 +1072,10 @@ function LightEnemyBattler:getSpritePart(part, parent)
 end
 
 function LightEnemyBattler:update()
+    if self.sprite and self.overlay_sprite then
+        self.overlay_sprite:setPosition(self.sprite:getPosition())
+    end
+
     if self.actor then
         self.actor:onBattleUpdate(self)
     end

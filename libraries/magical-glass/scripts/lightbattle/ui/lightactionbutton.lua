@@ -244,7 +244,7 @@ function LightActionButton:draw()
     end
     
     if self.rainbow then
-        self:setColor(Utils.hslToRgb(Kristal.getTime() / 0.75 % 1, 1, 0.7))
+        self:setColor(Utils.hslToRgb(Kristal.getTime() / 0.75 % 1, 1, 0.69))
     end
 
     super.draw(self)
