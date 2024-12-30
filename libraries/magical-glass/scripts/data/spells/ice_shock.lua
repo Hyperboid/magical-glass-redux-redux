@@ -1,5 +1,11 @@
 local spell, super = Class("ice_shock", true)
 
+function spell:init()
+    super.init(self)
+    
+    self.check = "Deals magical ICE damage to one enemy."
+end
+
 function spell:getDamage(user, target)
     if Game:isLight() then
         local min_magic = Utils.clamp(user.chara:getStat("magic") - 3, 1, 999)

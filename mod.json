@@ -3,7 +3,7 @@
     "name": "Magical Glass: Redux",
     "subtitle": "The Undertale Library!",
 
-    "version": "v2.15.36",
+    "version": "v2.16.0",
     "engineVer": "v0.10.0-dev",
 
     "chapter": 2,
@@ -27,7 +27,8 @@
     "config": {
         "kristal": {
             "lightCurrency": "Gold",
-            "lightCurrencyShort": "G"
+            "lightCurrencyShort": "G",
+            "overworldSpells": true,
             // End of config
         },
         "magical-glass": {

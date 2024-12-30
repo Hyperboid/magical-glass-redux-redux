@@ -8,7 +8,7 @@
         "Just Another Random User",     // contributor
     ],
 
-    "version": "v2.15.36",
+    "version": "v2.16.0",
     "engineVer": "v0.10.0-dev",
 
     "config": {
@@ -129,7 +129,7 @@
         "undertale_menu_display": false,
         
         ///// Always Show Magic
-        // Displays the MAGIC stat in the Light World STAT menu even if there's no
+        // Displays the MAGIC stat and spells in the Light World STAT menu even if there's no
         // member in the current party who has more than 0 MAGIC or even when not using Undertale stat display.
         /////
         "always_show_magic": false,
