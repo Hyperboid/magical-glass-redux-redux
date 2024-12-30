@@ -2552,7 +2552,7 @@ function lib:init()
                 
                 self.option_selecting = 1
                 self.state = "USINGSPELL"
-            elseif self.state == "USINGSPELL" then -- TODO - Finish this
+            elseif self.state == "USINGSPELL" then
                 if self.option_selecting == 1 and self:canCast(spell) then
                     if spell.target == "ally" and #Game.party > 1 then
                         self.ui_select:stop()
