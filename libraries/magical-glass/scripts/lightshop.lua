@@ -40,6 +40,7 @@ function LightShop:init()
     self.sell_no_selling_text = nil
     
     self.background = nil
+    self.background_speed = 5/30
 
     -- MAINMENU
     self.menu_options = {
@@ -126,6 +127,7 @@ function LightShop:postInit()
         self.background_sprite = Sprite(self.background, 0, 0)
         self.background_sprite:setScale(2, 2)
         self.background_sprite.layer = SHOP_LAYERS["background"]
+        self.background_sprite:play(self.background_speed, true)
         self:addChild(self.background_sprite)
     end
 
