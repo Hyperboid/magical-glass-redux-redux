@@ -20,7 +20,7 @@ function spell:onCast(user, target)
 end
 
 function spell:onLightWorldCast(chara)
-    Game.world:heal(chara, 22)
+    Game.world:heal(chara, 50)
 end
 
 return spell
