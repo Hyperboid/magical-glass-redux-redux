@@ -7,7 +7,7 @@ function item:init(inventory)
     self.short_name = "CandyBox"
     self.use_name = "Candy Box"
 
-    self.price = 50
+    self.price = 20
     self.sell_price = 5
 end
 
