@@ -39,7 +39,7 @@ function EncounterZone:update()
         end
         if Mod.libs["multiplayer"] then
             for _,player in ipairs(Game.world.other_players) do
-                if self.collider:collidesWith(player) then
+                if player.parent and self.collider:collidesWith(player) then
                     self.accepting = true
                 end
             end
