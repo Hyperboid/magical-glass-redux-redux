@@ -68,7 +68,7 @@ return {
     end,
     
     shop = function (cutscene)
-        local candy = Registry.createItem("ut_items/monster_candy")
+        local candy = Registry.createItem("undertale/monster_candy")
         cutscene:showShop()
         cutscene:text("* Hello![wait:5] It's a me Super Mario on the PS4.[wait:5] Whohooo!")
         cutscene:text(string.format("* I got some spare candies to sell.\nThey're %dG,[wait:5] interested?", 10))
