@@ -27,15 +27,15 @@ function TestShop:init()
     -- Shown when you enter the talk menu.
     self.talk_text = "Guess I\nshould\nthink."
 
-    self:registerItem("ut_weapons/tough_glove")
-    self:registerItem("ut_armors/cloudy_glasses", {price = 0})
-	self:registerItem("ut_weapons/torn_notebook", {description = "WEAPON\nWEAPON 2\nWEAPON 3", dont_show_change = true})
-    self:registerItem("ut_items/crab_apple")
+    self:registerItem("undertale/tough_glove")
+    self:registerItem("undertale/cloudy_glasses", {price = 0})
+	self:registerItem("undertale/torn_notebook", {description = "WEAPON\nWEAPON 2\nWEAPON 3", dont_show_change = true})
+    self:registerItem("undertale/crab_apple")
     self:registerItem("custom/ring", {description = "This is a\ntest."})
-    self:registerItem("ut_items/bisicle")
-    self:registerItem("ut_items/legendary_hero")
-    self:registerItem("ut_armors/temy_armor")
-    self:registerItem("ut_items/annoying_dog")
+    self:registerItem("undertale/bisicle")
+    self:registerItem("undertale/legendary_hero")
+    self:registerItem("undertale/temy_armor")
+    self:registerItem("undertale/annoying_dog")
     self:registerItem("custom/tough_glove_ex")
 
     self:registerTalk("Reflect")
