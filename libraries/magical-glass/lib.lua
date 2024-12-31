@@ -3609,7 +3609,7 @@ end
 function lib:onFootstep(char, num)
     if self.encounters_enabled and self.in_encounter_zone and Game.world.player and char:includes(Player) then
         local amount = 1
-        if Mod.libs["multiplayer"] then
+        if Mod.libs["multiplayer"] and #Game.world.other_players > 0 then
             amount = amount / (#Game.world.other_players + 1) / 0.75
         end
         self.steps_until_encounter = self.steps_until_encounter - amount
