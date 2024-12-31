@@ -60,7 +60,7 @@ function item:getBattleText(user, target)
         target.chara:addStatBuff("attack", 4)
         message = "\n* ATTACK increased by 4!"
     end
-    return "* " ..target.chara:getName().. " used the "..self.name:upper().."."..message
+    return super.getBattleText(self, user, target) .. message
 end
 
 function item:onLightBattleUse(user, target)

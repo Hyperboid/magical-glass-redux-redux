@@ -44,14 +44,16 @@ function item:init(inventory)
     
 end
 
-function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Sea Tea.\n* Your SPEED boosts!"
+function item:getLightBattleText(user, target, boost)
+    return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Sea Tea."..(boost and "\n* Your SPEED boosts!" or "")
 end
 
 function item:onLightBattleUse(user, target)
+    local boost = false
     if Game.battle.soul_speed_bonus < 4 then
         Game.battle.soul_speed_bonus = Game.battle.soul_speed_bonus + 1
         Game.battle.soul.speed = Game.battle.soul.speed + 1
+        boost = true
     end
     self:battleUseSound(user, target)
 
@@ -60,7 +62,7 @@ function item:onLightBattleUse(user, target)
         amount = equip:applyHealBonus(amount)
     end
     target:heal(amount)
-    Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target, amount))
+    Game.battle:battleText(self:getLightBattleText(user, target, boost).."\n"..self:getLightBattleHealingText(user, target, amount))
     return true
 end
 
@@ -76,6 +78,10 @@ function item:onBattleUse(user, target)
     end
     target:heal(amount)
     return true
+end
+
+function item:getBattleText(user, target)
+    return super.getBattleText(self, user, target) .. (Game.battle.soul_speed_bonus < 4 and "\n* Your SPEED boosts!" or "")
 end
 
 function item:battleUseSound(user, target)

@@ -70,4 +70,19 @@ function item:getLightBattleText(user, target)
     return message[picker]
 end
 
+function item:getBattleText(user, target)
+    local picker = Utils.random(1, 8, 1)
+    local message = {
+        "* You're just great!",
+        "* You look nice today!",
+        "* Are those claws natural?",
+        "* You're super spiffy!",
+        "* Have a wonderful day!",
+        "* Is this as sweet as you?",
+        "* (An illustration of a hug.)",
+        "* Love yourself! I love you!"
+    }
+    return message[picker] .. "\n" ..super.getBattleText(self, user, target)
+end
+
 return item
