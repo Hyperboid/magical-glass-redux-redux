@@ -1086,7 +1086,7 @@ function lib:init()
         if self:getLightBattleText(user, target) then
             Game.battle:battleText(self:getLightBattleText(user, target))
         else
-            Game.battle:battleText("* "..user.chara:getNameOrYou().." used the "..self:getUseName().."!")
+            Game.battle:battleText("* "..user.chara:getNameOrYou().." used the "..self:getUseName()..".")
         end
     end)
     

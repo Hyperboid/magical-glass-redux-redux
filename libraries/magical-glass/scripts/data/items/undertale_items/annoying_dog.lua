@@ -5,7 +5,7 @@ function item:init(inventory)
 
     -- Display name
     self.name = "Annoying Dog"
-    self.short_name = "AnnoyDog"
+    self.short_name = "Annoy Dog"
     self.serious_name = "Dog"
     self.use_name = "Dog"
 
@@ -47,6 +47,14 @@ end
 function item:onWorldUse(target)
     Game.world:showText("* You deployed the dog.")
     return true
+end
+
+function item:getLightBattleText(target)
+    return "* " .. target.chara:getNameOrYou() .. " deployed the dog."
+end
+
+function item:getBattleText(target)
+    return "* " .. target.chara:getName() .. " deployed the DOG!"
 end
 
 return item

@@ -5,7 +5,6 @@ function item:init(inventory)
 
     -- Display name
     self.name = "Unisicle"
-    self.short_name = "Unisicle" -- getname moment
     self.serious_name = "Popsicle"
 
     -- Item type (item, key, weapon, armor)

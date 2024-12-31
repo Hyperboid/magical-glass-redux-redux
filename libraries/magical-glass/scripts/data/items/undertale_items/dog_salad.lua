@@ -136,7 +136,7 @@ function item:getLightBattleText(user, target, dogsad)
 end
 
 function item:onLightBattleUse(user, target)
-    local dogsad = math.floor(Utils.random(4))
+    local dogsad = Utils.random(0, 3, 1)
 
     self.heal_amount = 1
 
@@ -160,7 +160,7 @@ function item:onLightBattleUse(user, target)
 end
 
 function item:onBattleUse(user, target)
-    local dogsad = math.floor(Utils.random(4))
+    local dogsad = Utils.random(0, 3, 1)
 
     self.heal_amount = 1
 

@@ -41,8 +41,8 @@ end
 
 function item:getWorldUseText(target)
     local message = ""
-    local picker = Utils.random(10)
-    if picker > 8 then
+    local picker = Utils.random(1, 10, 1)
+    if picker <= 2 then
         message = "\n* "..target:getNameOrYou().." didn't cry..."
     end
     return "* "..target:getNameOrYou().." ate the Stoic Onion."..message

@@ -42,10 +42,10 @@ function item:getWorldUseText(target)
     if MagicalGlassLib.serious_mode then
         return super.getWorldUseText(self, target)
     else
-        if target.id == Game.party[1].id then
-            return "* " .. target:getNameOrYou() .. " hit the Croquet Roll into \nyour mouth."
+        if select(2, target:getNameOrYou()) and target.id == Game.party[1].id then
+            return "* " .. target:getNameOrYou() .. " hit the Croquet Roll into\nyour mouth."
         else
-            return "* " .. target:getNameOrYou() .. " hit the Croquet Roll into \ntheir mouth."
+            return "* " .. target:getNameOrYou() .. " hit the Croquet Roll into\ntheir mouth."
         end
     end
 end
@@ -54,12 +54,12 @@ function item:getLightBattleText(user, target)
     if MagicalGlassLib.serious_mode then
         return super.getLightBattleText(self, user, target)
     else
-        if user.chara.id == Game.battle.party[1].chara.id and target.chara.id == Game.battle.party[1].chara.id then
-            return "* " .. user.chara:getNameOrYou() .. " hit the Croquet Roll into \nyour mouth."
+        if select(2, target.chara:getNameOrYou()) and user.chara.id == Game.battle.party[1].chara.id and target.chara.id == Game.battle.party[1].chara.id then
+            return "* " .. user.chara:getNameOrYou() .. " hit the Croquet Roll into\nyour mouth."
         elseif user.chara.id == target.chara.id then
-            return "* " .. user.chara:getNameOrYou() .. " hit the Croquet Roll into \ntheir mouth."
+            return "* " .. user.chara:getNameOrYou() .. " hit the Croquet Roll into\ntheir mouth."
         else
-            return "* " .. user.chara:getNameOrYou() .. " hit the Croquet Roll into \n"..target.chara:getName().."'s mouth."
+            return "* " .. user.chara:getNameOrYou() .. " hit the Croquet Roll into\n"..target.chara:getName().."'s mouth."
         end
     end
 end
