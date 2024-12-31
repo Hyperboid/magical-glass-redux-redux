@@ -7,7 +7,7 @@ function item:init(inventory)
     self.name = "Annoying Dog"
     self.short_name = "Annoy Dog"
     self.serious_name = "Dog"
-    self.use_name = "Dog"
+    self.use_name = "dog"
 
     -- How this item is used on you (ate, drank, eat, etc.)
     self.use_method = "deployed"
@@ -49,12 +49,8 @@ function item:onWorldUse(target)
     return true
 end
 
-function item:getLightBattleText(target)
-    return "* " .. target.chara:getNameOrYou() .. " deployed the dog."
-end
-
 function item:getBattleText(target)
-    return "* " .. target.chara:getName() .. " deployed the DOG!"
+    return "* "..target.chara:getName().." deployed the "..self:getUseName().."!"
 end
 
 return item

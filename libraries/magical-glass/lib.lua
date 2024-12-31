@@ -1071,7 +1071,7 @@ function lib:init()
                 return self.use_method
             end
         elseif isClass(target) then
-            if (target.id ~= Game.party[1].id and self.use_method_other and self.target ~= "party") or force_other then
+            if (not select(2, target:getNameOrYou()) or target.id ~= Game.party[1].id) and self.use_method_other and self.target ~= "party" then
                 return self.use_method_other
             else
                 return self.use_method
@@ -1086,7 +1086,7 @@ function lib:init()
         if self:getLightBattleText(user, target) then
             Game.battle:battleText(self:getLightBattleText(user, target))
         else
-            Game.battle:battleText("* "..user.chara:getNameOrYou().." used the "..self:getUseName()..".")
+            Game.battle:battleText("* "..user.chara:getNameOrYou().." "..self:getUseMethod(user.chara).." the "..self:getUseName()..".")
         end
     end)
     
@@ -2071,6 +2071,10 @@ function lib:init()
     Utils.hook(PartyMember, "getShortName", function(orig, self)
         return self.short_name or string.sub(self:getName(), 1, 6)
     end)
+    
+    Utils.hook(PartyMember, "getUndertaleMovement", function(orig, self)
+        return self.undertale_movement
+    end)
 
     Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
         if Game.battle.turn_count == 1 and not undo then
@@ -2853,7 +2857,7 @@ function lib:init()
             self:removeChild(self.soul)
         end
         
-        if Game.party[1].undertale_movement then
+        if Game.party[1]:getUndertaleMovement() then
             self.player = UnderPlayer(chara, x, y)
         else
             self.player = Player(chara, x, y)
