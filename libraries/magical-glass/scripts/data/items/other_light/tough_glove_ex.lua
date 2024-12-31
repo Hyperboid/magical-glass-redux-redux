@@ -5,8 +5,8 @@ function item:init()
 
     -- Display name
     self.name = "Tough Glove EX"
-    self.short_name = "TuffGlvEX"
-    self.serious_name = "GlvEX"
+    self.short_name = "TuffGlvX"
+    self.serious_name = "GlvX"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
