@@ -16,7 +16,7 @@ function LightPartyBattler:init(chara)
     self.targeted = false
     
     self.has_save = false
-    self.spare_button = false
+    self.manual_spare = false
     
     -- Karma (KR) calculations
     self.karma = 0

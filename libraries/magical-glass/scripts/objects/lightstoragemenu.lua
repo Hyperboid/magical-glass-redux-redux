@@ -88,7 +88,7 @@ function LightStorageMenu:drawStorage(list)
         if item then
             Draw.setColor(COLORS["white"])
             love.graphics.setFont(self.font)
-            love.graphics.print(item:getName(), x - 2, y - 6)
+            love.graphics.print(item:getName(), x, y - 6)
         else
             Draw.setColor(COLORS["red"])
             love.graphics.setLineWidth(1)

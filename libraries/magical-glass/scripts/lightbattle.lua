@@ -540,7 +540,7 @@ function LightBattle:processAction(action)
 
     if action.action == "SPARE" then
 
-        if Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode or battler.spare_button then
+        if battler.manual_spare then
             local worked = enemy:canSpare()
             enemy:onMercy(battler)
             if not worked then
@@ -623,7 +623,7 @@ function LightBattle:processAction(action)
                 end
             end
 
-            local weapon = battler.chara:getWeapon() or Registry.createItem(self:getNoWeaponAnimation(battler)) -- allows attacking without a weapon
+            local weapon = battler.chara:getWeapon() or Registry.createItem(battler.chara:getLightNoWeaponAnimation()) -- allows attacking without a weapon
             local damage = 0
             local crit
 
@@ -663,7 +663,7 @@ function LightBattle:processAction(action)
             end
         end
         
-        local weapon = battler.chara:getWeapon() or Registry.createItem(self:getNoWeaponAnimation(battler)) -- allows attacking without a weapon
+        local weapon = battler.chara:getWeapon() or Registry.createItem(battler.chara:getLightNoWeaponAnimation()) -- allows attacking without a weapon
         local damage = 0
         local crit
         
@@ -765,10 +765,6 @@ function LightBattle:processAction(action)
         Kristal.Console:warn("Unhandled battle action: " .. tostring(action.action))
         return true
     end
-end
-
-function LightBattle:getNoWeaponAnimation(battler)
-    return "custom/ring"
 end
 
 function LightBattle:getCurrentAction()
@@ -982,7 +978,7 @@ function LightBattle:onStateChange(old,new)
         end
         self.battle_ui:clearEncounterText()
 
-        if self.menuselect_cursor_memory[self.state_reason] and self.current_menu_columns == 1 then
+        if self.menuselect_cursor_memory[self.state_reason] and Utils.containsValue(self:menuSelectMemory(), self.state_reason) then
             self.current_menu_x = self.menuselect_cursor_memory[self.state_reason].x
             self.current_menu_y = self.menuselect_cursor_memory[self.state_reason].y
         else
@@ -1468,7 +1464,7 @@ function LightBattle:nextTurn()
     for _,battler in ipairs(self.party) do
         battler.hit_count = 0
         battler.delay_turn_end = false
-        battler.spare_button = false
+        battler.manual_spare = false
         if (battler.chara:getHealth() <= 0) and battler.chara:canAutoHeal() then
             battler:heal(battler.chara:autoHealAmount(), nil, true)
         end
@@ -2235,13 +2231,6 @@ function LightBattle:pushAction(action_type, target, data, character_id, extra)
     local battler = self.party[character_id]
 
     local current_state = self:getState()
-    
-    for _,action_box in ipairs(self.battle_ui.action_boxes) do
-        if action_box.battler == battler then
-            action_box.last_button = action_box.selected_button
-            break
-        end
-    end 
 
     self:commitAction(battler, action_type, target, data, extra)
 
@@ -2761,6 +2750,15 @@ function LightBattle:setSelectedParty(index)
     self.current_selecting = index or 0
 end
 
+function LightBattle:menuSelectMemory()
+    local reason = {"MERCY"}
+    for lib_id,_ in Kristal.iterLibraries() do
+        reason = Kristal.libCall(lib_id, "getLightMenuSelectMemory", reason) or reason
+    end
+    reason = Kristal.modCall("getLightMenuSelectMemory", reason) or reason
+    return reason
+end
+
 function LightBattle:actionButtonPairs()
     local pairs = {{"act", "magic"}, {"mercy", "spare", "defend"}}
     for lib_id,_ in Kristal.iterLibraries() do
@@ -2990,9 +2988,7 @@ function LightBattle:onKeyPressed(key)
             self:toggleSoul(false)
         end
         if key == "b" then
-            for _,battler in ipairs(self.party) do
-                battler:hurt(math.huge)
-            end
+            self:hurt(math.huge, true, "ALL")
         end
         if key == "k" then
             Game:setTension(Game:getMaxTension() * 2, true)

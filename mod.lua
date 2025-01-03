@@ -1,5 +1,30 @@
 function Mod:init()
     print("Loaded "..self.info.name.."!")
+    
+    -- -- Flavor Color (Like Deltatraveler)
+    -- Utils.hook(LightActionButton, "draw", function(orig, self)
+        -- if self.selectable and self.hovered then
+            -- love.graphics.draw(self.hover_tex or self.tex)
+        -- else
+            -- love.graphics.draw(self.tex)
+        -- end
+        
+        -- if self.rainbow then
+            -- self:removeFX(ShaderFX)
+            -- self:setColor(Utils.hslToRgb(Kristal.getTime() / 0.75 % 1, 1, 0.69))
+        -- elseif not self:getFX(ShaderFX) then
+            -- local function flavor()
+                -- if self.selectable and self.hovered then
+                    -- return {1, 0.69, 1, 1}
+                -- else
+                    -- return {1, 0, 1, 1}
+                -- end
+            -- end
+            -- self:addFX(ShaderFX(MagicalGlassLib:colorShader(), {["targetColor"] = flavor}))
+        -- end
+        
+        -- Object.draw(self)
+    -- end)
 end
 
 function Mod:load(data, new_file)
@@ -14,13 +39,25 @@ function Mod:load(data, new_file)
     end
     Game.world:registerCall("Dimensional Box A", "cell.box_a")
     Game.world:registerCall("Dimensional Box B", "cell.box_b")
-    Game.world:registerCall("Settings", "cell.config")
+    Game.world:registerCall("Settings", "cell.settings")
 end
 
--- function Mod:getLightActionButtons(battler, buttons)
-    -- if battler.chara.id == "susie" then
-        -- return {"fight", "mercy"}
+-- function Mod:postUpdate()
+    -- -- Text shakiness depending on HP
+    -- if Game.state == "BATTLE" and Game.battle.light then
+        -- local current_hp = 0
+        -- local max_hp = 0
+        -- for _,party in ipairs (Game.battle.party) do
+             -- current_hp = current_hp + party.chara:getHealth()
+             -- max_hp = max_hp + party.chara:getStat("health")
+        -- end
+        -- local average_hp = math.ceil(max_hp / current_hp / #Game.battle.party)
+        -- MagicalGlassLib:setLightBattleShakingText(Utils.clamp((average_hp - 1) / 4, 0.501, 2))
     -- end
+-- end
+
+-- function Mod:getLightActionButtons(battler, buttons)
+    -- return {"fight", "mercy", "defend"}
 -- end
 
 -- function Mod:getLightActionButtonPairs(pairs)

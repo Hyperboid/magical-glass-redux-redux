@@ -288,7 +288,6 @@ function lib:init()
         if Game.battle and Game.battle.light then
             local old_choice = self.current_choice
             if Input.pressed("left") or Input.pressed("right") then
-                Game.battle:playMoveSound()
                 if self.current_choice == 1 then
                     self.current_choice = 2
                 else
@@ -298,6 +297,10 @@ function lib:init()
 
             if self.current_choice > #self.choices then
                 self.current_choice = old_choice
+            end
+            
+            if self.ui_sound ~= false and self.current_choice ~= old_choice then
+                Game.battle:playMoveSound()
             end
 
             if Input.pressed("confirm") then
@@ -1859,10 +1862,12 @@ function lib:init()
 
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)
-
+        
         self.short_name = nil
         
         self.undertale_movement = false
+        
+        self.light_no_weapon_animation = "custom/ring"
         
         self.lw_stats_bonus = {
             health = 0,
@@ -1914,6 +1919,10 @@ function lib:init()
                 end
             end)
         end
+    end)
+    
+    Utils.hook(PartyMember, "getLightNoWeaponAnimation", function(orig, self)
+        return self.light_no_weapon_animation
     end)
 
     Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)

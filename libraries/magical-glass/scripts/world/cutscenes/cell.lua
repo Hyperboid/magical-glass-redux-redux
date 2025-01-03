@@ -11,7 +11,7 @@ return {
         cutscene:wait(7/30)
         cutscene:after(function() Game.world:openMenu(LightStorageMenu("items", "box_b")) end)
     end,
-    config = function(cutscene)
+    settings = function(cutscene)
         Assets.stopSound("phone")
         Assets.stopAndPlaySound("ui_select")
         cutscene:wait(1/30)

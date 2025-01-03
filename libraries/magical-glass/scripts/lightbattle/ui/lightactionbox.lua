@@ -110,8 +110,8 @@ function LightActionBox:update()
 end
 
 function LightActionBox:select()
-    self.buttons[self.selected_button]:select()
     self.last_button = self.selected_button
+    self.buttons[self.selected_button]:select()
 end
 
 function LightActionBox:unselect()

@@ -175,6 +175,7 @@ function LightActionButton:select()
             ["special"] = "spare",
             ["callback"] = function(menu_item)
                 if Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode then
+                    self.battler.manual_spare = true
                     Game.battle:setState("ENEMYSELECT", "SPARE")
                 else
                     Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
@@ -225,7 +226,7 @@ function LightActionButton:select()
         end
         Game.battle:setState("MENUSELECT", "MERCY")
     elseif self.type == "spare" then
-        self.battler.spare_button = true
+        self.battler.manual_spare = true
         Game.battle:setState("ENEMYSELECT", "SPARE")
     elseif self.type == "defend" then
         Game.battle:pushAction("DEFEND", nil, {tp = -16})
@@ -233,7 +234,7 @@ function LightActionButton:select()
 end
 
 function LightActionButton:unselect()
-    self.battler.spare_button = false
+    self.battler.manual_spare = false
 end
 
 function LightActionButton:draw()

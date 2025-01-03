@@ -89,4 +89,12 @@ return {
         end
         cutscene:hideShop()
     end,
+    
+    partners = function (cutscene)
+        cutscene:textChoicer("* Do you wanna be\npartners?", {"Not yet", "Yes"}, "smile", "noelle")
+    end,
+    
+    friends = function (cutscene)
+        cutscene:textChoicer("* (What should you say?)", {"Let's be\nfriends", "What a\nloser"})
+    end,
 }
