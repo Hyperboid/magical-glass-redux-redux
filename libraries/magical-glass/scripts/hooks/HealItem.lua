@@ -162,7 +162,7 @@ function HealItem:getLightWorldHealingText(target, amount)
     local maxed = false
 
     if self.target == "ally" then
-        maxed = target:getHealth() >= target:getStat("health")
+        maxed = target:getHealth() >= target:getStat("health") or amount == math.huge
     end
 
     local message

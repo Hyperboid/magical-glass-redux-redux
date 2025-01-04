@@ -36,14 +36,13 @@ end
 
 function item:onWorldUse(target)
     self:worldUseSound(target)
-    if target:getHealth() < target:getStat("health") - 1 then
+    
+    local old_health = target:getHealth()
+    Game.world:heal(target, math.huge, self:getWorldUseText(target), self)
+    if old_health < target:getStat("health") and target:getStat("health") > 1 then
         target:setHealth(target:getStat("health") - 1)
     end
-    if target.id == Game.party[1].id then
-        Game.world:showText(self:getWorldUseText(target).."\n* Your HP was maxed out.")
-    else
-        Game.world:showText(self:getWorldUseText(target).."\n* "..target:getName().."'s HP was maxed out.")
-    end
+    
     return true
 end
 
@@ -51,19 +50,17 @@ function item:onLightBattleUse(user, target)
     self:battleUseSound(user, target)
     
     if self.target == "ally" then
-        if target.chara:getHealth() < target.chara:getStat("health") - 1 then
+        local old_health = target.chara:getHealth()
+        target:heal(math.huge, nil, nil, false)
+        if old_health < target.chara:getStat("health") and target.chara:getStat("health") > 1 then
             target.chara:setHealth(target.chara:getStat("health") - 1)
         end
     elseif self.target == "enemy" then
-        target:heal(target.max_health)
+        target:heal(math.huge)
     end
 
-    if target.chara.id == Game.battle.party[1].chara.id then
-        Game.battle:battleText(self:getLightBattleText(user, target).."\n* Your HP was maxed out.")
-    else
-        Game.battle:battleText(self:getLightBattleText(user, target).."\n* "..target.chara:getName().."'s HP was maxed out.")
-    end
-
+    Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target, math.huge))
+    
     return true
 end
 
@@ -71,7 +68,7 @@ function item:onBattleUse(user, target)
     if self.target == "ally" then
         local old_health = target.chara:getHealth()
         target:heal(math.huge)
-        if old_health < target.chara:getStat("health") then
+        if old_health < target.chara:getStat("health") and target.chara:getStat("health") > 1 then
             target.chara:setHealth(target.chara:getStat("health") - 1)
         end
     elseif self.target == "enemy" then

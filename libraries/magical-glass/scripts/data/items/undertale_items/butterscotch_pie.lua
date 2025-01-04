@@ -14,6 +14,8 @@ function item:init(inventory)
     self.type = "item"
     -- Whether this item is for the light world
     self.light = true
+    
+    self.heal_amount = math.huge
 
     -- Default shop sell price
     self.sell_price = 180
@@ -34,29 +36,6 @@ function item:init(inventory)
     self.result_item = nil
     -- Will this item be instantly consumed in battles?
     self.instant = false
-end
-
-function item:onWorldUse(target)
-    self:worldUseSound(target)
-    target:setHealth(target:getStat("health"))
-    Game.world:showText(self:getLightWorldHealingText(target).."\n"..self:getLightWorldHealingText(target))
-    return true
-end
-
-function item:onLightBattleUse(user, target)
-    self:battleUseSound(user, target)
-    if self.target == "ally" then
-        target.chara:setHealth(target.chara:getStat("health"))
-    elseif self.target == "enemy" then
-        target:heal(target.max_health)
-    end
-    Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target))
-    return true
-end
-
-function item:onBattleUse(user, target)
-    target:heal(math.huge)
-    return true
 end
 
 return item
