@@ -1672,6 +1672,27 @@ function lib:init()
             end
         end
     end)
+    
+    Utils.hook(World, "onKeyPressed", function(orig, self, key)
+        orig(self, key)
+        if Kristal.Config["debug"] and Input.ctrl() then
+            if key == "s" and Game:isLight() then
+                -- close the old one
+                self.menu:remove()
+                self:closeMenu()
+                
+                local save_pos = nil
+                if Input.shift() then
+                    save_pos = {self.player.x, self.player.y}
+                end
+                if not Kristal.getLibConfig("magical-glass", "expanded_light_save_menu") then
+                    self:openMenu(LightSaveMenu(Game.save_id, save_pos))
+                else
+                    self:openMenu(LightSaveMenuExpanded(save_pos))
+                end
+            end
+        end
+    end)
 
     Utils.hook(World, "heal", function(orig, self, target, amount, text, item)
         if Game:isLight() then
