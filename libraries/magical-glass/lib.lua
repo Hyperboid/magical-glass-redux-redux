@@ -2497,7 +2497,7 @@ function lib:init()
         
         local show_magic = false
         for _,party in pairs(Game.party) do
-            if party:getBaseStats()["magic"] > 0 then
+            if party:hasSpells() then
                 show_magic = true
             end
         end
