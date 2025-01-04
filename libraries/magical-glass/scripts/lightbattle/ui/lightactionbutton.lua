@@ -28,7 +28,7 @@ function LightActionButton:select()
     Game.battle.current_menu_rows = nil
 
     if Game.battle.encounter:onActionSelect(self.battler, self) then return end
-    if Kristal.callEvent("onActionSelect", self.battler, self) then return end
+    if Kristal.callEvent(MG_EVENT.onLightActionSelect, self.battler, self) then return end
 
     if self.type == "fight" then
         Game.battle:setState("ENEMYSELECT", "ATTACK")

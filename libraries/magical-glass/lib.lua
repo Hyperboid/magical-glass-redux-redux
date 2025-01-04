@@ -27,6 +27,7 @@ local lib = MagicalGlassLib
 function lib:unload()
     MagicalGlassLib          = nil
     MG_PALETTE               = nil
+    MG_EVENT                 = nil
     TweenManager             = nil
     LightBattle              = nil
     LightPartyBattler        = nil
@@ -62,7 +63,6 @@ function lib:save(data)
     data.magical_glass["random_encounter"] = lib.random_encounter
     data.magical_glass["light_battle_shake_text"] = lib.light_battle_shake_text
     data.magical_glass["rearrange_cell_calls"] = lib.rearrange_cell_calls
-    data.magical_glass["lightmenu_calls"] = Game.world.calls
 end
 
 function lib:load(data, new_file)
@@ -97,11 +97,6 @@ function lib:load(data, new_file)
         lib.random_encounter = data.magical_glass["random_encounter"] or lib.random_encounter or nil
         lib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
         lib.rearrange_cell_calls = data.magical_glass["rearrange_cell_calls"] or false
-        if lib.rearrange_cell_calls and data.magical_glass["lightmenu_calls"] then
-            Game.world.timer:after(1/30, function()
-                Game.world.calls = data.magical_glass["lightmenu_calls"]
-            end)
-        end
         
         for _,party in pairs(Game.party_data) do -- Fixes a crash with existing saves
             if not party.lw_stats["magic"] then
@@ -215,41 +210,66 @@ function lib:preInit()
         ["light_world_dark_battle_color_damage_single"] = COLORS.white,
     }
     
-    self.random_encounters = {}
-    self.light_encounters = {}
-    self.light_enemies = {}
-    self.light_waves = {}
-    self.light_shops = {}
+    MG_EVENT = {
+        onLightBattleActionBegin = "onLightBattleActionBegin",
+        onLightBattleActionEnd = "onLightBattleActionEnd",
+        onLightBattleActionEndAnimation = "onLightBattleActionEndAnimation",
+        onLightBattleActionCommit = "onLightBattleActionCommit",
+        onLightBattleActionUndo = "onLightBattleActionUndo",
+        onLightBattleMenuSelect = "onLightBattleMenuSelect",
+        onLightBattleMenuCancel = "onLightBattleMenuCancel",
+        onLightBattleEnemySelect = "onLightBattleEnemySelect",
+        onLightBattleEnemyCancel = "onLightBattleEnemyCancel",
+        onLightBattlePartySelect = "onLightBattlePartySelect",
+        onLightBattlePartyCancel = "onLightBattlePartyCancel",
+        onLightActionSelect = "onLightActionSelect",
+        
+        onRegisterRandomEncounters = "onRegisterRandomEncounters",
+        onRegisterLightEncounters = "onRegisterLightEncounters",
+        onRegisterLightEnemies = "onRegisterLightEnemies",
+        onRegisterLightWaves = "onRegisterLightWaves",
+        onRegisterLightShops = "onRegisterLightShops",
+    }
 
+    self.random_encounters = {}
     for _,path,rnd_enc in Registry.iterScripts("battle/randomencounters") do
         assert(rnd_enc ~= nil, '"randomencounters/'..path..'.lua" does not return value')
         rnd_enc.id = rnd_enc.id or path
         self.random_encounters[rnd_enc.id] = rnd_enc
     end
+    Kristal.callEvent(MG_EVENT.onRegisterRandomEncounters)
 
+    self.light_encounters = {}
     for _,path,light_enc in Registry.iterScripts("battle/lightencounters") do
         assert(light_enc ~= nil, '"lightencounters/'..path..'.lua" does not return value')
         light_enc.id = light_enc.id or path
         self.light_encounters[light_enc.id] = light_enc
     end
+    Kristal.callEvent(MG_EVENT.onRegisterLightEncounters)
 
+    self.light_enemies = {}
     for _,path,light_enemy in Registry.iterScripts("battle/lightenemies") do
         assert(light_enemy ~= nil, '"lightenemies/'..path..'.lua" does not return value')
         light_enemy.id = light_enemy.id or path
         self.light_enemies[light_enemy.id] = light_enemy
     end
+    Kristal.callEvent(MG_EVENT.onRegisterLightEnemies)
     
+    self.light_waves = {}
     for _,path,light_wave in Registry.iterScripts("battle/lightwaves") do
         assert(light_wave ~= nil, '"lightwaves/'..path..'.lua" does not return value')
         light_wave.id = light_wave.id or path
         self.light_waves[light_wave.id] = light_wave
     end
+    Kristal.callEvent(MG_EVENT.onRegisterLightWaves)
 
+    self.light_shops = {}
     for _,path,light_shop in Registry.iterScripts("lightshops") do
         assert(light_shop ~= nil, '"lightshops/'..path..'.lua" does not return value')
         light_shop.id = light_shop.id or path
         self.light_shops[light_shop.id] = light_shop
     end
+    Kristal.callEvent(MG_EVENT.onRegisterLightShops)
 end
 
 function lib:init()
@@ -390,7 +410,12 @@ function lib:init()
     end)
     
     Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
-        if self.music.current ~= "toomuch" then
+        local music = {"toomuch"}
+        for lib_id,_ in Kristal.iterLibraries() do
+            music = Kristal.libCall(lib_id, "getPresistentWorldMusic", music) or music
+        end
+        music = Kristal.modCall("getPresistentWorldMusic", music) or music
+        if not Utils.containsValue(music, self.music.current) then
             orig(self, next, fade_out)
         end
     end)
