@@ -15,6 +15,4 @@ function encounter:storyWave()
     return "basic"
 end
 
-
-
 return encounter
