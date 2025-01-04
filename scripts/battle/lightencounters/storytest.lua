@@ -5,7 +5,7 @@ function encounter:init()
 
     self.music = false
     
-    self.story = true
+    self.event = true
     self.background = false
 
     self.no_end_message = true

@@ -1,9 +1,9 @@
 local LightStatusDisplay, super = Class(Object, "LightStatusDisplay")
 
-function LightStatusDisplay:init(x, y, story)
+function LightStatusDisplay:init(x, y, event)
     super.init(self, x, y, SCREEN_WIDTH + 1, 43)
     
-    self.story = story
+    self.event = event
 end
 
 function LightStatusDisplay:getHPGaugeLengthCap()
@@ -11,24 +11,25 @@ function LightStatusDisplay:getHPGaugeLengthCap()
 end
 
 function LightStatusDisplay:draw()
-    if self.story and Game.battle.party[1] then
-        self:drawStatusStripStory()
+    if self.event and Game.battle.party[1] then
+        self:drawStatusStripEvent()
     else
         self:drawStatusStrip()
     end
 end
 
-function LightStatusDisplay:drawStatusStripStory()
+function LightStatusDisplay:drawStatusStripEvent()
     local x, y = 200, 10
     
     local karma_mode = Game.battle.encounter.karma_mode
     local karma_mode_offset = karma_mode and 20 or 0
     
     local level = Game:isLight() and Game.battle.party[1].chara:getLightLV() or Game.battle.party[1].chara:getLevel()
+    local level_name = Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or Kristal.getLibConfig("magical-glass", "light_level_name_dark")
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
     love.graphics.setColor(COLORS["white"])
-    love.graphics.print((Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or Kristal.getLibConfig("magical-glass", "light_level_name_dark")).." " .. level, x - karma_mode_offset - (#tostring(level) > 2 and (#tostring(level) * 15) - 30 or 0), y)
+    love.graphics.print(level_name.." " .. level, x - karma_mode_offset - (#level_name - 2) * 15 - (#tostring(level) > 2 and (#tostring(level) * 15) - 30 or 0), y)
 
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 74 - karma_mode_offset, y + 5)
 

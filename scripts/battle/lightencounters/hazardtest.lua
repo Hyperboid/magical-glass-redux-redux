@@ -5,13 +5,13 @@ function encounter:init()
 
     self.music = false
     
-    self.story = true
+    self.event = true
     self.background = false
     
     self.fast_transition = true
 end
 
-function encounter:storyWave()
+function encounter:eventWave()
     return "basic"
 end
 

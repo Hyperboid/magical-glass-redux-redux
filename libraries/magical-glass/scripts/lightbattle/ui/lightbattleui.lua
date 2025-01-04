@@ -107,7 +107,7 @@ function LightBattleUI:init()
     self.flee_text.line_offset = 4
     Game.battle.arena:addChild(self.flee_text)
     
-    self.status_display = LightStatusDisplay(0, 390, Game.battle.encounter.story and not Game.battle.multi_mode)
+    self.status_display = LightStatusDisplay(0, 390, Game.battle.encounter.event and not Game.battle.multi_mode)
     self.status_display.layer = BATTLE_LAYERS["below_ui"] + 1
     Game.battle:addChild(self.status_display)
 end

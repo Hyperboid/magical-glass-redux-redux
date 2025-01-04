@@ -120,7 +120,7 @@ function LightBattle:init()
     self.menu_waves = {}
     self.finished_waves = false
     self.finished_menu_waves = false
-    self.story_wave = nil
+    self.event_wave = nil
 
     self.state_reason = nil
     self.substate_reason = nil
@@ -248,8 +248,8 @@ function LightBattle:postInit(state, encounter)
         self.encounter:onNoTransition()
     end
 
-    if self.encounter.story then
-        self.story_wave = self.encounter:storyWave()
+    if self.encounter.event then
+        self.event_wave = self.encounter:eventWave()
         self.tension = false
     end
 
@@ -1094,9 +1094,9 @@ function LightBattle:onStateChange(old,new)
                 end
             end
         end
-        if #active_enemies == 0 and not self.encounter.story then
+        if #active_enemies == 0 and not self.encounter.event then
             self:setState("VICTORY")
-        elseif Mod.libs["classic_turn_based_rpg"] and self.encounter:getEnemyAutoAttack() and not self.encounter.story and not self.debug_wave then
+        elseif Mod.libs["classic_turn_based_rpg"] and self.encounter:getEnemyAutoAttack() and not self.encounter.event and not self.debug_wave then
             update_enemies()
         else
             if self.state_reason then
@@ -1144,14 +1144,14 @@ function LightBattle:onStateChange(old,new)
             arena_x, arena_y = self.arena.home_x, self.arena.home_y
 
             if fullscreen and #self.waves > 0 then
-                if self.encounter.story then
+                if self.encounter.event then
                     self.arena:changePosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
                     self.arena:setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
                 else
                     self.arena:changeShape({SCREEN_WIDTH-10, self.arena.height})
                 end
             elseif has_arena then
-                if self.encounter.story then
+                if self.encounter.event then
                     self.arena:setSize(arena_w, arena_h)
                 else
                     self.arena:changeShape({arena_w, self.arena.height})
@@ -1163,7 +1163,7 @@ function LightBattle:onStateChange(old,new)
             local center_x, center_y = self.arena:getCenter()
     
             if has_soul then
-                if not self.encounter.story then
+                if not self.encounter.event then
                     self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
                         soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
                         soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
@@ -1365,7 +1365,7 @@ function LightBattle:onStateChange(old,new)
         self.encounter:onFleeFail()
         self:setState("ACTIONSDONE")
     elseif new == "DEFENDINGEND" then
-        if self.encounter.story then
+        if self.encounter.event then
             self:setState("TRANSITIONOUT")
             self.encounter:onBattleEnd()
         else
@@ -1392,7 +1392,7 @@ function LightBattle:onStateChange(old,new)
         end
     end
 
-    local should_end = not self.encounter.story
+    local should_end = not self.encounter.event
     for _,wave in ipairs(self.waves) do
         if wave:beforeEnd() then
             should_end = false
@@ -1756,7 +1756,7 @@ function LightBattle:hasCutscene()
 end
 
 function LightBattle:startCutscene(group, id, ...)
-    if not self.encounter.story then
+    if not self.encounter.event then
         self:toggleSoul(false)
     end
 
@@ -3326,7 +3326,7 @@ function LightBattle:onKeyPressed(key)
 end
 
 function LightBattle:handleActionSelectInput(key)
-    if not self.encounter.story then
+    if not self.encounter.event then
         local actbox = self.battle_ui.action_boxes[self.current_selecting]
 
         if Input.isConfirm(key) then

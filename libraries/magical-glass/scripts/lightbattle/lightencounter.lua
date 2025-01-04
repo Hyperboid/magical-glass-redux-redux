@@ -9,8 +9,8 @@ function LightEncounter:init()
     -- Text that will be displayed when the battle starts
     self.text = "* A skirmish breaks out!"
 
-    -- Is a "story" encounter (can't attack, only hp and lv are shown. a wave is started as soon as the battle starts)
-    self.story = false
+    -- Is an "event" encounter (can't attack, only hp and lv are shown. A wave is started as soon as the battle starts)
+    self.event = false
     
     -- A table defining the default location of where the soul should move to
     -- during the battle transition. If this is nil, it will move to the default location.
@@ -97,12 +97,12 @@ function LightEncounter:onSoulTransition()
             Game.battle.fake_player:remove()
             Assets.playSound("battlefall")
 
-            if self.story then
+            if self.event then
                 local center_x, center_y = Game.battle.arena:getCenter()
-                local soul_offset_x = self:storyWave().soul_offset_x
-                local soul_offset_y = self:storyWave().soul_offset_y
-                local soul_x = self:storyWave().soul_start_x or (soul_offset_x and center_x + soul_offset_x)
-                local soul_y = self:storyWave().soul_start_y or (soul_offset_y and center_y + soul_offset_y)
+                local soul_offset_x = self:eventWave().soul_offset_x
+                local soul_offset_y = self:eventWave().soul_offset_y
+                local soul_x = self:eventWave().soul_start_x or (soul_offset_x and center_x + soul_offset_x)
+                local soul_y = self:eventWave().soul_start_y or (soul_offset_y and center_y + soul_offset_y)
                 local target_x, target_y = soul_x or center_x, soul_y or center_y
                 if self.soul_target then
                     target_x, target_y = self.soul_target[1], self.soul_target[2]
@@ -145,12 +145,12 @@ function LightEncounter:onSoulTransition()
             Game.battle.fake_player:remove()
             Assets.playSound("battlefall")
             
-            if self.story then
+            if self.event then
                 local center_x, center_y = Game.battle.arena:getCenter()
-                local soul_offset_x = self:storyWave().soul_offset_x
-                local soul_offset_y = self:storyWave().soul_offset_y
-                local soul_x = self:storyWave().soul_start_x or (soul_offset_x and center_x + soul_offset_x)
-                local soul_y = self:storyWave().soul_start_y or (soul_offset_y and center_y + soul_offset_y)
+                local soul_offset_x = self:eventWave().soul_offset_x
+                local soul_offset_y = self:eventWave().soul_offset_y
+                local soul_x = self:eventWave().soul_start_x or (soul_offset_x and center_x + soul_offset_x)
+                local soul_y = self:eventWave().soul_start_y or (soul_offset_y and center_y + soul_offset_y)
                 local target_x, target_y = soul_x or center_x, soul_y or center_y
                 if self.soul_target then
                     target_x, target_y = self.soul_target[1], self.soul_target[2]
@@ -188,13 +188,13 @@ end
 
 function LightEncounter:onBattleInit() end
 
-function LightEncounter:storyWave()
+function LightEncounter:eventWave()
     return "_story"
 end
 
 function LightEncounter:setBattleState()
     if Game.battle.forced_victory then return end
-    if self.story then
+    if self.event then
         Game.battle:setState("ENEMYDIALOGUE")
         Game.battle.soul.can_move = true
     else
@@ -392,8 +392,8 @@ end
 
 function LightEncounter:getNextWaves()
     local waves = {}
-    if self.story then
-        local wave = self:storyWave()
+    if self.event then
+        local wave = self:eventWave()
         table.insert(waves, wave)
     else
         for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
