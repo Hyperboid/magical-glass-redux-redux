@@ -1436,7 +1436,7 @@ function LightBattle:nextTurn()
             return
         end
         for _,battler in ipairs(self.party) do
-            if battler.chara:onTurnEnd(battler) then
+            if battler.chara:onLightTurnEnd(battler) then
                 return
             end
         end
@@ -1540,8 +1540,8 @@ function LightBattle:nextTurn()
     end
     
     if self.battle_ui then
-        for _,party in ipairs(self.party) do
-            party.chara:onTurnStart(party)
+        for _,battler in ipairs(self.party) do
+            battler.chara:onLightTurnStart(battler)
         end
     end
 

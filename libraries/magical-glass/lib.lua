@@ -2129,6 +2129,15 @@ function lib:init()
     end)
     
     Utils.hook(PartyMember, "onLightActionSelect", function(orig, self, battler, undo) end)
+    Utils.hook(PartyMember, "onLightTurnStart", function(orig, self, battler) end)
+    
+    Utils.hook(PartyMember, "onLightTurnEnd", function(orig, self, battler)
+        for _,equip in ipairs(self:getEquipment()) do
+            if equip.onLightTurnEnd then
+                equip:onLightTurnEnd(battler)
+            end
+        end
+    end)
     
     Utils.hook(PartyMember, "onTurnEnd", function(orig, self, battler)
         for _,equip in ipairs(self:getEquipment()) do

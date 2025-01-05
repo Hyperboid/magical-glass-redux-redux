@@ -36,14 +36,20 @@ function item:init()
 
 end
 
-function item:onTurnEnd(battler)
+function item:showEquipText(target)
+    Game.world:showText("* "..target:getNameOrYou().." equipped the apron.")
+end
+
+function item:onLightTurnEnd(battler)
     if Game.battle.turn_count % 2 == 0 then
         battler:heal(1)
     end
 end
 
-function item:showEquipText(target)
-    Game.world:showText("* "..target:getNameOrYou().." equipped the apron.")
+function item:onTurnEnd(battler)
+    if Game.battle.turn_count % 2 == 0 then
+        battler:heal(1, nil, true)
+    end
 end
 
 return item

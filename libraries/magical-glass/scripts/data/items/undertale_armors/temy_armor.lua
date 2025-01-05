@@ -97,9 +97,15 @@ function item:getPrice()
     return price
 end
 
-function item:onTurnEnd(battler)
+function item:onLightTurnEnd(battler)
     if Game.battle.turn_count % 2 == 0 then
         battler:heal(1)
+    end
+end
+
+function item:onTurnEnd(battler)
+    if Game.battle.turn_count % 2 == 0 then
+        battler:heal(1, nil, true)
     end
 end
 
