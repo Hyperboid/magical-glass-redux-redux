@@ -40,7 +40,7 @@ function item:onWorldUse(target)
     local old_health = target:getHealth()
     Game.world:heal(target, math.huge, self:getWorldUseText(target), self)
     if old_health < target:getStat("health") and target:getStat("health") > 1 then
-        target:setHealth(target:getStat("health") - 1)
+        target:setHealth(target:getStat("health") - 1 + old_health % 1)
     end
     
     return true
@@ -51,12 +51,16 @@ function item:onLightBattleUse(user, target)
     
     if self.target == "ally" then
         local old_health = target.chara:getHealth()
-        target:heal(math.huge, nil, nil, false)
+        target:heal(math.huge, false)
         if old_health < target.chara:getStat("health") and target.chara:getStat("health") > 1 then
-            target.chara:setHealth(target.chara:getStat("health") - 1)
+            target.chara:setHealth(target.chara:getStat("health") - 1 + old_health % 1)
         end
     elseif self.target == "enemy" then
+        local old_health = target.health
         target:heal(math.huge)
+        if old_health < target.max_health and target.max_health > 1 then
+            target.health = target.max_health - 1 + old_health % 1
+        end
     end
 
     Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target, math.huge))
@@ -69,10 +73,14 @@ function item:onBattleUse(user, target)
         local old_health = target.chara:getHealth()
         target:heal(math.huge)
         if old_health < target.chara:getStat("health") and target.chara:getStat("health") > 1 then
-            target.chara:setHealth(target.chara:getStat("health") - 1)
+            target.chara:setHealth(target.chara:getStat("health") - 1 + old_health % 1)
         end
     elseif self.target == "enemy" then
+        local old_health = target.health
         target:heal(math.huge)
+        if old_health < target.max_health and target.max_health > 1 then
+            target.health = target.max_health - 1 + old_health % 1
+        end
     end
 
     return true

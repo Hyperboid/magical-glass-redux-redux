@@ -5,7 +5,7 @@ function item:getLightBattleText(user, target)
 end
 
 function item:onLightBattleUse(user, target)
-    target:heal(self.battle_heal_amount, {1, 0, 1})
+    target:heal(self.battle_heal_amount, false)
     self:battleUseSound(user, target)
 
     if target.poison_effect_timer then

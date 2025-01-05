@@ -59,7 +59,9 @@ function item:onLightBattleUse(user, target)
 
     local amount = self:getBattleHealAmount(target.chara.id)
     for _,equip in ipairs(user.chara:getEquipment()) do
-        amount = equip:applyHealBonus(amount)
+        if equip.getHealBonus then
+            amount = amount + equip:getHealBonus()
+        end
     end
     target:heal(amount)
     Game.battle:battleText(self:getLightBattleText(user, target, boost).."\n"..self:getLightBattleHealingText(user, target, amount))
@@ -74,7 +76,9 @@ function item:onBattleUse(user, target)
 
     local amount = self:getBattleHealAmount(target.chara.id)
     for _,equip in ipairs(user.chara:getEquipment()) do
-        amount = equip:applyHealBonus(amount)
+        if equip.getHealBonus then
+            amount = amount + equip:getHealBonus()
+        end
     end
     target:heal(amount)
     return true

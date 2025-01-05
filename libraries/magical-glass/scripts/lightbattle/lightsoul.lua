@@ -298,13 +298,19 @@ function LightSoul:moveYExact(amount, move_x)
 end
 
 function LightSoul:onDamage(bullet, amount)
-    for _,party in ipairs(Game.battle.party) do
-        for _,equip in ipairs(party.chara:getEquipment()) do
-            if equip.applyInvBonus then
-                self.inv_timer = equip:applyInvBonus(self.inv_timer)
+    local best_amount
+    for _,battler in ipairs(Game.battle.party) do
+        local equip_amount = 0
+        for _,equip in ipairs(battler.chara:getEquipment()) do
+            if equip.getInvBonus then
+                equip_amount = equip_amount + equip:getInvBonus()
             end
         end
+        if not best_amount or equip_amount > best_amount then
+            best_amount = equip_amount
+        end
     end
+    self.inv_timer = self.inv_timer + best_amount
 end
 
 function LightSoul:onCollide(bullet)

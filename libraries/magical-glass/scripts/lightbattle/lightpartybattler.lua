@@ -176,19 +176,17 @@ function LightPartyBattler:revive()
     self.is_down = false
 end
 
-function LightPartyBattler:heal(amount, sparkle_color, show_up, sound)
+function LightPartyBattler:heal(amount, playsound)
     MagicalGlassLib.heal_amount = amount
-    if sound or sound == nil then
+
+    if playsound ~= false then
         Assets.stopAndPlaySound("power")
     end
-
-    amount = math.floor(amount)
 
     if self.chara:getHealth() < self.chara:getStat("health") then
         self.chara:setHealth(math.min(self.chara:getStat("health"), self.chara:getHealth() + amount))
     end
-
-    local was_down = self.is_down
+    
     self:checkHealth()
 end
 

@@ -12,6 +12,7 @@ function LightEquipItem:init()
 
     self.heal_bonus = 0
     self.inv_bonus = 0
+    self.flee_bonus = 0
 
     self.light_bolt_count = 1
 
@@ -41,10 +42,9 @@ function LightEquipItem:getEquipDisplayName()
     end
 end
 
-function LightEquipItem:getFleeBonus() return 0 end
-
-function LightEquipItem:applyHealBonus(value) return value + self.heal_bonus end
-function LightEquipItem:applyInvBonus(value) return value + self.inv_bonus end
+function LightEquipItem:getHealBonus() return self.heal_bonus end
+function LightEquipItem:getInvBonus() return self.inv_bonus end
+function LightEquipItem:getFleeBonus() return self.flee_bonus end
 
 function LightEquipItem:getLightBoltCount() return self.light_bolt_count end
 

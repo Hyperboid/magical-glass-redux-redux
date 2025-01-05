@@ -100,9 +100,6 @@ end
 function item:onTurnEnd(battler)
     if Game.battle.turn_count % 2 == 0 then
         battler:heal(1)
-        if Game.battle.light then
-            Assets.stopAndPlaySound("power")
-        end
     end
 end
 

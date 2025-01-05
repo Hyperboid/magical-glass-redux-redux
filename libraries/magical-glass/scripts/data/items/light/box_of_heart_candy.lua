@@ -5,6 +5,7 @@ function item:init(inventory)
 
     -- Display name
     self.short_name = "CandyBox"
+    self.dark_name = "Candy Box"
     self.use_name = "Candy Box"
 
     self.price = 20

@@ -9,6 +9,7 @@ function item:init(inventory)
     self.name = "Instant Noodles"
     self.short_name = "InstaNood"
     self.serious_name = "I.Noodles"
+    self.dark_name = "Insta Noodles"
 
     -- Item type (item, key, weapon, armor)
     self.type = "item"
@@ -63,7 +64,7 @@ function item:onLightBattleUse(user, target)
             text = text .. "\n" .. self:getLightBattleHealingText(user, target, amount)
         end
 
-        target:heal(amount, nil, nil, false)
+        target:heal(amount, false)
         return text
     end
 
@@ -87,11 +88,15 @@ function item:onLightBattleUse(user, target)
             cutscene:text("[noskip]* Not great,[wait:10] but better.")
             Game.battle.music:resume()
             self.cooked = true
-            self.heal_amount = 4 
+            self.heal_amount = 4
+            for _,equip in ipairs(user.chara:getEquipment()) do
+                if equip.getHealBonus then
+                    self.heal_amount = self.heal_amount + equip:getHealBonus()
+                end
+            end
             cutscene:text(heal())
         end)
     else
-        self.heal_amount = 90
         super.onLightBattleUse(self, user, target)
     end
     return true

@@ -523,8 +523,8 @@ function lib:init()
     Utils.hook(Battle, "nextTurn", function(orig, self)
         self.turn_count = self.turn_count + 1
         if self.turn_count > 1 then
-            for _,party in ipairs(self.party) do
-                if party.chara:onTurnEnd() then
+            for _,battler in ipairs(self.party) do
+                if battler.chara:onTurnEnd(battler) then
                     return
                 end
             end
@@ -620,13 +620,19 @@ function lib:init()
     end)
     
     Utils.hook(Soul, "onDamage", function(orig, self, bullet, amount)
-        for _,party in ipairs(Game.battle.party) do
-            for _,equip in ipairs(party.chara:getEquipment()) do
-                if equip.applyInvBonus then
-                    self.inv_timer = equip:applyInvBonus(self.inv_timer)
+        local best_amount
+        for _,battler in ipairs(Game.battle.party) do
+            local equip_amount = 0
+            for _,equip in ipairs(battler.chara:getEquipment()) do
+                if equip.getInvBonus then
+                    equip_amount = equip_amount + equip:getInvBonus()
                 end
             end
+            if not best_amount or equip_amount > best_amount then
+                best_amount = equip_amount
+            end
         end
+        self.inv_timer = self.inv_timer + best_amount
         orig(self, bullet, amount)
     end)
     
@@ -883,6 +889,8 @@ function lib:init()
         self.short_name = nil
         -- Serious name for the light battle item menu
         self.serious_name = nil
+        -- Dark name for the dark battle item menu
+        self.dark_name = nil
 
         self.tags = {}
 
@@ -904,15 +912,15 @@ function lib:init()
     end)
     
     Utils.hook(Item, "getName", function(orig, self)
-        if self.light and #orig(self) > 15 and Game.state == "BATTLE" and not Game.battle.light and self.short_name then
-            return self.short_name
+        if self.light and Game.state == "BATTLE" and not Game.battle.light and self.dark_name then
+            return self.dark_name
         else
             return orig(self)
         end
     end)
     
     Utils.hook(Item, "getUseName", function(orig, self)
-        if self.light and Game.state == "BATTLE" and not Game.battle.light and self:getName() == self.short_name then
+        if self.light and Game.state == "BATTLE" and not Game.battle.light and self:getName() == self.dark_name then
             return self.use_name and self.use_name:upper() or self.name:upper()
         elseif (Game.state == "OVERWORLD" and Game:isLight()) or (Game.state == "BATTLE" and Game.battle.light)  then
             return self.use_name or self:getName()
@@ -1026,15 +1034,15 @@ function lib:init()
     end)
     
     Utils.hook(Item, "getLightBattleHealingText", function(orig, self, user, target, amount)
-        if target then
-            if self.target == "ally" then
-                maxed = target.chara:getHealth() >= target.chara:getStat("health") or amount == math.huge
-            elseif self.target == "enemy" then
-                maxed = target.health >= target.max_health or amount == math.huge
-            end
+        local maxed = false
+        if self.target == "ally" then
+            maxed = target.chara:getHealth() >= target.chara:getStat("health") or amount == math.huge
+        elseif self.target == "enemy" then
+            maxed = target.health >= target.max_health or amount == math.huge
+        elseif self.target == "party" and #Game.battle.party == 1 then
+            maxed = target[1].chara:getHealth() >= target[1].chara:getStat("health") or amount == math.huge
         end
-
-        local message
+        local message = ""
         if self.target == "ally" then
             if select(2, target.chara:getNameOrYou()) and maxed then
                 message = "* Your HP was maxed out."
@@ -1044,7 +1052,13 @@ function lib:init()
                 message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "party" then
-            message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
+            if #Game.battle.party > 1 then
+                message = "* Everyone recovered " .. amount .. " HP."
+            elseif maxed then
+                message = "* Your HP was maxed out."
+            else
+                message = "* You recovered " .. amount .. " HP."
+            end
         elseif self.target == "enemy" then
             if maxed then
                 message = "* " .. target.name .. "'s HP was maxed out."
@@ -1052,7 +1066,7 @@ function lib:init()
                 message = "* " .. target.name .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "enemies" then
-            message = "* The enemies all recovered " .. amount .. " HP."
+            message = "* The enemies recovered " .. amount .. " HP."
         end
         return message
     end)
@@ -1697,6 +1711,7 @@ function lib:init()
     Utils.hook(World, "heal", function(orig, self, target, amount, text, item)
         if Game:isLight() then
             lib.heal_amount = amount
+            
             if type(target) == "string" then
                 target = Game:getPartyMember(target)
             end
@@ -1970,20 +1985,6 @@ function lib:init()
     Utils.hook(PartyMember, "getLightNoWeaponAnimation", function(orig, self)
         return self.light_no_weapon_animation
     end)
-
-    Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
-        if Game:isLight() then
-            if playsound == nil or playsound then
-                Assets.stopAndPlaySound("power")
-            end
-            if self:getHealth() < self:getStat("health") then
-                self:setHealth(math.min(self:getStat("health"), self:getHealth() + amount))
-            end
-            return self:getStat("health") == self:getHealth()
-        else
-            return orig(self, amount, playsound)
-        end
-    end)
     
     Utils.hook(PartyMember, "convertToLight", function(orig, self)
         local last_weapon = self:getWeapon() and self:getWeapon().id or false
@@ -2118,10 +2119,6 @@ function lib:init()
         self:setFlag("light_weapon", last_weapon)
         self:setFlag("light_armor", last_armor)
     end)
-
-    Utils.hook(PartyMember, "getLightEXP", function(orig, self)
-        return self.lw_exp
-    end)
     
     Utils.hook(PartyMember, "getShortName", function(orig, self)
         return self.short_name or string.sub(self:getName(), 1, 6)
@@ -2130,21 +2127,13 @@ function lib:init()
     Utils.hook(PartyMember, "getUndertaleMovement", function(orig, self)
         return self.undertale_movement
     end)
-
-    Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
-        if Game.battle.turn_count == 1 and not undo then
-            for _,equip in ipairs(self:getEquipment()) do
-                if equip.onActionSelect() then
-                    equip:onActionSelect(self)
-                end
-            end
-        end
-    end)
+    
+    Utils.hook(PartyMember, "onLightActionSelect", function(orig, self, battler, undo) end)
     
     Utils.hook(PartyMember, "onTurnEnd", function(orig, self, battler)
         for _,equip in ipairs(self:getEquipment()) do
             if equip.onTurnEnd then
-                equip:onTurnEnd(self)
+                equip:onTurnEnd(battler)
             end
         end
     end)

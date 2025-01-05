@@ -38,9 +38,6 @@ function item:init(inventory)
     
 end
 
--- welcome to the most poorly coded item in the library
--- honestly, fitting considering it's a toby reference
-
 function item:battleUseSound(user, target)
     Game.battle.timer:script(function(wait)
         Assets.stopAndPlaySound("swallow")
@@ -66,9 +63,9 @@ function item:worldUseSound(target)
 end
 
 function item:onWorldUse(target)
-    local amount = 1
     local dogsad = Utils.random(0, 3, 1)
-    local text = self:getWorldUseText(target, dogsad)
+    
+    local amount = 1
 
     if dogsad == 0 then
         amount = 30
@@ -80,18 +77,32 @@ function item:onWorldUse(target)
         amount = 2
     end
     if dogsad == 3 then
-        self.heal_amount = math.huge
+        amount = math.huge
     end
+    
+    local text = self:getWorldUseText(target, dogsad)
+    
+    local best_amount
+    for _,member in ipairs(Game.party) do
+        local equip_amount = 0
+        for _,equip in ipairs(member:getEquipment()) do
+            if equip.getHealBonus then
+                equip_amount = equip_amount + equip:getHealBonus()
+            end
+        end
+        if not best_amount or equip_amount > best_amount then
+            best_amount = equip_amount
+        end
+    end
+    amount = amount + best_amount
 
     if self.target == "ally" then
         self:worldUseSound(target)
-        amount = amount
         Game.world:heal(target, amount, text, self)
         return true
     elseif self.target == "party" then
         self:worldUseSound(target)
         for _,party_member in ipairs(target) do
-            amount = amount
             Game.world:heal(party_member, amount, text, self)
         end
         return true
@@ -103,84 +114,96 @@ end
 function item:getWorldUseText(target, dogsad)
     local message = ""
     if dogsad == 0 then
-        message = "\n* Oh.[wait:10] Tastes yappy..."
+        message = "* Oh.[wait:10] Tastes yappy..."
     end
     if dogsad == 1 then
-        message = "\n* Oh.[wait:10] Fried tennis ball..."
+        message = "* Oh.[wait:10] Fried tennis ball..."
     end
     if dogsad == 2 then
-        message = "\n* Oh.[wait:10] There are bones..."
+        message = "* Oh.[wait:10] There are bones..."
     end
     if dogsad == 3 then
-        message = "\n* It's literally garbage???"
+        message = "* It's literally garbage???"
     end
-    return "* " ..target:getNameOrYou().." "..self:getUseMethod(target).." the Dog Salad."..message
+    return super.getWorldUseText(self, target).."\n"..message
 end
 
 function item:getLightBattleText(user, target, dogsad)
     local message
     if dogsad == 0 then
-        message = "\n* Oh.[wait:10] Tastes yappy..."
+        message = "* Oh.[wait:10] Tastes yappy..."
     end
     if dogsad == 1 then
-        message = "\n* Oh.[wait:10] Fried tennis ball..."
+        message = "* Oh.[wait:10] Fried tennis ball..."
     end
     if dogsad == 2 then
-        message = "\n* Oh.[wait:10] There are bones..."
+        message = "* Oh.[wait:10] There are bones..."
     end
     if dogsad == 3 then
-        message = "\n* It's literally garbage???" -- noelle quote, probably
+        message = "* It's literally garbage???"
     end
     
-    return "* " ..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Dog Salad."..message
+    return super.getLightBattleText(self, user, target).."\n"..message
 end
 
 function item:onLightBattleUse(user, target)
     local dogsad = Utils.random(0, 3, 1)
 
-    self.heal_amount = 1
+    local amount = 1
 
     if dogsad == 0 then
-        self.heal_amount = 30
+        amount = 30
     end
     if dogsad == 1 then
-        self.heal_amount = 10
+        amount = 10
     end
     if dogsad == 2 then
-        self.heal_amount = 2
+        amount = 2
     end
     if dogsad == 3 then
-        self.heal_amount = math.huge
+        amount = math.huge
+    end
+    
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        if equip.getHealBonus then
+            amount = amount + equip:getHealBonus()
+        end
     end
 
     self:battleUseSound(user, target)
-    target:heal(self:getHealAmount())
-    Game.battle:battleText(self:getLightBattleText(user, target, dogsad).."\n"..self:getLightBattleHealingText(user, target, self:getHealAmount()))
+    target:heal(amount, false)
+    Game.battle:battleText(self:getLightBattleText(user, target, dogsad).."\n"..self:getLightBattleHealingText(user, target, amount))
     return true
 end
 
 function item:onBattleUse(user, target)
     local dogsad = Utils.random(0, 3, 1)
 
-    self.heal_amount = 1
+    local amount = 1
 
     if dogsad == 0 then
-        self.heal_amount = 30
+        amount = 30
     end
     if dogsad == 1 then
-        self.heal_amount = 10
+        amount = 10
     end
     if dogsad == 2 then
-        self.heal_amount = 2
+        amount = 2
     end
     if dogsad == 3 then
-        self.heal_amount = math.huge
+        amount = math.huge
+    end
+    
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        if equip.getHealBonus then
+            amount = amount + equip:getHealBonus()
+        end
     end
 
     if not MagicalGlassLib.serious_mode then
         Assets.stopAndPlaySound("dogresidue")
     end
-    target:heal(self:getHealAmount())
+    target:heal(amount)
     return true
 end
 

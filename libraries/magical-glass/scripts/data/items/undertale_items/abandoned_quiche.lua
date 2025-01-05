@@ -7,6 +7,7 @@ function item:init(inventory)
     self.name = "Abandoned Quiche"
     self.short_name = "Ab Quiche"
     self.serious_name = "Quiche"
+    self.dark_name = "Quiche"
     self.use_name = "quiche"
 
     -- How this item is used on you (ate, drank, eat, etc.)

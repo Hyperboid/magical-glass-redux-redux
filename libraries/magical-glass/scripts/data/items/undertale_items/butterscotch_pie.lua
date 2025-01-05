@@ -7,6 +7,7 @@ function item:init(inventory)
     self.name = "Butterscotch Pie"
     self.short_name = "ButtsPie"
     self.serious_name = "Pie"
+    self.dark_name = "Butts Pie"
 
     -- How this item is used on you (ate, drank, eat, etc.)
     self.use_method = "ate"

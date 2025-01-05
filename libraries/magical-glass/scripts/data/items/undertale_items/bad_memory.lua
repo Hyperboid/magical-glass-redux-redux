@@ -39,19 +39,19 @@ function item:init(inventory)
     
 end
 
-function item:getWorldUseText(target)
+function item:getWorldUseText(target, hurt)
     if hurt then
         return "* "..target:getNameOrYou().." "..self:getUseMethod(target).." the Bad Memory.\n* "..target:getNameOrYou().." lost 1HP."
     else
-        return "* "..target:getNameOrYou().." "..self:getUseMethod(target).." the Bad Memory.\n"..self:getLightWorldHealingText(target)
+        return "* "..target:getNameOrYou().." "..self:getUseMethod(target).." the Bad Memory.\n"..self:getLightWorldHealingText(target, math.huge)
     end
 end
 
 function item:onWorldUse(target)
     if target:getHealth() <= 2 then
-        target:setHealth(target:getStat("health"))
+        target:heal(math.huge, false)
         self:worldUseSound(target, false)
-        Game.world:showText(self:getWorldUseText(target, true))
+        Game.world:showText(self:getWorldUseText(target, false))
     else
         target:setHealth(target:getHealth() - 1)
         self:worldUseSound(target, true)
@@ -63,13 +63,13 @@ function item:getLightBattleText(user, target, hurt)
     if hurt then
         return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Bad Memory.\n* "..target.chara:getNameOrYou().." lost 1HP."
     else
-        return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Bad Memory.\n"..self:getLightBattleHealingText(user, target, self:getBattleHealAmount(target.chara.id))
+        return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Bad Memory.\n"..self:getLightBattleHealingText(user, target, math.huge)
     end
 end
 
 function item:onLightBattleUse(user, target)
     if target.chara:getHealth() <= 2 then
-        target.chara:setHealth(target.chara:getStat("health"))
+        target:heal(math.huge, false)
         self:battleUseSound(user, target, false)
         Game.battle:battleText(self:getLightBattleText(user, target, false))
     else

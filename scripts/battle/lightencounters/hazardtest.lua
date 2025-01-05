@@ -6,13 +6,11 @@ function encounter:init()
     self.music = false
     
     self.event = true
+    self.event_wave = "basic"
+    
     self.background = false
     
     self.fast_transition = true
-end
-
-function encounter:eventWave()
-    return "basic"
 end
 
 return encounter

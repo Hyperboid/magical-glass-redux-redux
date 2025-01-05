@@ -11,6 +11,7 @@ function LightEncounter:init()
 
     -- Is an "event" encounter (can't attack, only hp and lv are shown. A wave is started as soon as the battle starts)
     self.event = false
+    self.event_wave = "_story"
     
     -- A table defining the default location of where the soul should move to
     -- during the battle transition. If this is nil, it will move to the default location.
@@ -189,7 +190,11 @@ end
 function LightEncounter:onBattleInit() end
 
 function LightEncounter:eventWave()
-    return "_story"
+    if type(self.event_wave) == "table" then
+        return Utils.pick(self.event_wave)
+    else
+        return self.event_wave
+    end
 end
 
 function LightEncounter:setBattleState()

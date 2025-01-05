@@ -43,6 +43,18 @@ function item:init(inventory)
     
 end
 
+function item:getWorldUseText(target)
+    return string.sub(super.getWorldUseText(self, target), 1, -2)
+end
+
+function item:getLightBattleText(user, target)
+    return string.sub(super.getLightBattleText(self, user, target), 1, -2)
+end
+
+function item:getBattleText(user, target)
+    return string.sub(super.getBattleText(self, user, target), 1, -2)
+end
+
 function item:battleUseSound(user, target)
     Game.battle.timer:script(function(wait)
         Assets.stopAndPlaySound("swallow")

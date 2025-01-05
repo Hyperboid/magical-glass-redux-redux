@@ -8,7 +8,7 @@ end
 
 function spell:onLightCast(user, target)
     local amount = math.ceil(Game:isLight() and user.chara:getStat("magic") * 2.5 or user.chara:getStat("magic") * 5)
-    target:heal(amount, false, true)
+    target:heal(amount)
 end
 
 function spell:onCast(user, target)

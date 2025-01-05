@@ -938,7 +938,7 @@ function LightBattle:onStateChange(old,new)
         end
 
         local party = self.party[self.current_selecting]
-        party.chara:onActionSelect(party, false)
+        party.chara:onLightActionSelect(party, false)
         self.encounter:onCharacterTurn(party, false)
 
         if self.battle_ui.help_window then
@@ -1435,8 +1435,8 @@ function LightBattle:nextTurn()
         if self.encounter:onTurnEnd() then
             return
         end
-        for _,party in ipairs(self.party) do
-            if party.chara:onTurnEnd() then
+        for _,battler in ipairs(self.party) do
+            if battler.chara:onTurnEnd(battler) then
                 return
             end
         end
@@ -1466,7 +1466,7 @@ function LightBattle:nextTurn()
         battler.delay_turn_end = false
         battler.manual_spare = false
         if (battler.chara:getHealth() <= 0) and battler.chara:canAutoHeal() then
-            battler:heal(battler.chara:autoHealAmount(), nil, true)
+            battler:heal(math.floor(battler.chara:autoHealAmount()))
         end
         battler.action = nil
     end
@@ -2844,7 +2844,7 @@ function LightBattle:nextParty()
             self.battle_ui.encounter_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. self.battle_ui.current_encounter_text)
         else
             local party = self.party[self.current_selecting]
-            party.chara:onActionSelect(party, false)
+            party.chara:onLightActionSelect(party, false)
             self.encounter:onCharacterTurn(party, false)
         end
     end
@@ -2881,7 +2881,7 @@ function LightBattle:previousParty()
     table.remove(self.selected_action_stack, #self.selected_action_stack)
 
     local party = self.party[self.current_selecting]
-    party.chara:onActionSelect(party, true)
+    party.chara:onLightActionSelect(party, true)
     self.encounter:onCharacterTurn(party, true)
 end
 

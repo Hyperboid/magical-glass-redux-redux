@@ -7,6 +7,7 @@ function item:init(inventory)
     self.name = "Undyne's Letter"
     self.short_name = "UndynLetr"
     self.serious_name = "Letter"
+    self.dark_name = "Letter"
 
     -- Item type (item, key, weapon, armor)
     self.type = "item"
