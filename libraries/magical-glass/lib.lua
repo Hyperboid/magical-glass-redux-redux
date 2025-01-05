@@ -3087,6 +3087,8 @@ function lib:init()
         local maxed = false
         if self.target == "ally" then
             maxed = target:getHealth() >= target:getStat("health") or amount == math.huge
+        elseif self.target == "party" and #Game.party == 1 then
+            maxed = target[1]:getHealth() >= target[1]:getStat("health") or amount == math.huge
         end
         local message = ""
         if self.target == "ally" then
@@ -3098,8 +3100,10 @@ function lib:init()
                 message = "* " .. target:getNameOrYou() .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "party" then
-            if #Game.battle.party > 1 then
+            if #Game.party > 1 then
                 message = "* Everyone recovered " .. amount .. " HP."
+            elseif maxed then
+                message = "* Your HP was maxed out."
             else
                 message = "* You recovered " .. amount .. " HP."
             end
@@ -3212,6 +3216,8 @@ function lib:init()
             maxed = target.chara:getHealth() >= target.chara:getStat("health") or amount == math.huge
         elseif self.target == "enemy" then
             maxed = target.health >= target.max_health or amount == math.huge
+        elseif self.target == "party" and #Game.battle.party == 1 then
+            maxed = target[1].chara:getHealth() >= target[1].chara:getStat("health") or amount == math.huge
         end
         local message = ""
         if self.target == "ally" then
@@ -3225,6 +3231,8 @@ function lib:init()
         elseif self.target == "party" then
             if #Game.battle.party > 1 then
                 message = "* Everyone recovered " .. amount .. " HP."
+            elseif maxed then
+                message = "* Your HP was maxed out."
             else
                 message = "* You recovered " .. amount .. " HP."
             end
