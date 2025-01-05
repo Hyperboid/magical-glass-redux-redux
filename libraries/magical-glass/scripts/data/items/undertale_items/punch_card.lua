@@ -67,7 +67,7 @@ end
 
 function item:getLightBattleText(user, target)
     local gave = user == target and "" or "* "..user.chara:getNameOrYou().." gave the card to "..target.chara:getNameOrYou(true)..".\n[wait:10]"
-    if Utils.containsValue(target.chara:getWeapon().tags, "punch") then
+    if Utils.containsValue(target.chara:getWeapon() and target.chara:getWeapon().tags or {}, "punch") then
         return {
             "* OOOORAAAAA!!![wait:10]\n"..gave.."* "..target.chara:getNameOrYou().." rips up the punch card!",
             "* "..(select(2, target.chara:getNameOrYou()) and target.chara.id == Game.battle.party[1].chara.id and "Your" or target.chara:getNameOrYou().."'s").." hands are burning![wait:10]\n* AT increased by "..self:getATIncrease(target).."!"
@@ -82,7 +82,7 @@ end
 
 function item:getBattleText(user, target)
     local gave = user == target and "" or "* "..user.chara:getName().." gave the card to "..target.chara:getName().."!\n[wait:10]"
-    if Utils.containsValue(target.chara:getWeapon().tags, "punch") then
+    if Utils.containsValue(target.chara:getWeapon() and target.chara:getWeapon().tags or {}, "punch") then
         return {
             "* OOOORAAAAA!!![wait:10]\n"..gave.."* "..target.chara:getName().." rips up the punch card!",
             "* "..target.chara:getName().."'s hands are burning![wait:10]\n* AT increased by "..self:getATIncrease(target).."!"
@@ -97,7 +97,7 @@ end
 
 function item:onLightBattleUse(user, target)
     Game.battle:battleText(self:getLightBattleText(user, target))
-    if Utils.containsValue(target.chara:getWeapon().tags, "punch") then
+    if Utils.containsValue(target.chara:getWeapon() and target.chara:getWeapon().tags or {}, "punch") then
         Assets.playSound("tearcard")
         target.chara:addStatBuff("attack", self:getATIncrease(target))
     end
@@ -105,7 +105,7 @@ function item:onLightBattleUse(user, target)
 end
 
 function item:onBattleUse(user, target)
-    if Utils.containsValue(target.chara:getWeapon().tags, "punch") then
+    if Utils.containsValue(target.chara:getWeapon() and target.chara:getWeapon().tags or {}, "punch") then
         Assets.playSound("tearcard")
         target.chara:addStatBuff("attack", self:getATIncrease(target))
     end
