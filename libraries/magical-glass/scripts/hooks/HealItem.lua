@@ -1,4 +1,4 @@
-local HealItem, super = Class("HealItem", false)
+local HealItem, super = Class("HealItem", true)
 
 function HealItem:onWorldUse(target)
     if Game:isLight() then
