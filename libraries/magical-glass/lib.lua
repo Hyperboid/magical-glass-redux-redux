@@ -480,6 +480,17 @@ function lib:init()
     end)
     
     Utils.hook(Battle, "postInit", function(orig, self, state, encounter)
+        local check_encounter
+        if type(encounter) == "string" then
+            check_encounter = Registry.getEncounter(encounter)
+        else
+            check_encounter = encounter
+        end
+        
+        if check_encounter:includes(LightEncounter) then
+            error("Attempted to use LightEncounter in a DarkBattle. Convert the encounter file to an Encounter.")
+        end
+    
         orig(self, state, encounter)
         if not Kristal.getLibConfig("magical-glass", "light_world_dark_battle_tension") and Game:isLight() then
             self.tension_bar:remove()
@@ -849,21 +860,6 @@ function lib:init()
             end
         end
     end)
-
-    Utils.hook(Battle, "postInit", function(orig, self, state, encounter)
-        local local_encounter
-        if type(encounter) == "string" then
-            local_encounter = Registry.getEncounter(encounter)
-        else
-            local_encounter = encounter
-        end
-        
-        if local_encounter:includes(LightEncounter) then
-            error("Attempted to use LightEncounter in a DarkBattle. Convert the encounter file to an Encounter.")
-        end
-        
-        orig(self, state, encounter)
-    end)
     
     Utils.hook(Battle, "setWaves", function(orig, self, waves, allow_duplicates)
         for i,wave in ipairs(waves) do
@@ -891,8 +887,6 @@ function lib:init()
         self.serious_name = nil
         -- Dark name for the dark battle item menu
         self.dark_name = nil
-
-        self.tags = {}
 
         -- How this item is used on you (ate, drank, eat, etc.)
         self.use_method = "used"
@@ -1016,6 +1010,242 @@ function lib:init()
         end)
     end
     Utils.hook(LightEquipItem, "convertToDark", function(orig, self, inventory) return false end)
+    
+    Utils.hook(LightEquipItem, "init", function(orig, self)
+        orig(self)
+        
+        self.index = nil
+        self.storage = nil
+
+        self.equip_display_name = nil
+
+        self.target = "ally"
+
+        self.heal_bonus = 0
+        self.inv_bonus = 0
+        self.flee_bonus = 0
+
+        self.light_bolt_count = 1
+
+        self.light_bolt_speed = 11
+        self.light_bolt_speed_variance = 2
+
+        self.light_bolt_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
+        self.light_multibolt_variance = 50
+
+        self.light_bolt_direction = "right" -- "right", "left", or "random"
+
+        self.light_bolt_miss_threshold = 280
+
+        self.attack_sprite = "effects/attack/strike"
+
+        -- Sound played when attacking, defaults to laz_c
+        self.attack_sound = "laz_c"
+        
+        self.tags = {}
+
+        self.attack_pitch = 1
+    end)
+    
+    Utils.hook(LightEquipItem, "getEquipDisplayName", function(orig, self)
+        if self.equip_display_name then
+            return self.equip_display_name
+        else
+            return self:getName()
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "getHealBonus", function(orig, self) return self.heal_bonus end)
+    Utils.hook(LightEquipItem, "getInvBonus", function(orig, self) return self.inv_bonus end)
+    Utils.hook(LightEquipItem, "getFleeBonus", function(orig, self) return self.flee_bonus end)
+    
+    Utils.hook(LightEquipItem, "getLightBoltCount", function(orig, self) return self.light_bolt_count end)
+    
+    Utils.hook(LightEquipItem, "getLightBoltSpeed", function(orig, self)
+        if Game.battle.multi_mode then
+            return nil
+        else
+            return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "getLightBoltSpeedVariance", function(orig, self) return self.light_bolt_speed_variance or 0 end)
+    
+    Utils.hook(LightEquipItem, "getLightBoltStart", function(orig, self)
+        if Game.battle.multi_mode then
+            return nil
+        elseif type(self.light_bolt_start) == "table" then
+            return Utils.pick(self.light_bolt_start)
+        elseif type(self.light_bolt_start) == "number" then
+            return self.light_bolt_start
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "onBattleSelect", function(orig, self, user, target)
+        self.storage, self.index = Game.inventory:getItemIndex(self)
+        return true
+    end)
+    
+    Utils.hook(LightEquipItem, "getLightMultiboltVariance", function(orig, self, index)
+        if Game.battle.multi_mode then
+            return nil
+        elseif type(self.light_multibolt_variance) == "number" then
+            return self.light_multibolt_variance * index
+        elseif self.light_multibolt_variance[index] then
+            return type(self.light_multibolt_variance[index]) == "table" and Utils.pick(self.light_multibolt_variance[index]) or self.light_multibolt_variance[index]
+        else
+            return (type(self.light_multibolt_variance[#self.light_multibolt_variance]) == "table" and Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) or self.light_multibolt_variance[#self.light_multibolt_variance]) * (index - #self.light_multibolt_variance + 2) / 2
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "getLightBoltDirection", function(orig, self)
+        if self.light_bolt_direction == "random" then
+            return Utils.pick({"right", "left"})
+        else
+            return self.light_bolt_direction
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "getLightAttackMissZone", function(orig, self) return self.light_bolt_miss_threshold end)
+    
+    Utils.hook(LightEquipItem, "getLightAttackSprite", function(orig, self) return self.attack_sprite end)
+    Utils.hook(LightEquipItem, "getLightAttackSound", function(orig, self) return self.attack_sound end)
+    Utils.hook(LightEquipItem, "getLightAttackPitch", function(orig, self) return self.attack_pitch end)
+    
+    Utils.hook(LightEquipItem, "showEquipText", function(orig, self, target)
+        Game.world:showText("* " .. target:getNameOrYou() .. " equipped the " .. self:getName() .. ".")
+    end)
+    
+    Utils.hook(LightEquipItem, "showEquipTextFail", function(orig, self, target)
+        Game.world:showText("* " .. target:getNameOrYou() .. " didn't want to equip the " .. self:getName() .. ".")
+    end)
+    
+    Utils.hook(LightEquipItem, "onWorldUse", function(orig, self, target)
+        if self:canEquip(target) then
+            self.storage, self.index = Game.inventory:getItemIndex(self)
+            Assets.playSound("item")
+            if self.type == "weapon" then
+                if target:getWeapon() then
+                    Game.inventory:addItemTo(self.storage, self.index, target:getWeapon())
+                end
+                target:setWeapon(self)
+            elseif self.type == "armor" then
+                if target:getArmor(1) then
+                    Game.inventory:addItemTo(self.storage, self.index, target:getArmor(1))
+                end
+                target:setArmor(1, self)
+            else
+                error("LightEquipItem "..self.id.." invalid type: "..self.type)
+            end
+
+            self.storage, self.index = nil, nil
+            self:showEquipText(target)
+            return true
+        else
+            self:showEquipTextFail(target)
+            return false
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "getLightBattleText", function(orig, self, user, target)
+        local text = "* "..target.chara:getNameOrYou().." equipped the "..self:getUseName().."."
+        if user ~= target then
+            text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." equipped it."
+        end
+        return text
+    end)
+    
+    Utils.hook(LightEquipItem, "getLightBattleTextFail", function(orig, self, user, target)
+        local text = "* "..target.chara:getNameOrYou().." didn't want to equip the "..self:getUseName().."."
+        if user ~= target then
+            text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." didn't want to equip it."
+        end
+        return text
+    end)
+    
+    Utils.hook(LightEquipItem, "getBattleText", function(orig, self, user, target)
+        if self:canEquip(target.chara) then
+            local text = "* "..target.chara:getName().." equipped the "..self:getUseName().."!"
+            if user ~= target then
+                text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." equipped it!"
+            end
+            return text
+        else
+            return self:getBattleTextFail(user, target)
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "getBattleTextFail", function(orig, self, user, target)
+        local text = "* "..target.chara:getName().." didn't want to equip the "..self:getUseName().."."
+        if user ~= target then
+            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." didn't want to equip it."
+        end
+        return text
+    end)
+    
+    Utils.hook(LightEquipItem, "onLightBattleUse", function(orig, self, user, target)
+        if self:canEquip(target.chara) then
+            Assets.playSound("item")
+            local chara = target.chara
+            if self.type == "weapon" then
+                if chara:getWeapon() then
+                    Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
+                end
+                chara:setWeapon(self)
+            elseif self.type == "armor" then
+                if chara:getArmor(1) then
+                    Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
+                end
+                chara:setArmor(1, self)
+            else
+                error("LightEquipItem "..self.id.." invalid type: "..self.type)
+            end
+            self.storage, self.index = nil, nil
+            Game.battle:battleText(self:getLightBattleText(user, target))
+        else
+            Game.inventory:addItemTo(self.storage, self.index, self)
+            Game.battle:battleText(self:getLightBattleTextFail(user, target))
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "onBattleUse", function(orig, self, user, target)
+        if self:canEquip(target.chara) then
+            Assets.playSound("item")
+            local chara = target.chara
+            if self.type == "weapon" then
+                if chara:getWeapon() then
+                    Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
+                end
+                chara:setWeapon(self)
+            elseif self.type == "armor" then
+                if chara:getArmor(1) then
+                    Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
+                end
+                chara:setArmor(1, self)
+            else
+                error("LightEquipItem "..self.id.." invalid type: "..self.type)
+            end
+            self.storage, self.index = nil, nil
+        else
+            Game.inventory:addItemTo(self.storage, self.index, self)
+        end
+    end)
+    
+    Utils.hook(LightEquipItem, "onLightBoltHit", function(orig, self, battler) end)
+    
+    Utils.hook(LightEquipItem, "scoreLightHit", function(orig, self, battler, score, eval, close)
+        local new_score = score
+        new_score = new_score + eval
+
+        if new_score > 430 then
+            new_score = new_score * 1.8
+        end
+        if new_score >= 400 then
+            new_score = new_score * 1.25
+        end
+
+        return new_score
+    end)
     
     Utils.hook(Item, "getLightBattleText", function(orig, self, user, target)
         if self.target == "ally" then
@@ -1738,6 +1968,286 @@ function lib:init()
         end
     end)
     
+    Utils.hook(HealItem, "onWorldUse", function(orig, self, target)
+        if Game:isLight() then
+            local text = self:getWorldUseText(target)
+            if self.target == "ally" then
+                self:worldUseSound(target)
+                local amount = self:getWorldHealAmount(target.id)
+                local best_amount
+                for _,member in ipairs(Game.party) do
+                    local equip_amount = 0
+                    for _,equip in ipairs(member:getEquipment()) do
+                        if equip.getHealBonus then
+                            equip_amount = equip_amount + equip:getHealBonus()
+                        end
+                    end
+                    if not best_amount or equip_amount > best_amount then
+                        best_amount = equip_amount
+                    end
+                end
+                amount = amount + best_amount
+                Game.world:heal(target, amount, text, self)
+                return true
+            elseif self.target == "party" then
+                self:worldUseSound(target)
+                for _,party_member in ipairs(target) do
+                    local amount = self:getWorldHealAmount(party_member.id)
+                    local best_amount
+                    for _,member in ipairs(Game.party) do
+                        local equip_amount = 0
+                        for _,equip in ipairs(member:getEquipment()) do
+                            if equip.getHealBonus then
+                                equip_amount = equip_amount + equip:getHealBonus()
+                            end
+                        end
+                        if not best_amount or equip_amount > best_amount then
+                            best_amount = equip_amount
+                        end
+                    end
+                    amount = amount + best_amount
+                    Game.world:heal(party_member, amount, text, self)
+                end
+                return true
+            else
+                return false
+            end
+        else
+            return orig(self, target)
+        end
+    end)
+    
+    Utils.hook(HealItem, "onLightBattleUse", function(orig, self, user, target)
+        local text = self:getLightBattleText(user, target)
+
+        if self.target == "ally" then
+            self:battleUseSound(user, target)
+            local amount = self:getBattleHealAmount(target.chara.id)
+
+            for _,equip in ipairs(user.chara:getEquipment()) do
+                if equip.getHealBonus then
+                    amount = amount + equip:getHealBonus()
+                end
+            end
+
+            target:heal(amount, false)
+            text = text .. "\n" .. self:getLightBattleHealingText(user, target, amount)
+            Game.battle:battleText(text)
+            return true
+        elseif self.target == "party" then
+            self:battleUseSound(user, target)
+
+            local amount = 0
+            for _,battler in ipairs(target) do
+                amount = self:getBattleHealAmount(battler.chara.id)
+                for _,equip in ipairs(user.chara:getEquipment()) do
+                    if equip.getHealBonus then
+                        amount = amount + equip:getHealBonus()
+                    end
+                end
+
+                battler:heal(amount, false)
+            end
+
+            text = text .. "\n" .. self:getLightBattleHealingText(user, target, amount)
+            Game.battle:battleText(text)
+            return true
+        elseif self.target == "enemy" then
+            local amount = self:getBattleHealAmount(target.id)
+            
+            for _,equip in ipairs(user.chara:getEquipment()) do
+                if equip.getHealBonus then
+                    amount = amount + equip:getHealBonus()
+                end
+            end
+
+            target:heal(amount)
+            
+            text = text .. "\n" .. self:getLightBattleHealingText(user, target, amount)
+            Game.battle:battleText(text)
+            return true
+        elseif self.target == "enemies" then
+            local amount = 0
+            for _,enemy in ipairs(target) do
+                amount = self:getBattleHealAmount(enemy.id)
+                for _,equip in ipairs(user.chara:getEquipment()) do
+                    if equip.getHealBonus then
+                        amount = amount + equip:getHealBonus()
+                    end
+                end
+                
+                enemy:heal(amount)
+            end
+            
+            text = text .. "\n" .. self:getLightBattleHealingText(user, target, amount)
+            Game.battle:battleText(text)
+            return true
+        else
+            -- No target or enemy target (?), do nothing
+            return false
+        end
+    end)
+    
+    Utils.hook(HealItem, "getLightBattleText", function(orig, self, user, target)
+        if self.target == "ally" then
+            return "* " .. target.chara:getNameOrYou() .. " "..self:getUseMethod(target.chara).." the " .. self:getUseName() .. "."
+        elseif self.target == "party" then
+            if #Game.battle.party > 1 then
+                return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+            else
+                return "* You "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
+            end
+        elseif self.target == "enemy" then
+            return "* " .. target.name .. " "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+        elseif self.target == "enemies" then
+            return "* The enemies "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+        end
+    end)
+    
+    Utils.hook(HealItem, "getWorldUseText", function(orig, self, target)
+        if self.target == "ally" then
+            return "* " .. target:getNameOrYou() .. " "..self:getUseMethod(target).." the " .. self:getUseName() .. "."
+        elseif self.target == "party" then
+            if #Game.party > 1 then
+                return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+            else
+                return "* You "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
+            end
+        end
+    end)
+    
+    Utils.hook(HealItem, "getLightBattleHealingText", function(orig, self, user, target, amount)
+        local maxed = false
+        if self.target == "ally" then
+            maxed = target.chara:getHealth() >= target.chara:getStat("health") or amount == math.huge
+        elseif self.target == "enemy" then
+            maxed = target.health >= target.max_health or amount == math.huge
+        elseif self.target == "party" and #Game.battle.party == 1 then
+            maxed = target[1].chara:getHealth() >= target[1].chara:getStat("health") or amount == math.huge
+        end
+        local message = ""
+        if self.target == "ally" then
+            if select(2, target.chara:getNameOrYou()) and maxed then
+                message = "* Your HP was maxed out."
+            elseif maxed then
+                message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
+            else
+                message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "party" then
+            if #Game.battle.party > 1 then
+                message = "* Everyone recovered " .. amount .. " HP."
+            elseif maxed then
+                message = "* Your HP was maxed out."
+            else
+                message = "* You recovered " .. amount .. " HP."
+            end
+        elseif self.target == "enemy" then
+            if maxed then
+                message = "* " .. target.name .. "'s HP was maxed out."
+            else
+                message = "* " .. target.name .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "enemies" then
+            message = "* The enemies recovered " .. amount .. " HP."
+        end
+        return message
+    end)
+    
+    Utils.hook(HealItem, "getLightWorldHealingText", function(orig, self, target, amount)
+        local maxed = false
+
+        if self.target == "ally" or self.target == "party" and #Game.party == 1 then
+            maxed = target:getHealth() >= target:getStat("health") or amount == math.huge
+        end
+
+        local message = ""
+        if self.target == "ally" then
+            if select(2, target:getNameOrYou()) and maxed then
+                message = "* Your HP was maxed out."
+            elseif maxed then
+                message = "* " .. target:getNameOrYou() .. "'s HP was maxed out."
+            else
+                message = "* " .. target:getNameOrYou() .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "party" then
+            if #Game.party > 1 then
+                message = "* Everyone recovered " .. amount .. " HP."
+            elseif maxed then
+                message = "* Your HP was maxed out."
+            else
+                message = "* You recovered " .. amount .. " HP."
+            end
+        end
+        return message
+    end)
+    
+    Utils.hook(HealItem, "onBattleUse", function(orig, self, user, target)
+        if Game:isLight() then
+            if self.target == "ally" then
+                -- Heal single party member
+                local amount = self:getBattleHealAmount(target.chara.id)
+                for _,equip in ipairs(user.chara:getEquipment()) do
+                    if equip.getHealBonus then
+                        amount = amount + equip:getHealBonus()
+                    end
+                end
+                target:heal(amount)
+            elseif self.target == "party" then
+                -- Heal all party members
+                for _,battler in ipairs(target) do
+                    local amount = self:getBattleHealAmount(battler.chara.id)
+                    for _,equip in ipairs(user.chara:getEquipment()) do
+                        if equip.getHealBonus then
+                            amount = amount + equip:getHealBonus()
+                        end
+                    end
+                    battler:heal(amount)
+                end
+            elseif self.target == "enemy" then
+                -- Heal single enemy (why)
+                local amount = self:getBattleHealAmount(target.id)
+                for _,equip in ipairs(user.chara:getEquipment()) do
+                    if equip.getHealBonus then
+                        amount = amount + equip:getHealBonus()
+                    end
+                end
+                target:heal(amount)
+            elseif self.target == "enemies" then
+                -- Heal all enemies (why????)
+                for _,enemy in ipairs(target) do
+                    local amount = self:getBattleHealAmount(enemy.id)
+                    for _,equip in ipairs(user.chara:getEquipment()) do
+                        if equip.getHealBonus then
+                            amount = amount + equip:getHealBonus()
+                        end
+                    end
+                    enemy:heal(amount)
+                end
+            else
+                -- No target, do nothing
+            end
+        else
+            orig(self, user, target)
+        end
+    end)
+    
+    Utils.hook(HealItem, "battleUseSound", function(orig, self, user, target)
+        Game.battle.timer:script(function(wait)
+            Assets.stopAndPlaySound("swallow")
+            wait(0.4)
+            Assets.stopAndPlaySound("power")
+        end)
+    end)
+    
+    Utils.hook(HealItem, "worldUseSound", function(orig, self, target)
+        Game.world.timer:script(function(wait)
+            Assets.stopAndPlaySound("swallow")
+            wait(0.4)
+            Assets.stopAndPlaySound("power")
+        end)
+    end)
+    
     Utils.hook(WorldCutscene, "startLightEncounter", function(orig, self, encounter, transition, enemy, options)
         options = options or {}
         transition = transition ~= false
@@ -1768,117 +2278,6 @@ function lib:init()
     Utils.hook(BattleCutscene, "text", function(orig, self, text, portrait, actor, options)
         orig(self, Game.battle.light and ("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. text) or text, portrait, actor, options)
     end)
-
-    if not Mod.libs["widescreen"] then
-        Utils.hook(WorldCutscene, "text", function(orig, self, text, portrait, actor, options)
-            local function waitForTextbox(self) return not self.textbox or self.textbox:isDone() end
-            if type(actor) == "table" and not isClass(actor) then
-                options = actor
-                actor = nil
-            end
-            if type(portrait) == "table" then
-                options = portrait
-                portrait = nil
-            end
-        
-            options = options or {}
-        
-            self:closeText()
-        
-            local width, height = 529, 103
-            if Game:isLight() then
-                width, height = 530, 104
-            end
-        
-            self.textbox = Textbox(56, 344, width, height)
-            self.textbox.text.hold_skip = false
-            self.textbox.layer = WORLD_LAYERS["textbox"]
-            Game.world:addChild(self.textbox)
-            self.textbox:setParallax(0, 0)
-        
-            local speaker = self.textbox_speaker
-            if not speaker and isClass(actor) and actor:includes(Character) then
-                speaker = actor.sprite
-            end
-        
-            if options["talk"] ~= false then
-                self.textbox.text.talk_sprite = speaker
-            end
-        
-            actor = actor or self.textbox_actor
-            if isClass(actor) and actor:includes(Character) then
-                actor = actor.actor
-            end
-            if actor then
-                self.textbox:setActor(actor)
-            end
-        
-            if options["top"] == nil and self.textbox_top == nil then
-                local _, player_y = Game.world.player:localToScreenPos()
-                options["top"] = player_y > 260
-            end
-            if options["top"] or (options["top"] == nil and self.textbox_top) then
-            local bx, by = self.textbox:getBorder()
-            self.textbox.y = by + 2
-            end
-        
-            self.textbox.active = true
-            self.textbox.visible = true
-            self.textbox:setFace(portrait, options["x"], options["y"])
-        
-            if options["reactions"] then
-                for id,react in pairs(options["reactions"]) do
-                    self.textbox:addReaction(id, react[1], react[2], react[3], react[4], react[5])
-                end
-            end
-        
-            if options["functions"] then
-                for id,func in pairs(options["functions"]) do
-                    self.textbox:addFunction(id, func)
-                end
-            end
-        
-            if options["font"] then
-                if type(options["font"]) == "table" then
-                    -- {font, size}
-                    self.textbox:setFont(options["font"][1], options["font"][2])
-                else
-                    self.textbox:setFont(options["font"])
-                end
-            end
-        
-            if options["align"] then
-                self.textbox:setAlign(options["align"])
-            end
-        
-            self.textbox:setSkippable(options["skip"] or options["skip"] == nil)
-            self.textbox:setAdvance(options["advance"] or options["advance"] == nil)
-            self.textbox:setAuto(options["auto"])
-        
-            if false then -- future feature
-                self.textbox:setText("[wait:2]"..text, function()
-                    self.textbox:remove()
-                    self:tryResume()
-                end)
-            else
-                self.textbox:setText(text, function()
-                    self.textbox:remove()
-                    self:tryResume()
-                end)
-            end
-        
-            local wait = options["wait"] or options["wait"] == nil
-            if not self.textbox.text.can_advance then
-                wait = options["wait"] -- By default, don't wait if the textbox can't advance
-            end
-        
-            if wait then
-                return self:wait(waitForTextbox)
-            else
-                return waitForTextbox, self.textbox
-            end
-        end)
-    end
     
     Utils.hook(PartyBattler, "calculateDamage", function(orig, self, amount)
         if Game:isLight() then
@@ -2257,6 +2656,8 @@ function lib:init()
     Utils.hook(PartyMember, "getAttackBarColor", function(orig, self)
         if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") == true and Game:isLight() then
             return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color_attackbar"])
+        elseif self.attack_bar_color_lw and Game:isLight() then
+            return Utils.unpackColor(self.attack_bar_color_lw)
         else
             return orig(self)
         end
@@ -2265,6 +2666,8 @@ function lib:init()
     Utils.hook(PartyMember, "getAttackBoxColor", function(orig, self)
         if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") == true and Game:isLight() then
             return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color_attackbox"])
+        elseif self.attack_box_color_lw and Game:isLight() then
+            return Utils.unpackColor(self.attack_box_color_lw)
         else
             return orig(self)
         end
@@ -2273,6 +2676,16 @@ function lib:init()
     Utils.hook(PartyMember, "getDamageColor", function(orig, self)
         if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") == true and Game:isLight() and #Game.battle.party == 1 then
             return Utils.unpackColor(MG_PALETTE["light_world_dark_battle_color_damage_single"])
+        elseif self.dmg_color_lw and Game:isLight() then
+            return Utils.unpackColor(self.dmg_color_lw)
+        else
+            return orig(self)
+        end
+    end)
+    
+    Utils.hook(PartyMember, "getXActColor", function(orig, self)
+        if self.xact_color_lw and Game:isLight() then
+            return Utils.unpackColor(self.xact_color_lw)
         else
             return orig(self)
         end
@@ -2360,40 +2773,6 @@ function lib:init()
             return Utils.unpackColor(self.light_xact_color)
         else
             return self:getXActColor()
-        end
-    end)
-    
-    
-    -- Dark Battle Colors
-    Utils.hook(PartyMember, "getDamageColor", function(orig, self)
-        if self.dmg_color_lw and Game:isLight() then
-            return Utils.unpackColor(self.dmg_color_lw)
-        else
-            return orig(self)
-        end
-    end)
-    
-    Utils.hook(PartyMember, "getAttackBarColor", function(orig, self)
-        if self.attack_bar_color_lw and Game:isLight() then
-            return Utils.unpackColor(self.attack_bar_color_lw)
-        else
-            return orig(self)
-        end
-    end)
-    
-    Utils.hook(PartyMember, "getAttackBoxColor", function(orig, self)
-        if self.attack_box_color_lw and Game:isLight() then
-            return Utils.unpackColor(self.attack_box_color_lw)
-        else
-            return orig(self)
-        end
-    end)
-    
-    Utils.hook(PartyMember, "getXActColor", function(orig, self)
-        if self.xact_color_lw and Game:isLight() then
-            return Utils.unpackColor(self.xact_color_lw)
-        else
-            return orig(self)
         end
     end)
     
