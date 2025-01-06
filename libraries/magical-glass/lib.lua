@@ -575,7 +575,7 @@ function lib:init()
             end
 
             if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_tension") then
-                self.money = self.money + (math.floor((Game:getTension() * 2.5) / 30))
+                self.money = self.money + math.floor(Game:getTension() / 5)
             end
 
             for _,battler in ipairs(self.party) do
