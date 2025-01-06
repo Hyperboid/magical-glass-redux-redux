@@ -51,6 +51,7 @@ function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
         else
             self.text = tostring(self.amount)
         end
+        self.text = self.text:upper()
     end
 
     if self.message and self.message ~= "_special" then
