@@ -897,8 +897,8 @@ function LightEnemyBattler:freeze()
 
     -- self:recruitMessage("frozen")
     local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255}, true)
-    message.y = message.y + 60
     message:resetPhysics()
+    message.y = message.y + 50
 
     self.hurt_timer = -1
 
@@ -926,7 +926,7 @@ function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
     local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
     
     local function y_msg_position()
-        return y + (offset_y - 2) - (not kill and self.light_hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
+        return y + (offset_y - 1) - (not kill and self.light_hit_count * 32 or 0)
     end
     
     if y_msg_position() <= 6 and self.light_hit_count > 0 then
@@ -936,7 +936,7 @@ function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
         self.x_number_offset = self.x_number_offset + 1
     end
     local percent
-    if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
+    if type == "mercy" and self:getMercyVisibility() or type ~= "mercy" then
         percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
         if kill then
             percent.kill_others = true
@@ -953,11 +953,9 @@ function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
         end
     end
 
-    if type ~= "msg" then
-        if (type == "damage" and self:getHPVisibility()) or (type == "mercy" and self:getMercyVisibility()) then
-            local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
-            self.parent:addChild(gauge)
-        end
+    if (type == "damage" and self:getHPVisibility()) or (type == "mercy" and self:getMercyVisibility()) then
+        local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
+        self.parent:addChild(gauge)
     end
 
     return percent
