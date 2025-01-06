@@ -1,7 +1,7 @@
 local item, super = Class("s_poison", true)
 
 function item:getLightBattleText(user, target)
-    return "* "..user.chara:getNameOrYou().." administered the "..self:getUseName().."."
+    return "* "..target.chara:getNameOrYou().." administered "..self:getUseName().."."
 end
 
 function item:onLightBattleUse(user, target)
@@ -25,7 +25,8 @@ function item:onLightBattleUse(user, target)
             return false
         end
     end)
-    Game.battle:battleText(self:getLightBattleText(user, target))
+    Game.battle:battleText(self:getLightBattleText(user, target).."\n"..string.sub(self:getLightBattleHealingText(user, target, self.battle_heal_amount), 1, -2).."?"
+    .."\n* "..target.chara:getNameOrYou().." "..(select(2, target.chara:getNameOrYou()) and "are" or "is").." poisoned.")
 end
 
 function item:battleUseSound(user, target)
