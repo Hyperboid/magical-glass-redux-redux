@@ -26,10 +26,8 @@ function item:init()
         "* Use outside of battle\nto look at the card."
     }
 
-    -- Prevents the overworld selection for an item (Light World Only)
-    self.skip_overworld_selection = true
     -- Consumable target mode (ally, party, enemy, enemies, or none)
-    self.target = "ally"
+    self.target = "none"
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
@@ -39,14 +37,14 @@ function item:init()
     
 end
 
-function item:getATIncrease(target)
-    if target.chara:getStat("attack") > 28 then
+function item:getATIncrease(user)
+    if user.chara:getStat("attack") > 28 then
         return 2
-    elseif target.chara:getStat("attack") > 26 then
+    elseif user.chara:getStat("attack") > 26 then
         return 3
-    elseif target.chara:getStat("attack") > 23 then
+    elseif user.chara:getStat("attack") > 23 then
         return 4
-    elseif target.chara:getStat("attack") > 18 then
+    elseif user.chara:getStat("attack") > 18 then
         return 5
     else
         return 6
@@ -66,30 +64,28 @@ function item:onWorldUse(target)
 end
 
 function item:getLightBattleText(user, target)
-    local gave = user == target and "" or "* "..user.chara:getNameOrYou().." gave the card to "..target.chara:getNameOrYou(true)..".\n[wait:10]"
-    if Utils.containsValue(target.chara:getWeapon() and target.chara:getWeapon().tags or {}, "punch") then
+    if Utils.containsValue(user.chara:getWeapon() and user.chara:getWeapon().tags or {}, "punch") then
         return {
-            "* OOOORAAAAA!!![wait:10]\n"..gave.."* "..target.chara:getNameOrYou().." rips up the punch card!",
-            "* "..(select(2, target.chara:getNameOrYou()) and target.chara.id == Game.battle.party[1].chara.id and "Your" or target.chara:getNameOrYou().."'s").." hands are burning![wait:10]\n* AT increased by "..self:getATIncrease(target).."!"
+            "* OOOORAAAAA!!![wait:10]\n* "..user.chara:getNameOrYou().." rips up the punch card!",
+            "* "..(select(2, user.chara:getNameOrYou()) and user.chara.id == Game.battle.party[1].chara.id and "Your" or user.chara:getNameOrYou().."'s").." hands are burning![wait:10]\n* AT increased by "..self:getATIncrease(user).."!"
         }
     else
         return {
-            "* OOOORAAAAA!!![wait:10]\n"..gave.."* "..target.chara:getNameOrYou().." rips up the punch card!",
+            "* OOOORAAAAA!!![wait:10]\n* "..user.chara:getNameOrYou().." rips up the punch card!",
             "* But nothing happened."
         }
     end
 end
 
 function item:getBattleText(user, target)
-    local gave = user == target and "" or "* "..user.chara:getName().." gave the card to "..target.chara:getName().."!\n[wait:10]"
-    if Utils.containsValue(target.chara:getWeapon() and target.chara:getWeapon().tags or {}, "punch") then
+    if Utils.containsValue(user.chara:getWeapon() and user.chara:getWeapon().tags or {}, "punch") then
         return {
-            "* OOOORAAAAA!!![wait:10]\n"..gave.."* "..target.chara:getName().." rips up the punch card!",
-            "* "..target.chara:getName().."'s hands are burning![wait:10]\n* AT increased by "..self:getATIncrease(target).."!"
+            "* OOOORAAAAA!!![wait:10]\n* "..user.chara:getName().." rips up the punch card!",
+            "* "..user.chara:getName().."'s hands are burning![wait:10]\n* AT increased by "..self:getATIncrease(user).."!"
         }
     else
         return {
-            "* OOOORAAAAA!!![wait:10]\n"..gave.."* "..target.chara:getName().." rips up the punch card!",
+            "* OOOORAAAAA!!![wait:10]\n* "..user.chara:getName().." rips up the punch card!",
             "* But nothing happened."
         }
     end
@@ -97,17 +93,17 @@ end
 
 function item:onLightBattleUse(user, target)
     Game.battle:battleText(self:getLightBattleText(user, target))
-    if Utils.containsValue(target.chara:getWeapon() and target.chara:getWeapon().tags or {}, "punch") then
+    if Utils.containsValue(user.chara:getWeapon() and user.chara:getWeapon().tags or {}, "punch") then
         Assets.playSound("tearcard")
-        target.chara:addStatBuff("attack", self:getATIncrease(target))
+        user.chara:addStatBuff("attack", self:getATIncrease(user))
     end
     return true
 end
 
 function item:onBattleUse(user, target)
-    if Utils.containsValue(target.chara:getWeapon() and target.chara:getWeapon().tags or {}, "punch") then
+    if Utils.containsValue(user.chara:getWeapon() and user.chara:getWeapon().tags or {}, "punch") then
         Assets.playSound("tearcard")
-        target.chara:addStatBuff("attack", self:getATIncrease(target))
+        user.chara:addStatBuff("attack", self:getATIncrease(user))
     end
     return true
 end

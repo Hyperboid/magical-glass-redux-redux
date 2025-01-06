@@ -898,9 +898,6 @@ function lib:init()
         -- Doesn't display stats for weapons and armors in light shops
         self.shop_dont_show_change = false
         
-        -- Prevents the overworld selection for an item (Light World Only)
-        self.skip_overworld_selection = false
-        
         -- Whether this equipment item can convert on light change
         self.equip_can_convert = nil
     end)
@@ -1772,7 +1769,7 @@ function lib:init()
                 local item = Game.inventory:getItem(self.storage, self.item_selecting)
                 if self.option_selecting == 1 and (item.usable_in == "world" or item.usable_in == "all") and not (item.target == "enemy" or item.target == "enemies") then
                     self.party_selecting = 1
-                    if #Game.party > 1 and not item.skip_overworld_selection and item.target == "ally" then
+                    if #Game.party > 1 and item.target == "ally" then
                         self.ui_select:stop()
                         self.ui_select:play()
                         self.party_select_bg.visible = true
