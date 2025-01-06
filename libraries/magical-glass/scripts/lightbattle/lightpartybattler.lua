@@ -177,6 +177,7 @@ function LightPartyBattler:revive()
 end
 
 function LightPartyBattler:heal(amount, playsound)
+    amount = math.floor(amount)
     MagicalGlassLib.heal_amount = amount
 
     if playsound ~= false then

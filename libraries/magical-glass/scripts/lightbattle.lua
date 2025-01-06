@@ -1466,7 +1466,7 @@ function LightBattle:nextTurn()
         battler.delay_turn_end = false
         battler.manual_spare = false
         if (battler.chara:getHealth() <= 0) and battler.chara:canAutoHeal() then
-            battler:heal(math.floor(battler.chara:autoHealAmount()))
+            battler:heal(battler.chara:autoHealAmount())
         end
         battler.action = nil
     end
