@@ -25,5 +25,9 @@ return {
             {"Right BottomMid", "right", "bottommid", "surprise", "susie"},
         }})
         end
+        
+        if cutscene:getCharacter("noelle") then
+            cutscene:text("* (...[wait:10] Could she punch me too?)", "blush", "noelle")
+        end
     end
 }

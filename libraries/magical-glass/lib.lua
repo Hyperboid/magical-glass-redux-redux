@@ -1426,27 +1426,27 @@ function lib:init()
         if battle_box then
             if Game.battle.light then
                 self.face_x = 6
-                self.face_y = -2
-        
+                self.face_y = -3
+                
                 self.text_x = 0
                 self.text_y = -2 
             else
                 self.face_x = -4
                 self.face_y = 2
-        
+                
                 self.text_x = 0
                 self.text_y = -2 -- TODO: This was changed 2px lower with the new font, but it was 4px offset. Why? (Used to be 0)
             end
         elseif Game:isLight() then
             self.face_x = 13
             self.face_y = 6
-    
+            
             self.text_x = 2
             self.text_y = -4
         else
             self.face_x = 18
             self.face_y = 6
-    
+            
             self.text_x = 2
             self.text_y = -4  -- TODO: This was changed with the new font but it's accurate anyways
         end
