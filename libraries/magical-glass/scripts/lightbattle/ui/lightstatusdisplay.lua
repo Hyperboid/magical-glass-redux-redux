@@ -57,7 +57,7 @@ function LightStatusDisplay:drawStatusStripEvent()
         love.graphics.setColor(Game:isLight() and MG_PALETTE["player_karma_health"] or MG_PALETTE["player_karma_health_dark"])
         love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1), 21)
         love.graphics.setColor(Game:isLight() and MG_PALETTE["player_health"] or {Game.battle.party[1].chara:getColor()})
-        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + 10) * 1.2 + 1) - (karma_mode and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.2 + 1 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.2 + 1) - (karma_mode and 1 or 0), 21)
     end
 
     if max < 10 and max >= 0 then
