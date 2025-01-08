@@ -1926,13 +1926,13 @@ function LightBattle:update()
             if wave.darken then
                 darken = true
                 time = wave.time
-            end
-            if wave.darken == "ut" then
-                ut_darken = true
+                if wave.darken == "undertale" then
+                    ut_darken = true
+                end
             end
         end
         
-        if darken and ut_darken then
+        if ut_darken then
             self.darkify_fader.layer = BATTLE_LAYERS["below_ui"] + 1.5
         else
             self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
