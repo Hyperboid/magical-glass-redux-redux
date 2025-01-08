@@ -604,10 +604,11 @@ function LightShop:draw()
 
             Draw.setColor(COLORS.white)
             if not current_item.options["dont_show_change"] and (current_item.item.type == "weapon" or current_item.item.type == "armor") then
-                local stats_diff = {}
+                local stats_diff = {{"("}, {"("}}
                 local equip
                 local difference = ""
                 local stat = ""
+                local slot = 1
                 for i,party in ipairs(Game.party) do
                     if current_item.item.type == "weapon" then
                         equip = party:getWeapon()
@@ -637,41 +638,26 @@ function LightShop:draw()
                         difference = "XX"
                     end
                     
-                    table.insert(stats_diff, difference .. " ")
+                    if Mod.libs["moreparty"] and i > (Kristal.getLibConfig("moreparty", "classic_mode") and 3 or 4) then
+                        slot = 2
+                    end
+                    if #Game.party > 1 then
+                        table.insert(stats_diff[slot], {party:getColor()})
+                    end
+                    table.insert(stats_diff[slot], difference .. " ")
+                end
+                for i = 1, 2 do
+                    if #Game.party > 1 then
+                        table.insert(stats_diff[i], {1,1,1})
+                    end
+                    table.insert(stats_diff[i], stat ..")")
                 end
                 love.graphics.print(current_item.item:getLightTypeName(), left + 28, top + 28)
-                if #Game.party == 2 then
-                    love.graphics.print({"(",{Game.party[1]:getColor()},stats_diff[1],{Game.party[2]:getColor()},stats_diff[2],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
-                elseif #Game.party == 3 then
-                    love.graphics.print({"(",{Game.party[1]:getColor()},stats_diff[1],{Game.party[2]:getColor()},stats_diff[2],{Game.party[3]:getColor()},stats_diff[3],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
-                elseif Mod.libs["moreparty"] and #Game.party > 3 then
-                    if not Kristal.getLibConfig("moreparty", "classic_mode") then
-                        if #Game.party == 4 then
-                            love.graphics.print({"(",{Game.party[1]:getColor()},stats_diff[1],{Game.party[2]:getColor()},stats_diff[2],{Game.party[3]:getColor()},stats_diff[3],{Game.party[4]:getColor()},stats_diff[4],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
-                        else
-                            love.graphics.print({"(",{Game.party[1]:getColor()},stats_diff[1],{Game.party[2]:getColor()},stats_diff[2],{Game.party[3]:getColor()},stats_diff[3],{Game.party[4]:getColor()},stats_diff[4],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() - 10)
-                        end
-                        if #Game.party == 5 then
-                            love.graphics.print({"(",{Game.party[5]:getColor()},stats_diff[5],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
-                        elseif #Game.party == 6 then
-                            love.graphics.print({"(",{Game.party[5]:getColor()},stats_diff[5],{Game.party[6]:getColor()},stats_diff[6],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
-                        elseif #Game.party == 7 then
-                            love.graphics.print({"(",{Game.party[5]:getColor()},stats_diff[5],{Game.party[6]:getColor()},stats_diff[6],{Game.party[7]:getColor()},stats_diff[7],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
-                        elseif #Game.party >= 8 then
-                            love.graphics.print({"(",{Game.party[5]:getColor()},stats_diff[5],{Game.party[6]:getColor()},stats_diff[6],{Game.party[7]:getColor()},stats_diff[7],{Game.party[8]:getColor()},stats_diff[8],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
-                        end
-                    else
-                        love.graphics.print({"(",{Game.party[1]:getColor()},stats_diff[1],{Game.party[2]:getColor()},stats_diff[2],{Game.party[3]:getColor()},stats_diff[3],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() - 10)
-                        if #Game.party == 4 then
-                            love.graphics.print({"(",{Game.party[4]:getColor()},stats_diff[4],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
-                        elseif #Game.party == 5 then
-                            love.graphics.print({"(",{Game.party[4]:getColor()},stats_diff[4],{Game.party[5]:getColor()},stats_diff[5],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
-                        elseif #Game.party >= 6 then
-                            love.graphics.print({"(",{Game.party[4]:getColor()},stats_diff[4],{Game.party[5]:getColor()},stats_diff[5],{Game.party[6]:getColor()},stats_diff[6],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
-                        end
-                    end
+                if slot == 2 then
+                    love.graphics.print(stats_diff[1], left + 28, top + 28 + self.font:getHeight() - 10)
+                    love.graphics.print(stats_diff[2], left + 28, top + 28 + self.font:getHeight() + 10)
                 else
-                    love.graphics.print("(" .. stats_diff[1] .. stat ..")", left + 28, top + 28 + self.font:getHeight())
+                    love.graphics.print(stats_diff[1], left + 28, top + 28 + self.font:getHeight())
                 end
                 love.graphics.print(current_item.options["description"], left + 28, top + 28 + self.font:getHeight() * 2)
             elseif not current_item.options["dont_show_change"] and current_item.item:includes(HealItem) then

@@ -1,11 +1,6 @@
 local LightEncounter = Class()
 
 function LightEncounter:init()
-    -- Sets the encounter ID incase it was started without an encounter file
-    if not self.id then
-        self.id = "_local"
-    end
-
     -- Text that will be displayed when the battle starts
     self.text = "* A skirmish breaks out!"
 
@@ -445,14 +440,17 @@ function LightEncounter:createSoul(x, y, color)
 end
 
 function LightEncounter:setFlag(flag, value)
+    if self.id == nil then return end
     Game:setFlag("lw_encounter#"..self.id..":"..flag, value)
 end
 
 function LightEncounter:getFlag(flag, default)
+    if self.id == nil then return end
     return Game:getFlag("lw_encounter#"..self.id..":"..flag, default)
 end
 
 function LightEncounter:addFlag(flag, amount)
+    if self.id == nil then return end
     return Game:addFlag("lw_encounter#"..self.id..":"..flag, amount)
 end
 
