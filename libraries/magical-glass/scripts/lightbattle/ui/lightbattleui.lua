@@ -43,7 +43,7 @@ function LightBattleUI:init()
     -- active: 237
     -- inactive: 280
     self.help_window = HelpWindow(SCREEN_WIDTH/2, 280) -- height is 99px in dt
-    self.help_window.layer = self.arena.layer - 10
+    self.help_window.layer = self.arena.layer - 0.5
     Game.battle:addChild(self.help_window)
 
     self.attack_box = nil
@@ -53,7 +53,7 @@ function LightBattleUI:init()
 
     for i,battler in ipairs(Game.battle.party) do
         self.action_box_ut = LightActionBox(20, 0, i, battler)
-        self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
+        self.action_box_ut.layer = BATTLE_LAYERS["below_ui"] + 2
         self.action_box_ut:move(self:getRelativePos())
         Game.battle:addChild(self.action_box_ut)
         table.insert(self.action_boxes, self.action_box_ut)
@@ -108,7 +108,7 @@ function LightBattleUI:init()
     Game.battle.arena:addChild(self.flee_text)
     
     self.status_display = LightStatusDisplay(0, 390, Game.battle.encounter.event and not Game.battle.multi_mode)
-    self.status_display.layer = BATTLE_LAYERS["below_ui"] + 1
+    self.status_display.layer = BATTLE_LAYERS["below_ui"]
     Game.battle:addChild(self.status_display)
 end
 

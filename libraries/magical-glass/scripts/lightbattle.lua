@@ -262,6 +262,7 @@ function LightBattle:postInit(state, encounter)
 
     self.tension_bar = LightTensionBar(25, 55, true)
     self.tension_bar.visible = self.tension
+    self.tension_bar.layer = BATTLE_LAYERS["below_ui"] + 1
     self:addChild(self.tension_bar)
 
     if Game.encounter_enemies then
@@ -1919,18 +1920,32 @@ function LightBattle:update()
         end
     elseif self.state == "DEFENDING" then
         local darken = false
+        local ut_darken = false
         local time
         for _,wave in ipairs(self.waves) do
             if wave.darken then
                 darken = true
                 time = wave.time
             end
+            if wave.darken == "ut" then
+                ut_darken = true
+            end
+        end
+        
+        if darken and ut_darken then
+            self.darkify_fader.layer = BATTLE_LAYERS["below_ui"] + 1.5
+        else
+            self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
         end
 
         if darken and self.wave_timer <= time - 9/30 then
             self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0.5, DTMULT * 0.05)
+            if ut_darken then
+                self.arena.alpha = Utils.approach(self.arena.alpha, 0.5, DTMULT * 0.05)
+            end
         else
             self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0, DTMULT * 0.05)
+            self.arena.alpha = Utils.approach(self.arena.alpha, 1, DTMULT * 0.05)
         end
 
         self:updateWaves()
@@ -1961,6 +1976,7 @@ function LightBattle:update()
     
     if Utils.containsValue({"TURNDONE", "DEFENDINGEND", "ACTIONSELECT", "ACTIONS", "VICTORY", "TRANSITIONOUT", "BATTLETEXT"}, self.state) then
         self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0, DTMULT * 0.05)
+        self.arena.alpha = Utils.approach(self.arena.alpha, 1, DTMULT * 0.05)
     end
     
     self.update_child_list = true
