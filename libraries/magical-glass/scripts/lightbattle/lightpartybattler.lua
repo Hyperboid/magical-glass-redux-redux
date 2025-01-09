@@ -87,7 +87,8 @@ end
 
 function LightPartyBattler:hurt(amount, exact, color, options)
     options = options or {}
-    self.sleeping = false
+    
+    self:setSleeping(false)
 
     if not options["all"] then
         Assets.playSound("hurt")
