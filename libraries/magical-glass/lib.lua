@@ -460,6 +460,17 @@ function lib:init()
         end)
     end)
     
+    Utils.hook(WorldCutscene, "init", function(orig, self, world, group, id, ...)
+        orig(self, world, group, id, ...)
+        
+        if Game:isLight() then
+            if self.world.menu and self.world.menu.state == "STATMENU" then
+                self.world.menu:closeBox()
+                self.world.menu.state = "TEXT"
+            end
+        end
+    end)
+    
     Utils.hook(WorldCutscene, "showShop", function(orig, self)
         if Game:isLight() then
             if self.shopbox then self.shopbox:remove() end
@@ -2823,7 +2834,6 @@ function lib:init()
         end
         
         local spell = self:getSpells()[self.spell_selecting]
-        local function has_cutscene() return not Game.world:hasCutscene() end
         if Input.pressed("confirm") and (not OVERLAY_OPEN or TextInput.active) then
             if self.state == "STATS" and self.show_magic then
                 self.ui_select:stop()
@@ -2863,22 +2873,13 @@ function lib:init()
                     else
                         Game:removeTension(spell:getTPCost())
                         spell:onLightWorldStart(Game.party[self.party_selecting], spell.target == "ally" and Game.party[1] or spell.target == "party" and Game.party or nil)
-                        Game.world.menu:closeBox()
-                        Game.world.menu.state = "SPELLUSAGE"
-                        Game.world.timer:afterCond(has_cutscene, function() Game.world:closeMenu() end)
                     end
                 elseif self.option_selecting == 2 then
                     spell:onCheck()
-                    Game.world.menu:closeBox()
-                    Game.world.menu.state = "SPELLUSAGE"
-                    Game.world.timer:afterCond(has_cutscene, function() Game.world:closeMenu() end)
                 end
             elseif self.state == "PARTYSELECT" then
                 Game:removeTension(spell:getTPCost())
                 spell:onLightWorldStart(Game.party[self.party_selecting], Game.party[self.party_selecting_spell])
-                Game.world.menu:closeBox()
-                Game.world.menu.state = "SPELLUSAGE"
-                Game.world.timer:afterCond(has_cutscene, function() Game.world:closeMenu() end)
             end
         end
 
