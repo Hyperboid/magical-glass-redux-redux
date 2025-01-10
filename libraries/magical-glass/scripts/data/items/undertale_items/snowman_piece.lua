@@ -1,6 +1,6 @@
 local item, super = Class(HealItem, "undertale/snowman_piece")
 
-function item:init(inventory)
+function item:init()
     -- this guy's probably pretty happy he got moved to an entirely different game
     super.init(self)
 

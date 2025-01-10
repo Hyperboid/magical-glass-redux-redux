@@ -1,6 +1,6 @@
 local item, super = Class(HealItem, "undertale/monster_candy")
 
-function item:init(inventory)
+function item:init()
     super.init(self)
 
     -- Display name
@@ -22,10 +22,10 @@ function item:init(inventory)
     self.can_sell = true
 
     -- Item description text (unused by light items outside of debug menu)
-    self.description = "Has a distinct, non licorice flavor."
+    self.description = "Has a distinct, non-licorice flavor."
 
     -- Light world check text
-    self.check = "Heals 10 HP\n* Has a distinct,[wait:10]\nnon licorice flavor."
+    self.check = "Heals 10 HP\n* Has a distinct,[wait:10]\nnon-licorice flavor."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "ally"

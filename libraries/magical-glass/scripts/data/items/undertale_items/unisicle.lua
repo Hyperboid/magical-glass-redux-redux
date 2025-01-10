@@ -1,6 +1,6 @@
 local item, super = Class(HealItem, "undertale/unisicle")
 
-function item:init(inventory)
+function item:init()
     super.init(self)
 
     -- Display name
@@ -23,7 +23,7 @@ function item:init(inventory)
     self.description = "It's a SINGLE-pronged popsicle.\nWait, that's just normal..."
 
     -- Light world check text
-    self.check = "Heals 11 HP\n* It's a SINGLE-pronged popsicle.[wait:10]\nWait,[wait:10] that's just normal..."
+    self.check = "Heals 11 HP\n* It's a SINGLE-pronged popsicle.[wait:10]\n* Wait,[wait:10] that's just normal..."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "ally"

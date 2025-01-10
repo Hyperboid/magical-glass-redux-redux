@@ -1,6 +1,6 @@
 local item, super = Class(HealItem, "undertale/dream")
 
-function item:init(inventory)
+function item:init()
     super.init(self)
 
     -- How this item is used on you (ate, drank, eat, etc.)

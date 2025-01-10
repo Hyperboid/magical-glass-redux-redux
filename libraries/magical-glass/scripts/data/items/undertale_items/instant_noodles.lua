@@ -1,6 +1,6 @@
 local item, super = Class(HealItem, "undertale/instant_noodles")
 
-function item:init(inventory)
+function item:init()
     super.init(self)
 
     -- How this item is used on you (ate, drank, eat, etc.)
@@ -39,10 +39,6 @@ function item:init(inventory)
     -- Will this item be instantly consumed in battles?
     self.instant = false
     
-end
-
-function item:onCheck()
-    Game.world:showText("* \""..self:getName().."\" "..self:getCheck())
 end
 
 function item:getLightBattleText(user, target)

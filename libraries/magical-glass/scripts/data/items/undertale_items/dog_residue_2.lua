@@ -1,6 +1,6 @@
 local item, super = Class(Item, "undertale/dog_residue_2")
 
-function item:init(inventory)
+function item:init()
     super.init(self)
 
     -- Display name

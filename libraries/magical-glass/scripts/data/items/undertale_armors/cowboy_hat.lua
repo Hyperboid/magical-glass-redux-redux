@@ -28,7 +28,6 @@ function item:init()
     self.check = {
         "Armor DF 12\n* This battle-worn hat makes you\nwant to grow a beard.",
         "* It also raises ATTACK by 5.",
-        --"* EIGHTEEN NAKED COWBOYS IN THE SHOWERS AT RAM RAAAANCH"
     }
 
     -- Where this item can be used (world, battle, all, or none)

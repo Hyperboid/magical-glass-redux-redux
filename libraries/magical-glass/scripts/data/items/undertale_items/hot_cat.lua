@@ -1,6 +1,6 @@
 local item, super = Class(HealItem, "undertale/hot_cat")
 
-function item:init(inventory)
+function item:init()
     super.init(self)
 
     -- Display name

@@ -1,6 +1,6 @@
 local item, super = Class(HealItem, "test/team_bun")
 
-function item:init(inventory)
+function item:init()
     super.init(self)
 
     -- Display name

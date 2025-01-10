@@ -12,10 +12,10 @@ function item:init()
     self.light = true
     
     -- Item description text (unused by light items outside of debug menu)
-    self.description = "A magical pink scarf.\nVery fluffy."
+    self.description = "A magical pink scarf.\nIt's quite fluffy."
 
     -- Light world check text
-    self.check = "Weapon 2 MG\n* A magical pink scarf.\n* Very fluffy."
+    self.check = "Weapon 2 MG\n* A magical pink scarf.\n* It's quite fluffy."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"

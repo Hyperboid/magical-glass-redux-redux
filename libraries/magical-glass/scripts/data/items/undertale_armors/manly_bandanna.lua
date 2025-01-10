@@ -26,7 +26,7 @@ function item:init()
     self.description = "It has seen some wear.\nIt has abs drawn on it."
 
     -- Light world check text
-    self.check = "Armor DF 7\n* It has seen some wear.\nIt has abs drawn on it."
+    self.check = "Armor DF 7\n* It has seen some wear.\n* It has abs drawn on it."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
