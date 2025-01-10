@@ -1,7 +1,6 @@
 local item, super = Class(HealItem, "undertale/snowman_piece")
 
 function item:init()
-    -- this guy's probably pretty happy he got moved to an entirely different game
     super.init(self)
 
     -- How this item is used on you (ate, drank, eat, etc.)
