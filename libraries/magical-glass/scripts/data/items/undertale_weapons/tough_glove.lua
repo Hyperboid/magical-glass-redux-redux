@@ -26,7 +26,7 @@ function item:init()
     self.description = "A worn pink leather glove.\nFor five-fingered folk."
 
     -- Light world check text
-    self.check = "Weapon AT 5\n* A worn pink leather glove.[wait:10]\nFor five-fingered folk."
+    self.check = "Weapon AT 5\n* A worn pink leather glove.[wait:10]\n* For five-fingered folk."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -37,17 +37,23 @@ function item:init()
         attack = 5
     }
 
-    self.light_bolt_speed = self.light_bolt_speed * 1.2
     self.attack_punches = 4
     self.attack_punch_time = 1
     self.light_bolt_direction = "random"
 
     self.attack_sound = "punchstrong"
 
-    self.ignore_no_damage = true
-
     self.tags = {"punch"}
 
+end
+
+function item:getLightBoltSpeed()
+    local speed = super.getLightBoltSpeed(self)
+    if speed then
+        return speed * 1.2
+    else
+        return nil
+    end
 end
 
 function item:showEquipText(target)

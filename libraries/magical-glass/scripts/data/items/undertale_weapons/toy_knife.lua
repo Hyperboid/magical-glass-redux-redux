@@ -41,7 +41,7 @@ end
 
 function item:getLightBoltSpeed()
     local speed = super.getLightBoltSpeed(self)
-    if speed ~= nil then
+    if speed then
         return speed * 1.25
     else
         return nil

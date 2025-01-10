@@ -1,12 +1,12 @@
-local item, super = Class(LightEquipItem, "custom/tough_glove_ex")
+local item, super = Class(LightEquipItem, "custom/tough_glove_2")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Tough Glove EX"
-    self.short_name = "TuffGlvX"
-    self.serious_name = "GlvX"
+    self.name = "Tough Glove 2"
+    self.short_name = "TuffGlove2"
+    self.serious_name = "Glove2"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -14,19 +14,19 @@ function item:init()
     self.light = true
 
     -- Shop description
-    self.shop = "Slap 'em,\nbetter!"
+    self.shop = "Slap 'em."
     -- Default shop price (sell price is halved)
-    self.price = 180
+    self.price = 50
     -- Default shop sell price
-    self.sell_price = 60
+    self.sell_price = 50
     -- Whether the item can be sold
     self.can_sell = true
 
     -- Item description text (unused by light items outside of debug menu)
-    self.description = "A worn pink leather glove.\nFor five-fingered folk.\nAttacks with multiple bolts, which allows it to deal more damage."
+    self.description = "A worn pink leather glove.\nFor five-fingered folk."
 
     -- Light world check text
-    self.check = {"Weapon AT 5\n* A worn pink leather glove.[wait:10]\nFor five-fingered folk.", "* Attacks with multiple bolts, which allows it to deal more damage."}
+    self.check = "Weapon AT 5\n* A worn pink leather glove.[wait:10]\n* For five-fingered folk."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -54,11 +54,11 @@ function item:init()
 end
 
 function item:showEquipText(target)
-    Game.world:showText("* " .. target:getNameOrYou() .." equipped Tough Glove EX.")
+    Game.world:showText("* " .. target:getNameOrYou() .." equipped Tough Glove 2.")
 end
 
 function item:showEquipTextFail(target)
-    Game.world:showText("* " .. target:getNameOrYou() .. " didn't want to equip Tough Glove EX.")
+    Game.world:showText("* " .. target:getNameOrYou() .. " didn't want to equip Tough Glove 2.")
 end
 
 function item:getLightBattleText(user, target)
