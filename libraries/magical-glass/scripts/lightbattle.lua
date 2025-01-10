@@ -2068,7 +2068,6 @@ function LightBattle:updateAttacking()
 
                 elseif box:checkMiss(attacker) then
                     local points = box:miss(attacker)
-                    local stretch = 2
 
                     local action = self:getActionBy(attacker.battler)
                     if attacker.attack_type == "slice" then

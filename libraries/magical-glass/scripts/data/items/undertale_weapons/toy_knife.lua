@@ -31,13 +31,21 @@ function item:init()
     self.bonuses = {
         attack = 3
     }
-
-    self.light_bolt_speed = self.light_bolt_speed * 1.25
+    
     self.light_bolt_direction = "random"
 
     self.can_equip = {
         ["susie"] = false
     }
+end
+
+function item:getLightBoltSpeed()
+    local speed = super.getLightBoltSpeed(self)
+    if speed ~= nil then
+        return speed * 1.25
+    else
+        return nil
+    end
 end
 
 function item:showEquipText(target)

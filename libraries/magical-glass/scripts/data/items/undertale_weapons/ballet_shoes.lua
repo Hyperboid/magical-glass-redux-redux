@@ -82,7 +82,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
     src:setPitch(self:getLightAttackPitch() or 1)
 
-    local sprite = Sprite("effects/attack/hyperfoot")
+    local sprite = Sprite("effects/lightattack/hyperfoot")
     sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
     table.insert(enemy.dmg_sprites, sprite)
     sprite:setOrigin(0.5)

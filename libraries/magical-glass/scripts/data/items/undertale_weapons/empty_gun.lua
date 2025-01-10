@@ -59,7 +59,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
     src:setPitch(self:getLightAttackPitch() or 1)
 
-    local sprite = Sprite("effects/attack/gunshot_stab")
+    local sprite = Sprite("effects/lightattack/gunshot_stab")
     sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
     table.insert(enemy.dmg_sprites, sprite)
     sprite:setScale(2)
@@ -81,7 +81,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
         local stars = {}
         for i = 0, 7 do
-            local star = Sprite("effects/attack/gunshot_stab")
+            local star = Sprite("effects/lightattack/gunshot_stab")
             star:setOrigin(0.5)
             star.siner = 45 * i
             star.star_sine_amt = 0
@@ -138,7 +138,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
         local ring_opacity = 1
         Game.battle.timer:every(3/30, function()
-            local ring = Sprite("effects/attack/gunshot_remnant")
+            local ring = Sprite("effects/lightattack/gunshot_remnant")
             ring.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
             table.insert(enemy.dmg_sprites, ring)
             local ring_form = false

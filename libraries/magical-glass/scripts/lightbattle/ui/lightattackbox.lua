@@ -133,7 +133,7 @@ function LightAttackBox:evaluateHit(battler, close)
     elseif close < 28 then
         value = value + 10
     else
-        value = value + 10
+        value = value + 0
     end
 
     return value
@@ -143,12 +143,23 @@ function LightAttackBox:checkAttackEnd(battler, score, bolts, close)
     if #bolts == 0 then
         if battler.attack_type == "shoe" then
             self.shoe_finished = self.shoe_finished + 1
+            
+            if battler.weapon and battler.weapon:getLightBoltCount() > 4 then
+                score = score / battler.weapon:getLightBoltCount() * 4
+            end
+            
+            if score > 430 then
+                score = score * 1.8
+            end
+            if score > 400 then
+                score = score * 1.25
+            end
         end
         battler.attacked = true
         if self.shoe_finished >= #self.attackers then
             self.fading = true
         end
-        return battler.score
+        return score
     end
 end
 
@@ -166,13 +177,6 @@ function LightAttackBox:hit(battler)
             battler.score = battler.weapon:scoreHit(battler, battler.score, eval, close)
         else
             battler.score = battler.score + eval
-
-            if battler.score > 430 then
-                battler.score = battler.score * 1.8
-            end
-            if battler.score >= 400 then
-                battler.score = battler.score * 1.25
-            end
         end
 
         bolt:burst()
@@ -195,7 +199,7 @@ function LightAttackBox:hit(battler)
             battler.bolts[1].sprite:setSprite(bolt.active_sprite)
         end
 
-        return self:checkAttackEnd(battler, battler.score, battler.bolts, close), 2
+        return self:checkAttackEnd(battler, battler.score, battler.bolts, close), Utils.clamp(battler.score / battler.weapon:getLightBoltCount() / 110 * 1.2, 0.5, 1)
     elseif battler.attack_type == "slice" then
         battler.score = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) < -20 and 3 or 1))
         if battler.score == 0 then

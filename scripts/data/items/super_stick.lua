@@ -39,7 +39,7 @@ function item:onLightAttack(battler, enemy, damage, stretch)
         local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
         src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
     
-        local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
+        local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/lightattack/strike")
         sprite.rotation = math.rad(self.counter % 2 == 1 and -45 or 45)
         sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, sprite)

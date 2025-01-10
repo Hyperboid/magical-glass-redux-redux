@@ -55,7 +55,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
     src:setPitch(self:getLightAttackPitch() or 1)
 
-    local sprite = Sprite("effects/attack/frypan_impact")
+    local sprite = Sprite("effects/lightattack/impact")
     sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
     table.insert(enemy.dmg_sprites, sprite)
     local stars = {}
@@ -77,7 +77,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     end
 
     for i = 0, 8 do
-        local star = Sprite("effects/attack/frypan_star")
+        local star = Sprite("effects/lightattack/frypan_star")
         star:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
         star:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])

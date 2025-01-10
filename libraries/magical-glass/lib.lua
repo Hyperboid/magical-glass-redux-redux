@@ -1039,13 +1039,13 @@ function lib:init()
         self.light_bolt_speed_variance = 2
 
         self.light_bolt_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
-        self.light_multibolt_variance = 50
+        self.light_multibolt_variance = nil
 
         self.light_bolt_direction = "right" -- "right", "left", or "random"
 
-        self.light_bolt_miss_threshold = 280
+        self.light_bolt_miss_threshold = nil -- (Defaults: 280 for slice weapons | 2 for shoe weapons)
 
-        self.attack_sprite = "effects/attack/strike"
+        self.attack_sprite = "effects/lightattack/strike"
 
         -- Sound played when attacking, defaults to laz_c
         self.attack_sound = "laz_c"
@@ -1095,14 +1095,14 @@ function lib:init()
     end)
     
     Utils.hook(LightEquipItem, "getLightMultiboltVariance", function(orig, self, index)
-        if Game.battle.multi_mode then
+        if Game.battle.multi_mode or self.light_multibolt_variance == nil then
             return nil
         elseif type(self.light_multibolt_variance) == "number" then
             return self.light_multibolt_variance * index
         elseif self.light_multibolt_variance[index] then
             return type(self.light_multibolt_variance[index]) == "table" and Utils.pick(self.light_multibolt_variance[index]) or self.light_multibolt_variance[index]
         else
-            return (type(self.light_multibolt_variance[#self.light_multibolt_variance]) == "table" and Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) or self.light_multibolt_variance[#self.light_multibolt_variance]) * (index - #self.light_multibolt_variance + 2) / 2
+            return (type(self.light_multibolt_variance[#self.light_multibolt_variance]) == "table" and Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) or self.light_multibolt_variance[#self.light_multibolt_variance]) * (index - #self.light_multibolt_variance + 1)
         end
     end)
     
@@ -1378,8 +1378,8 @@ function lib:init()
         local src = Assets.stopAndPlaySound(Game:isLight() and (self.getLightAttackSound and self:getLightAttackSound() or "laz_c") or battler.chara:getAttackSound() or "laz_c")
         -- src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
         src:setPitch(Game:isLight() and (self.getLightAttackPitch and self:getLightAttackPitch() or 1) or battler.chara:getAttackPitch() or 1)
-        -- local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
-        local sprite = Sprite(Game:isLight() and (self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike") or battler.chara:getAttackSprite() or "effects/attack/cut") -- dark stuff here
+        -- local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/lightattack/strike")
+        local sprite = Sprite(Game:isLight() and (self.getLightAttackSprite and self:getLightAttackSprite() or "effects/lightattack/strike") or battler.chara:getAttackSprite() or "effects/attack/cut") -- dark stuff here
         sprite.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, sprite)
         sprite:setOrigin(0.5)
