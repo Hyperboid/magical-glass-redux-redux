@@ -2,13 +2,13 @@
     "id": "magical-glass",
     "authors": [
         "Nyakorita",                    // original author
-        "Sam Deluxe",                   // current author and lead programmer
-        "FireRainV",                    // second in command
+        "Sam Deluxe",                   // previous author and lead programmer
+        "FireRainV",                    // current developer
         "Bor",                          // contributor
         "Just Another Random User",     // contributor
     ],
 
-    "version": "v2.19.3",
+    "version": "v2.19.4",
     "engineVer": "v0.10.0-dev",
 
     "config": {

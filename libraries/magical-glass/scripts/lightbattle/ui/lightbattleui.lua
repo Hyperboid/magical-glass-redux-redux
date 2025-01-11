@@ -90,7 +90,7 @@ function LightBattleUI:init()
     
     self.xact_text = {}
     for i = 1, 3 do
-        self.xact_text[i] = Text("", 284, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
+        self.xact_text[i] = Text("", 286, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
         Game.battle.arena:addChild(self.xact_text[i])
     end
     
