@@ -295,7 +295,7 @@ function LightEncounter:onFlee()
 
     Game.battle.soul.collidable = false
     Game.battle.soul.y = Game.battle.soul.y + 4
-    Game.battle.soul.sprite:setAnimation({"player/heartgtfo", 1/15, true})
+    Game.battle.soul.sprite:setAnimation({"player/heart_gtfo", 1/15, true})
     Game.battle.soul.physics.speed_x = -3
 
     Game.battle.timer:after(1, function()
