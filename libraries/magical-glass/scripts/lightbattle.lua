@@ -23,6 +23,7 @@ function LightBattle:init()
 
     self.tension = false
     self.hp_display = nil
+    self.max_hp_display = nil
 
     self.fader = Fader()
     self.fader.layer = 1000
@@ -499,11 +500,6 @@ function LightBattle:retargetEnemy()
             return other
         end
     end
-    return true
-end
-
-function LightBattle:enemyExists(enemy)
-    return enemy ~= nil and type(enemy) ~= "boolean"
 end
 
 function LightBattle:processAction(action)
@@ -513,10 +509,10 @@ function LightBattle:processAction(action)
 
     self.current_processing_action = action
 
-    if self:enemyExists(enemy) and enemy.done_state then
+    if enemy and enemy.done_state then
         enemy = self:retargetEnemy()
         action.target = enemy
-        if not self:enemyExists(enemy) then
+        if not enemy then
             if action.action == "AUTOATTACK" then
                 self:finishAction(action)
             end
@@ -614,10 +610,10 @@ function LightBattle:processAction(action)
 
         if lane.attacked then
 
-            if self:enemyExists(action.target) and action.target.done_state then
+            if action.target and action.target.done_state then
                 enemy = self:retargetEnemy()
                 action.target = enemy
-                if not self:enemyExists(enemy) then
+                if not enemy then
                     self.cancel_attack = true
                     self:finishAction(action)
                     return
@@ -628,7 +624,7 @@ function LightBattle:processAction(action)
             local damage = 0
             local crit
 
-            if self:enemyExists(enemy) then
+            if enemy then
                 if not action.force_miss and action.points > 0 then
                     damage, crit = enemy:getAttackDamage(action.damage or 0, lane, action.points or 0, action.stretch)
                     damage = Utils.round(damage)
@@ -654,10 +650,10 @@ function LightBattle:processAction(action)
         return false
         
     elseif action.action == "AUTOATTACK" then
-        if self:enemyExists(action.target) and action.target.done_state then
+        if action.target and action.target.done_state then
             enemy = self:retargetEnemy()
             action.target = enemy
-            if not self:enemyExists(enemy) then
+            if not enemy then
                 self.cancel_attack = true
                 self:finishAction(action)
                 return
@@ -668,7 +664,7 @@ function LightBattle:processAction(action)
         local damage = 0
         local crit
         
-        if self:enemyExists(enemy) then
+        if enemy then
             if not action.force_miss and action.points > 0 then
                 local stretch = action.points / 150
                 damage, crit = enemy:getAttackDamage(action.damage or 0, battler, action.points or 0, stretch)
@@ -1801,8 +1797,12 @@ function LightBattle:sortChildren()
     end)
 end
 
-function LightBattle:customHealthDisplay(health) -- Won't do anything in multi mode due to lack of space
-    self.hp_display = health
+function LightBattle:customHealthDisplay(type, health) -- Won't do anything in multi mode due to lack of space
+    if type and type >= 2 then
+        self.max_hp_display = health
+    else
+        self.hp_display = health
+    end
 end
 
 function LightBattle:update()

@@ -133,11 +133,7 @@ function LightBattleUI:beginAttack()
 end
 
 function LightBattleUI:endAttack()
-    if not Game.battle:retargetEnemy() then
-        Game.battle.cancel_attack = true
-    else
-        self.attack_box.fading = true
-    end
+    self.attack_box.fading = true
 
     for _,lane in ipairs(self.attack_box.lanes) do
         for _,bolt in ipairs(lane.bolts) do

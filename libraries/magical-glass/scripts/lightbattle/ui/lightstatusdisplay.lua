@@ -80,6 +80,7 @@ function LightStatusDisplay:drawStatusStripEvent()
     end
     
     if Game.battle.hp_display then current = Game.battle.hp_display end
+    if Game.battle.max_hp_display then max = Game.battle.max_hp_display end
     
     love.graphics.setColor(color)
     love.graphics.print(current .. " / " .. max, x + 115 + size * 1.2 + 1 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
@@ -149,6 +150,7 @@ function LightStatusDisplay:drawStatusStrip()
             end
             
             if Game.battle.hp_display then current = Game.battle.hp_display end
+            if Game.battle.max_hp_display then max = Game.battle.max_hp_display end
             
             love.graphics.setColor(color)
             love.graphics.print(current .. " / " .. max, x + 245 + size * 1.2 + 1 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
