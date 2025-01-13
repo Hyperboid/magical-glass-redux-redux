@@ -1,8 +1,5 @@
 local LightBattle, super = Class(Object)
 
--- nyako, if you ever read this, i'm sorry i basically turned this into a hodgepodge of
--- kristal code and literal shit
-
 function LightBattle:init()
     super.init(self)
 
@@ -15,6 +12,7 @@ function LightBattle:init()
 
     -- states: BATTLETEXT, TRANSITION, ACTIONSELECT, MENUSELECT, ENEMYSELECT, PARTYSELECT, TURNDONE
     -- ENEMYDIALOGUE, DEFENDING, DEFENDINGEND, VICTORY, TRANSITIONOUT, ATTACKING, FLEEING, FLEEFAIL
+    -- BUTNOBODYCAME
 
     self.state = "NONE"
     self.substate = "NONE"
@@ -26,7 +24,7 @@ function LightBattle:init()
     self.max_hp_display = nil
 
     self.fader = Fader()
-    self.fader.layer = 1000
+    self.fader.layer = BATTLE_LAYERS["top"]
     self.fader.alpha = 1
     self:addChild(self.fader)
 
@@ -121,7 +119,6 @@ function LightBattle:init()
     self.menu_waves = {}
     self.finished_waves = false
     self.finished_menu_waves = false
-    self.event_wave = nil
 
     self.state_reason = nil
     self.substate_reason = nil
@@ -250,7 +247,6 @@ function LightBattle:postInit(state, encounter)
     end
 
     if self.encounter.event then
-        self.event_wave = self.encounter:eventWave()
         self.tension = false
     end
 
@@ -345,7 +341,7 @@ function LightBattle:getSoulLocation(always_player)
     if self.soul and not always_player then
         return self.soul:getPosition()
     else
-        return 49, 455
+        return 49 - 1, 455 - 1
     end
 end
 
@@ -918,7 +914,7 @@ function LightBattle:onStateChange(old,new)
         end
         
         self.fader:fadeIn(function()
-            self.soul.layer = BATTLE_LAYERS["soul"]        
+            self.soul.layer = BATTLE_LAYERS["soul"]
         end, {speed=5/30})
 
         self.battle_ui.encounter_text.text.line_offset = 5
@@ -1161,7 +1157,7 @@ function LightBattle:onStateChange(old,new)
     
             if has_soul then
                 if not self.encounter.event then
-                    self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
+                    self.timer:after(1/30, function() -- Undertale has a few frames where the soul doesn't appear
                         soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
                         soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
                         self.soul:setPosition(soul_x or center_x, soul_y or center_y)
@@ -1388,20 +1384,24 @@ function LightBattle:onStateChange(old,new)
             end
         end
     end
+    
+    local normal_arena_state = {"TURNDONE", "DEFENDINGEND", "TRANSITIONOUT", "ACTIONSELECT", "VICTORY", "INTRO", "ACTIONS", "ENEMYSELECT", "PARTYSELECT", "MENUSELECT", "ATTACKING", "FLEEING", "FLEEFAIL", "BUTNOBODYCAME"}
 
     local should_end = not self.encounter.event
-    for _,wave in ipairs(self.waves) do
-        if wave:beforeEnd() then
-            should_end = false
+    if Utils.containsValue(normal_arena_state, new) then
+        for _,wave in ipairs(self.waves) do
+            if wave:beforeEnd() then
+                should_end = false
+            end
         end
-    end
-    if should_end then
-        for _,battler in ipairs(self.party) do
-            battler.targeted = false
+        if should_end then
+            for _,battler in ipairs(self.party) do
+                battler.targeted = false
+            end
         end
     end
 
-    if old == "DEFENDING" and new ~= "ENEMYDIALOGUE" and should_end then
+    if old == "DEFENDING" and not Utils.containsValue({"ENEMYDIALOGUE", "DIALOGUEEND", "DEFENDINGBEGIN"}, new) and should_end then
         for _,wave in ipairs(self.waves) do
             if not wave:onEnd(false) then
                 wave:clear()
@@ -1797,7 +1797,7 @@ function LightBattle:sortChildren()
     end)
 end
 
-function LightBattle:customHealthDisplay(type, health) -- Won't do anything in multi mode due to lack of space
+function LightBattle:customHealthDisplay(type, health) -- Won't do anything in multi-mode due to lack of space
     if type and type >= 2 then
         self.max_hp_display = health
     else
@@ -1974,7 +1974,7 @@ function LightBattle:update()
         self:updateMenuWaves()
     end
     
-    if Utils.containsValue({"TURNDONE", "DEFENDINGEND", "ACTIONSELECT", "ACTIONS", "VICTORY", "TRANSITIONOUT", "BATTLETEXT"}, self.state) then
+    if Utils.containsValue({"TURNDONE", "DEFENDINGEND", "ACTIONSELECT", "ACTIONS", "VICTORY", "TRANSITIONOUT", "BATTLETEXT", "FLEEING", "FLEEFAIL", "BUTNOBODYCAME"}, self.state) then
         self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0, DTMULT * 0.05)
         self.arena.alpha = Utils.approach(self.arena.alpha, 1, DTMULT * 0.05)
     end

@@ -6,7 +6,7 @@ function encounter:init()
     self.music = false
     
     self.event = true
-    self.event_wave = "basic"
+    self.event_waves = {"basic"}
     
     self.background = false
     

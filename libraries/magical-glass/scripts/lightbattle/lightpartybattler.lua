@@ -2,9 +2,8 @@ local LightPartyBattler, super = Class(Battler)
 
 function LightPartyBattler:init(chara)
     self.chara = chara
-    self.actor = chara:getActor()
-
-    super.init(self, x, y, self.actor:getSize())
+    
+    super.init(self)
 
     self.action = nil
 
@@ -199,16 +198,6 @@ function LightPartyBattler:checkHealth()
     end
 end
 
-function LightPartyBattler:statusMessage(...)
-    local message = super.statusMessage(self, 0, self.height/2, ...)
-    message.y = message.y - 4
-    return message
-end
-
-function LightPartyBattler:recruitMessage(...)
-    return super.recruitMessage(self, ...)
-end
-
 function LightPartyBattler:isActive()
     return not self.is_down and not self.sleeping
 end
@@ -244,10 +233,6 @@ function LightPartyBattler:toggleSaveButton(value)
 end
 
 function LightPartyBattler:update()
-    if self.actor then
-        self.actor:onBattleUpdate(self)
-    end
-
     if self.chara:getWeapon() then
         self.chara:getWeapon():onBattleUpdate(self)
     end

@@ -9,6 +9,8 @@ function encounter:init()
     self.background = false
 
     self.no_end_message = true
+    
+    self.soul_offset = {-4, 0}
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("froggit", SCREEN_WIDTH/2, 246)

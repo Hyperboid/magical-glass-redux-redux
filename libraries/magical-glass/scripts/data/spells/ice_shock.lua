@@ -3,7 +3,7 @@ local spell, super = Class("ice_shock", true)
 function spell:init()
     super.init(self)
     
-    self.check = "Deals magical ICE damage to one enemy."
+    self.check = "Deals magical ice damage to one enemy."
 end
 
 function spell:getDamage(user, target)

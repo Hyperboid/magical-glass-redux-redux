@@ -1022,8 +1022,7 @@ function lib:init()
     Utils.hook(LightEquipItem, "init", function(orig, self)
         orig(self)
         
-        self.index = nil
-        self.storage = nil
+        self.storage, self.index = nil, nil
 
         self.equip_display_name = nil
 
@@ -1055,12 +1054,21 @@ function lib:init()
         self.attack_pitch = 1
     end)
     
+    Utils.hook(LightEquipItem, "onManualEquip", function(orig, self, target, replacement)
+        local can_equip = true
+    
+        if (not self:onEquip(target, replacement)) then can_equip = false end
+        if replacement and (not replacement:onUnequip(target, self)) then can_equip = false end
+        if (not target:onEquip(self, replacement)) then can_equip = false end
+        if (not target:onUnequip(replacement, self)) then can_equip = false end
+        if (not self:canEquip(target, self.type, 1)) then can_equip = false end
+        
+        -- If one of the functions returned false, the equipping will fail
+        return can_equip
+    end)
+    
     Utils.hook(LightEquipItem, "getEquipDisplayName", function(orig, self)
-        if self.equip_display_name then
-            return self.equip_display_name
-        else
-            return self:getName()
-        end
+        return self.equip_display_name or self:getName()
     end)
     
     Utils.hook(LightEquipItem, "getHealBonus", function(orig, self) return self.heal_bonus end)
@@ -1129,26 +1137,30 @@ function lib:init()
     end)
     
     Utils.hook(LightEquipItem, "onWorldUse", function(orig, self, target)
-        if self:canEquip(target) then
-            self.storage, self.index = Game.inventory:getItemIndex(self)
+        local chara = target
+        local replacing = nil
+
+        if self.type == "weapon" then
+            replacing = chara:getWeapon()
+        elseif self.type == "armor" then
+            replacing = chara:getArmor(1)
+        end
+        
+        if self:onManualEquip(chara, replacing) then
             Assets.playSound("item")
+            if replacing then
+                Game.inventory:replaceItem(self, replacing)
+            end
             if self.type == "weapon" then
-                if target:getWeapon() then
-                    Game.inventory:addItemTo(self.storage, self.index, target:getWeapon())
-                end
-                target:setWeapon(self)
+                chara:setWeapon(self)
             elseif self.type == "armor" then
-                if target:getArmor(1) then
-                    Game.inventory:addItemTo(self.storage, self.index, target:getArmor(1))
-                end
-                target:setArmor(1, self)
+                chara:setArmor(1, self)
             else
                 error("LightEquipItem "..self.id.." invalid type: "..self.type)
             end
-
-            self.storage, self.index = nil, nil
+            
             self:showEquipText(target)
-            return true
+            return replacing == nil
         else
             self:showEquipTextFail(target)
             return false
@@ -1172,88 +1184,89 @@ function lib:init()
     end)
     
     Utils.hook(LightEquipItem, "getBattleText", function(orig, self, user, target)
-        if self:canEquip(target.chara) then
+        local replacing = nil
+
+        if self.type == "weapon" then
+            replacing = target.chara:getWeapon()
+        elseif self.type == "armor" then
+            replacing = target.chara:getArmor(1)
+        end
+        
+        if self:onManualEquip(target.chara, replacing) then
             local text = "* "..target.chara:getName().." equipped the "..self:getUseName().."!"
             if user ~= target then
                 text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." equipped it!"
             end
             return text
         else
-            return self:getBattleTextFail(user, target)
+            local text = "* "..target.chara:getName().." didn't want to equip the "..self:getUseName().."."
+            if user ~= target then
+                text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." didn't want to equip it."
+            end
+            return text
         end
-    end)
-    
-    Utils.hook(LightEquipItem, "getBattleTextFail", function(orig, self, user, target)
-        local text = "* "..target.chara:getName().." didn't want to equip the "..self:getUseName().."."
-        if user ~= target then
-            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." didn't want to equip it."
-        end
-        return text
     end)
     
     Utils.hook(LightEquipItem, "onLightBattleUse", function(orig, self, user, target)
-        if self:canEquip(target.chara) then
+        local chara = target.chara
+        local replacing = nil
+
+        if self.type == "weapon" then
+            replacing = chara:getWeapon()
+        elseif self.type == "armor" then
+            replacing = chara:getArmor(1)
+        end
+    
+        if self:onManualEquip(chara, replacing) then
             Assets.playSound("item")
-            local chara = target.chara
+            if replacing then
+                Game.inventory:addItemTo(self.storage, self.index, replacing)
+            end
             if self.type == "weapon" then
-                if chara:getWeapon() then
-                    Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
-                end
                 chara:setWeapon(self)
             elseif self.type == "armor" then
-                if chara:getArmor(1) then
-                    Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
-                end
                 chara:setArmor(1, self)
             else
                 error("LightEquipItem "..self.id.." invalid type: "..self.type)
             end
-            self.storage, self.index = nil, nil
+            
             Game.battle:battleText(self:getLightBattleText(user, target))
         else
             Game.inventory:addItemTo(self.storage, self.index, self)
             Game.battle:battleText(self:getLightBattleTextFail(user, target))
         end
+        self.storage, self.index = nil, nil
     end)
     
     Utils.hook(LightEquipItem, "onBattleUse", function(orig, self, user, target)
-        if self:canEquip(target.chara) then
+        local chara = target.chara
+        local replacing = nil
+
+        if self.type == "weapon" then
+            replacing = chara:getWeapon()
+        elseif self.type == "armor" then
+            replacing = chara:getArmor(1)
+        end
+    
+        if self:onManualEquip(chara, replacing) then
             Assets.playSound("item")
-            local chara = target.chara
+            if replacing then
+                Game.inventory:addItemTo(self.storage, self.index, replacing)
+            end
             if self.type == "weapon" then
-                if chara:getWeapon() then
-                    Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
-                end
                 chara:setWeapon(self)
             elseif self.type == "armor" then
-                if chara:getArmor(1) then
-                    Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
-                end
                 chara:setArmor(1, self)
             else
                 error("LightEquipItem "..self.id.." invalid type: "..self.type)
             end
-            self.storage, self.index = nil, nil
         else
             Game.inventory:addItemTo(self.storage, self.index, self)
         end
+        self.storage, self.index = nil, nil
     end)
     
     Utils.hook(LightEquipItem, "onLightBoltHit", function(orig, self, battler) end)
-    
-    Utils.hook(LightEquipItem, "scoreLightHit", function(orig, self, battler, score, eval, close)
-        local new_score = score
-        new_score = new_score + eval
-
-        if new_score > 430 then
-            new_score = new_score * 1.8
-        end
-        if new_score >= 400 then
-            new_score = new_score * 1.25
-        end
-
-        return new_score
-    end)
     
     Utils.hook(Item, "getLightBattleText", function(orig, self, user, target)
         if self.target == "ally" then
@@ -2286,7 +2299,7 @@ function lib:init()
                     if type(result) == "string" then
                         result = Registry.createItem(result)
                     end
-                    if isClass(result) and self:canEquip(result) and self.equipped.weapon and self.equipped.weapon.dark_item and self.equipped.weapon.equip_can_convert ~= false then
+                    if isClass(result) and self:canEquip(result, "weapon", 1) and self.equipped.weapon and self.equipped.weapon.dark_item and self.equipped.weapon.equip_can_convert ~= false then
                         self.equipped.weapon = result
                     end
                 end
@@ -2299,7 +2312,7 @@ function lib:init()
                         if type(result) == "string" then
                             result = Registry.createItem(result)
                         end
-                        if isClass(result) and self:canEquip(result) and (self.equipped.armor[1] and (self.equipped.armor[1].equip_can_convert or self.equipped.armor[1].id == result.id) or not self.equipped.armor[1]) then
+                        if isClass(result) and self:canEquip(result, "armor", 1) and (self.equipped.armor[1] and (self.equipped.armor[1].equip_can_convert or self.equipped.armor[1].id == result.id) or not self.equipped.armor[1]) then
                             if self:getFlag("converted_light_armor") == nil then
                                 if self.equipped.armor[1] and self.equipped.armor[1].id == result.id then
                                     self:setFlag("converted_light_armor", "light/bandage")
@@ -2346,7 +2359,7 @@ function lib:init()
                     if type(result) == "string" then
                         result = Registry.createItem(result)
                     end
-                    if isClass(result) and self:canEquip(result) and self.equipped.weapon and self.equipped.weapon:convertToLightEquip(self) and self.equipped.weapon.equip_can_convert ~= false then
+                    if isClass(result) and self:canEquip(result, "weapon", 1) and self.equipped.weapon and self.equipped.weapon:convertToLightEquip(self) and self.equipped.weapon.equip_can_convert ~= false then
                         self.equipped.weapon = result
                     end
                 end
@@ -2357,24 +2370,33 @@ function lib:init()
                     if type(result) == "string" then
                         result = Registry.createItem(result)
                     end
-                    if isClass(result) and self:canEquip(result) then
-                        if self:getFlag("converted_light_armor") == nil then
-                            self:setFlag("converted_light_armor", "light/bandage")
-                        end
-                        local already_equipped = false
+                    if isClass(result) then
+                        local slot
                         for i = 1, 2 do
-                            if self.equipped.armor[i] and (self.equipped.armor[i].id == result.id or self.equipped.armor[i].equip_can_convert == false) then
-                                already_equipped = true
+                            if self:canEquip(result, "armor", i) then
+                                slot = i
+                                break
                             end
                         end
-                        if not already_equipped then
+                        if slot then
+                            if self:getFlag("converted_light_armor") == nil then
+                                self:setFlag("converted_light_armor", "light/bandage")
+                            end
+                            local already_equipped = false
                             for i = 1, 2 do
-                                if self.equipped.armor[i] then
-                                    Game.inventory:addItem(self.equipped.armor[i].id)
+                                if self.equipped.armor[i] and (self.equipped.armor[i].id == result.id or self.equipped.armor[i].equip_can_convert == false) then
+                                    already_equipped = true
                                 end
                             end
-                            self.equipped.armor[1] = result
-                            self.equipped.armor[2] = nil
+                            if not already_equipped then
+                                for i = 1, 2 do
+                                    if self.equipped.armor[i] then
+                                        Game.inventory:addItem(self.equipped.armor[i].id)
+                                    end
+                                    self.equipped.armor[i] = nil
+                                end
+                                self.equipped.armor[slot] = result
+                            end
                         end
                     end
                 else
@@ -3890,9 +3912,6 @@ function lib:setLightBattleSpareColor(value, color_name)
         for name,color in pairs(COLORS) do
             if value == name then
                 lib.spare_color, lib.spare_color_name = color, name:upper()
-                if value == "white" and color_name ~= true then
-                    lib.spare_color_name = lib.spare_color_name .. "?"
-                end
                 break
             end
         end

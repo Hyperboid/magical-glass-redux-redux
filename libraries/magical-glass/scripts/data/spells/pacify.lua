@@ -3,7 +3,7 @@ local spell, super = Class("pacify", true)
 function spell:init()
     super.init(self)
     
-    self.check = "SPARE a tired enemy by putting them to sleep."
+    self.check = "Spare a tired enemy by putting them to sleep."
 end
 
 function spell:getLightCastMessage(user, target)
