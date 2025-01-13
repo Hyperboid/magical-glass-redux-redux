@@ -229,7 +229,6 @@ function LightStatusDisplay:drawStatusStrip()
                 local function target_text_area()
                     love.graphics.rectangle("fill", x + 1, y - 9, 25, 4)
                 end
-                love.graphics.setColor(1, 1, 1, 1)
                 love.graphics.stencil(target_text_area, "replace", 1)
                 love.graphics.setStencilTest("equal", 0)
                 if math.floor(Kristal.getTime() * 3) % 2 == 0 then
