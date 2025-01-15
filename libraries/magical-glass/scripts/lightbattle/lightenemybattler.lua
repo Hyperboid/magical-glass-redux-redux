@@ -1072,10 +1072,6 @@ function LightEnemyBattler:getSpritePart(part, parent)
 end
 
 function LightEnemyBattler:update()
-    if self.sprite and self.overlay_sprite then
-        self.overlay_sprite:setPosition(self.sprite:getPosition())
-    end
-
     if self.actor then
         self.actor:onBattleUpdate(self)
     end
