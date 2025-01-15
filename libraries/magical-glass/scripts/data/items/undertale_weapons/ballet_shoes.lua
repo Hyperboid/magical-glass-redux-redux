@@ -19,10 +19,10 @@ function item:init()
     self.can_sell = true
 
     -- Item description text (unused by light items outside of debug menu)
-    self.description = "These used shoes make you feel extra dangerous."
+    self.description = "These used shoes make you feel incredibly dangerous."
 
     -- Light world check text
-    self.check = "Weapon AT 7\n* These used shoes make you feel\nextra dangerous."
+    self.check = "Weapon AT 7\n* These used shoes make you\nfeel incredibly dangerous."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
