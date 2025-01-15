@@ -132,7 +132,7 @@ function LightShop:postInit()
     end
 
     -- Construct the UI
-    self.large_box = UIBox(0, 0, 0, 0, "shop")
+    self.large_box = UIBox(0, 0, 0, 0, "lightshop")
     local left, top = self.large_box:getBorder()
     self.large_box:setOrigin(0, 1)
     self.large_box.x = left - 8
@@ -143,12 +143,11 @@ function LightShop:postInit()
 
     self:addChild(self.large_box)
 
-    self.info_box = UIBox(0, 0, 0, 0, "shop")
+    self.info_box = UIBox(0, 0, 0, 0, "lightshop")
     local left, top = self.info_box:getBorder()
     self.info_box:setOrigin(1, 1)
     self.info_box.x = SCREEN_WIDTH - left + 10
-    -- find a more elegant way to do this...
-    self.info_box.y = SCREEN_HEIGHT - top - self.large_box.height - (1 * 2) + 16 + 1
+    self.info_box.y = SCREEN_HEIGHT - top - self.large_box.height + 15
     self.info_box.width = 174
     self.info_box.height = -8
     self.info_box:setLayer(SHOP_LAYERS["info_box"])
@@ -459,16 +458,16 @@ function LightShop:update()
                 self.info_box.height = self.info_box.height + 2 * DTMULT
             end
             if self.info_box.height < 80 then
-                self.info_box.height = self.info_box.height + 3 * DTMULT
-            end
-            if self.info_box.height < 100 then
                 self.info_box.height = self.info_box.height + 4 * DTMULT
             end
-            if self.info_box.height < 220 - 48 then
-                self.info_box.height = self.info_box.height + (5 + 3) * DTMULT
+            if self.info_box.height < 100 then
+                self.info_box.height = self.info_box.height + 5 * DTMULT
             end
-            if self.info_box.height > 220 - 48 then
-                self.info_box.height = 220 - 48
+            if self.info_box.height < 167 then
+                self.info_box.height = self.info_box.height + (3 + 4) * DTMULT
+            end
+            if self.info_box.height > 167 then
+                self.info_box.height = 167
             end
         end
 

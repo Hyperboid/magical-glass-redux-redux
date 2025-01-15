@@ -21,7 +21,7 @@ function LightPartyBattler:init(chara)
     self.karma = 0
     self.karma_timer = 0
     self.karma_bonus = 0
-    self.prev_health = self.chara:getHealth()
+    self.prev_health = 0
     self.inv_bonus = 0
 end
 
@@ -253,8 +253,8 @@ function LightPartyBattler:update()
             self.karma_bonus = 0
             self.inv_bonus = 0
             for _,equip in ipairs(self.chara:getEquipment()) do
-                if equip.applyInvBonus then
-                    self.inv_bonus = equip:applyInvBonus(self.inv_bonus)
+                if equip.getInvBonus then
+                    self.inv_bonus = self.inv_bonus + equip:getInvBonus()
                 end
             end
             if self.inv_bonus >= 15/30 then

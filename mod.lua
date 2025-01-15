@@ -42,6 +42,10 @@ function Mod:load(data, new_file)
     Game.world:registerCall("Settings", "cell.settings")
 end
 
+-- function Mod:getUISkin()
+    -- return "dark"
+-- end
+
 -- function Mod:postUpdate()
     -- -- Text shakiness depending on HP
     -- if Game.state == "BATTLE" and Game.battle.light then

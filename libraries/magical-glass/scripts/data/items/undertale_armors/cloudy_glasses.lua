@@ -28,7 +28,7 @@ function item:init()
 
     -- Light world check text
     self.check = {
-        "Weapon DF 6\n* Glasses marred with wear.\n* Increases INV by 9.",
+        "Armor DF 5\n* Glasses marred with wear.\n* Increases INV by 9.",
         "* (After you get hurt by an\nattack,[wait:10] you stay invulnerable\nfor longer.)"
     }
 
@@ -38,7 +38,7 @@ function item:init()
     self.inv_bonus = 1
 
     self.bonuses = {
-        defense = 6
+        defense = 5
     }
 
 end
