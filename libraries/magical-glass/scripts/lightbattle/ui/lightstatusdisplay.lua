@@ -28,7 +28,7 @@ function LightStatusDisplay:drawStatusStripEvent()
     local level_name = Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or Kristal.getLibConfig("magical-glass", "light_level_name_dark")
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
-    love.graphics.setColor(COLORS["white"])
+    love.graphics.setColor(MG_PALETTE["player_text"])
     love.graphics.print(level_name.." " .. level, x - karma_mode_offset - (#level_name - 2) * 15 - (#tostring(level) > 2 and (#tostring(level) * 15) - 30 or 0), y)
 
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 74 - karma_mode_offset, y + 5)
@@ -68,7 +68,7 @@ function LightStatusDisplay:drawStatusStripEvent()
         current = "0" .. tostring(current)
     end
 
-    local color = COLORS.white
+    local color = MG_PALETTE["player_text"]
     if not Game.battle.party[1].is_down then
         if Game.battle.party[1].sleeping then
             color = MG_PALETTE["player_sleeping_text"]
@@ -102,7 +102,7 @@ function LightStatusDisplay:drawStatusStrip()
             local karma = battler.karma
 
             love.graphics.setFont(Assets.getFont("namelv", 24))
-            love.graphics.setColor(COLORS["white"])
+            love.graphics.setColor(MG_PALETTE["player_text"])
             love.graphics.print(name .. "   "..(Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or Kristal.getLibConfig("magical-glass", "light_level_name_dark")).." " .. level, x, y)
             
             love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 214 - karma_mode_offset, y + 5)
@@ -138,7 +138,7 @@ function LightStatusDisplay:drawStatusStrip()
                 current = "0" .. tostring(current)
             end
 
-            local color = COLORS.white
+            local color = MG_PALETTE["player_text"]
             if not battler.is_down then
                 if battler.sleeping then
                     color = MG_PALETTE["player_sleeping_text"]
@@ -165,7 +165,7 @@ function LightStatusDisplay:drawStatusStrip()
             local karma = battler.karma
             
             love.graphics.setFont(Assets.getFont("namelv", 24))
-            love.graphics.setColor(COLORS["white"])
+            love.graphics.setColor(MG_PALETTE["player_text"])
             love.graphics.print(name, x, y - 7)
             love.graphics.setFont(Assets.getFont("namelv", 16))
             love.graphics.print((Game:isLight() and Kristal.getLibConfig("magical-glass", "light_level_name_short") or Kristal.getLibConfig("magical-glass", "light_level_name_dark")).." " .. level, x, y + 13)
@@ -202,7 +202,7 @@ function LightStatusDisplay:drawStatusStrip()
                 current = "0" .. tostring(current)
             end
             
-            local color = COLORS.white
+            local color = MG_PALETTE["player_text"]
             if battler.is_down then
                 color = MG_PALETTE["player_down_text"]
             elseif battler.sleeping then
