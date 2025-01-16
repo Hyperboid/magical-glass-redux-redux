@@ -813,7 +813,6 @@ function LightBattleUI:drawState()
         local message = Game.battle.encounter.used_flee_message or ""
         self.flee_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. message)
     end
-
 end
 
 function LightBattleUI:update()
