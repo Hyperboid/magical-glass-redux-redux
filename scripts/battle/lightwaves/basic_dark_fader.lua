@@ -3,7 +3,7 @@ local Basic, super = Class(LightWave)
 function Basic:init()
     super.init(self)
 
-    self.darken = "undertale"
+    self.darken = "alt"
     self:setArenaSize(100)
 end
 

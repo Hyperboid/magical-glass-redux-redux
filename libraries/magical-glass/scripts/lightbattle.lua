@@ -1920,19 +1920,19 @@ function LightBattle:update()
         end
     elseif self.state == "DEFENDING" then
         local darken = false
-        local ut_darken = false
+        local alt_darken = false
         local time
         for _,wave in ipairs(self.waves) do
             if wave.darken then
                 darken = true
                 time = wave.time
-                if wave.darken == "undertale" then
-                    ut_darken = true
+                if wave.darken == "alt" then
+                    alt_darken = true
                 end
             end
         end
         
-        if ut_darken then
+        if alt_darken then
             self.darkify_fader.layer = BATTLE_LAYERS["below_ui"] + 1.5
         else
             self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
@@ -1940,7 +1940,7 @@ function LightBattle:update()
 
         if darken and self.wave_timer <= time - 9/30 then
             self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0.5, DTMULT * 0.05)
-            if ut_darken then
+            if alt_darken then
                 self.arena.alpha = Utils.approach(self.arena.alpha, 0.5, DTMULT * 0.05)
             end
         else
