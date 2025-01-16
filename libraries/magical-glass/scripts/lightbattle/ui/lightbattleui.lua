@@ -88,6 +88,12 @@ function LightBattleUI:init()
         Game.battle.arena:addChild(self.enemies_special_text[i])
     end
     
+    self.comment_text = {}
+    for i = 1, 3 do
+        self.comment_text[i] = Text("", 62, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
+        Game.battle.arena:addChild(self.comment_text[i])
+    end
+    
     self.xact_text = {}
     for i = 1, 3 do
         self.xact_text[i] = Text("", 286, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
@@ -144,10 +150,6 @@ function LightBattleUI:endAttack()
     self.attacking = false
 end
 
-function LightBattleUI:drawActionArea()
-    self:drawState()
-end
-
 function LightBattleUI:drawState()
     local state = Game.battle.state
     
@@ -164,6 +166,9 @@ function LightBattleUI:drawState()
             text.enemy = nil
             text.enemy_name = nil
         end
+    end
+    for _,text in ipairs(self.comment_text) do
+        text:setText("")
     end
     for _,text in ipairs(self.xact_text) do
         text:setText("")
@@ -374,7 +379,6 @@ function LightBattleUI:drawState()
         end
 
     elseif state == "ENEMYSELECT" then
-        --self:clearMenuText()
 
         local enemies = Game.battle.enemies_index
         local reason = Game.battle.state_reason
@@ -405,8 +409,6 @@ function LightBattleUI:drawState()
                 love.graphics.print("MERCY", 502, -15, 0, 1, 0.75)
             end
         end
-
-        love.graphics.setFont(font_mono)
         
         local letters = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
         local enemy_counter = {}
@@ -457,6 +459,7 @@ function LightBattleUI:drawState()
                 local enemy_text = self.enemies_text[index - page_offset]
                 local enemy_special_text = self.enemies_special_text[index - page_offset]
                 local xact_text = self.xact_text[index - page_offset]
+                local comment_text = self.comment_text[index - page_offset]
 
                 if #name_colors <= 1 then
                     enemy_text:setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
@@ -494,16 +497,16 @@ function LightBattleUI:drawState()
                     local tired_icon = false
 
                     if enemy.tired and enemy:canSpare() then
-                        Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10, 10 + y_offset)
+                        Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10 + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
                         spare_icon = true
                         
-                        Draw.draw(self.tiredmark, 100 + font_mono:getWidth(name) + 30, 10 + y_offset)
+                        Draw.draw(self.tiredmark, 100 + font_mono:getWidth(name) + 30 + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
                         tired_icon = true
                     elseif enemy.tired then
-                        Draw.draw(self.tiredmark, 100 + font_mono:getWidth(name) + 30, 10 + y_offset)
+                        Draw.draw(self.tiredmark, 100 + font_mono:getWidth(name) + 30 + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
                         tired_icon = true
                     elseif enemy.mercy >= 100 then
-                        Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10, 10 + y_offset)
+                        Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10 + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
                         spare_icon = true
                     end
 
@@ -513,7 +516,7 @@ function LightBattleUI:drawState()
                                 -- Skip the custom icons if we're already drawing spare/tired ones
                             else
                                 Draw.setColor(1, 1, 1, 1)
-                                Draw.draw(enemy.icons[i], 60 + font:getWidth(name) + (i * 20), 60 + y_off)
+                                Draw.draw(enemy.icons[i], 100 + font_mono:getWidth(name) + 10 + ((i-1) * 20) + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
                             end
                         end
                     end
@@ -527,15 +530,9 @@ function LightBattleUI:drawState()
                         xact_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. Game.battle.selected_xaction.name)
                     end
                 elseif self.style ~= "undertale" then
-                    local namewidth = font_mono:getWidth(enemy.name)
-
-                    Draw.setColor(128/255, 128/255, 128/255, 1)
-
-                    if ((80 + namewidth + 110 + (font_mono:getWidth(enemy.comment) / 2)) < 338) then
-                        love.graphics.print(enemy.comment, 80 + namewidth + 110, 0 + y_offset)
-                    else
-                        love.graphics.print(enemy.comment, 80 + namewidth + 110, 0 + y_offset, 0, 0.5, 1)
-                    end
+                    comment_text.x = 144 + font_mono:getWidth(enemy.name) + (enemy.rainbow_name and 12 or 0)
+                    comment_text:setColor(128/255, 128/255, 128/255, 1)
+                    comment_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. enemy.comment)
                 end
 
                 local hp_percent = enemy.health / enemy.max_health
@@ -827,6 +824,7 @@ function LightBattleUI:update()
             self.help_window:toggleVisibility(false)
         end
     end
+    super.update(self)
 end
 
 function LightBattleUI:draw()
