@@ -333,7 +333,7 @@ function LightBattleUI:drawState()
                 end
             end
 
-            if Game.battle.current_menu_columns == 1 then
+            if Game.battle.current_menu_columns == 1 then -- Options positioning
                 if x == 0 then
                     y = y + 1
                 end
