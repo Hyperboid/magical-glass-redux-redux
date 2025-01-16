@@ -1949,11 +1949,6 @@ function LightBattle:update()
         end
 
         self:updateWaves()
-    elseif self.state == "ACTIONSELECT" then
-        local actbox = self.battle_ui.action_boxes[self.current_selecting]
-        if actbox then
-            actbox:snapSoulToButton()
-        end
     elseif self.state == "TURNDONE" then
         for _,wave in ipairs(self.waves) do
             wave:onArenaExit()
@@ -1963,6 +1958,13 @@ function LightBattle:update()
         if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
             Input.clear("cancel", true)
             self:nextTurn()
+        end
+    end
+    
+    if self.state == "ACTIONSELECT" then
+        local actbox = self.battle_ui.action_boxes[self.current_selecting]
+        if actbox then
+            actbox:snapSoulToButton()
         end
     end
 
