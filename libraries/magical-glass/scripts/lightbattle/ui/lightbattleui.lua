@@ -98,7 +98,7 @@ function LightBattleUI:init()
     
     self.xact_text = {}
     for i = 1, 3 do
-        self.xact_text[i] = Text("", 286, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
+        self.xact_text[i] = Text("", self.style == "undertale" and 290 or 312, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
         Game.battle.arena:addChild(self.xact_text[i])
     end
     
@@ -502,16 +502,16 @@ function LightBattleUI:drawState()
                     local tired_icon = false
 
                     if enemy.tired and enemy:canSpare() then
-                        Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10 + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
+                        Draw.draw(self.sparestar, 98 + font_mono:getWidth(name) + 20, 8 + y_offset)
                         spare_icon = true
                         
-                        Draw.draw(self.tiredmark, 100 + font_mono:getWidth(name) + 30 + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
+                        Draw.draw(self.tiredmark, 98 + font_mono:getWidth(name) + 40, 8 + y_offset)
                         tired_icon = true
                     elseif enemy.tired then
-                        Draw.draw(self.tiredmark, 100 + font_mono:getWidth(name) + 30 + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
+                        Draw.draw(self.tiredmark, 98 + font_mono:getWidth(name) + 40, 8 + y_offset)
                         tired_icon = true
                     elseif enemy.mercy >= 100 then
-                        Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10 + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
+                        Draw.draw(self.sparestar, 98 + font_mono:getWidth(name) + 20, 8 + y_offset)
                         spare_icon = true
                     end
 
@@ -521,7 +521,7 @@ function LightBattleUI:drawState()
                                 -- Skip the custom icons if we're already drawing spare/tired ones
                             else
                                 Draw.setColor(1, 1, 1, 1)
-                                Draw.draw(enemy.icons[i], 100 + font_mono:getWidth(name) + 10 + ((i-1) * 20) + (enemy.rainbow_name and 12 or 0), 10 + y_offset)
+                                Draw.draw(enemy.icons[i], 98 + font_mono:getWidth(name) + (i * 20), 8 + y_offset)
                             end
                         end
                     end
@@ -535,7 +535,7 @@ function LightBattleUI:drawState()
                         xact_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. Game.battle.selected_xaction.name)
                     end
                 elseif self.style ~= "undertale" then
-                    comment_text.x = 144 + font_mono:getWidth(enemy.name) + (enemy.rainbow_name and 12 or 0)
+                    comment_text.x = 74 + font_mono:getWidth(name)
                     comment_text:setColor(128/255, 128/255, 128/255, 1)
                     comment_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. enemy.comment)
                 end

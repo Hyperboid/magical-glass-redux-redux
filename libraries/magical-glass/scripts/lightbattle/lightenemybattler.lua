@@ -163,11 +163,6 @@ function LightEnemyBattler:getMercyVisibility() return self.show_mercy end
 
 function LightEnemyBattler:setTired(bool)
     self.tired = bool
-    if self.tired then
-        self.comment = "(Tired)"
-    else
-        self.comment = ""
-    end
 end
 
 function LightEnemyBattler:registerAct(name, description, party, tp, icons)
