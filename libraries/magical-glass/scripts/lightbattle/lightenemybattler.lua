@@ -161,7 +161,7 @@ function LightEnemyBattler:setTired(bool)
     end
 end
 
-function LightEnemyBattler:registerAct(name, description, party, tp, highlight, icons)
+function LightEnemyBattler:registerAct(name, description, party, tp, icons)
     if type(party) == "string" then
         if party == "all" then
             party = {}
@@ -178,7 +178,6 @@ function LightEnemyBattler:registerAct(name, description, party, tp, highlight, 
         ["description"] = description,
         ["party"] = party,
         ["tp"] = tp or 0,
-        ["highlight"] = highlight,
         ["short"] = false,
         ["icons"] = icons
     }
@@ -186,7 +185,7 @@ function LightEnemyBattler:registerAct(name, description, party, tp, highlight, 
     return act
 end
 
-function LightEnemyBattler:registerShortAct(name, description, party, tp, highlight, icons)
+function LightEnemyBattler:registerShortAct(name, description, party, tp, icons)
     if type(party) == "string" then
         if party == "all" then
             party = {}
@@ -203,7 +202,6 @@ function LightEnemyBattler:registerShortAct(name, description, party, tp, highli
         ["description"] = description,
         ["party"] = party,
         ["tp"] = tp or 0,
-        ["highlight"] = highlight,
         ["short"] = true,
         ["icons"] = icons
     }
@@ -211,7 +209,7 @@ function LightEnemyBattler:registerShortAct(name, description, party, tp, highli
     return act
 end
 
-function LightEnemyBattler:registerActFor(char, name, description, party, tp, highlight, icons)
+function LightEnemyBattler:registerActFor(char, name, description, party, tp, icons)
     if type(party) == "string" then
         if party == "all" then
             party = {}
@@ -228,14 +226,13 @@ function LightEnemyBattler:registerActFor(char, name, description, party, tp, hi
         ["description"] = description,
         ["party"] = party,
         ["tp"] = tp or 0,
-        ["highlight"] = highlight,
         ["short"] = false,
         ["icons"] = icons
     }
     table.insert(self.acts, act)
 end
 
-function LightEnemyBattler:registerShortActFor(char, name, description, party, tp, highlight, icons)
+function LightEnemyBattler:registerShortActFor(char, name, description, party, tp, icons)
     if type(party) == "string" then
         if party == "all" then
             party = {}
@@ -252,7 +249,6 @@ function LightEnemyBattler:registerShortActFor(char, name, description, party, t
         ["description"] = description,
         ["party"] = party,
         ["tp"] = tp or 0,
-        ["highlight"] = highlight,
         ["short"] = true,
         ["icons"] = icons
     }

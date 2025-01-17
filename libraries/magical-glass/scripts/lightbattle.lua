@@ -934,9 +934,6 @@ function LightBattle:onStateChange(old,new)
         party.chara:onLightActionSelect(party, false)
         self.encounter:onCharacterTurn(party, false)
 
-        if self.battle_ui.help_window then
-            self.battle_ui.help_window:toggleVisibility(true)
-        end
     elseif new == "BUTNOBODYCAME" then
         self.current_selecting = 0
         if not self.soul then
@@ -966,9 +963,6 @@ function LightBattle:onStateChange(old,new)
             self:tryProcessNextAction()
         end
     elseif new == "MENUSELECT" then
-        if self.battle_ui.help_window then
-            self.battle_ui.help_window:setTension(0)
-        end
         self.battle_ui:clearEncounterText()
 
         if self.menuselect_cursor_memory[self.state_reason] and Utils.containsValue(self:menuSelectMemory(), self.state_reason) then
@@ -1047,10 +1041,6 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "ENEMYDIALOGUE" then
-        if self.battle_ui.help_window then
-            self.battle_ui.help_window:toggleVisibility(false)
-        end
-
         self.current_selecting = 0
         self:toggleSoul(false)
         self.battle_ui:clearEncounterText()

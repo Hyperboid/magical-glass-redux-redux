@@ -40,6 +40,16 @@ function Dummy:init()
     }
     -- Text displayed at the bottom of the screen when the enemy has low health
     self.low_health_text = "* Low HP."
+    
+    self:registerActFor("noelle", "Noelle Only", "hi")
+    self:registerAct("Test", "", nil, nil, {{"ui/battle/msg/dumbass", false}})
+    self:registerAct("Test", "", nil, nil, {{"ui/battle/msg/dumbass", true}})
+    self:registerAct("Test", "", {"kris"}, 100, {{"ui/battle/msg/dumbass", false}})
+    self:registerAct("Test", "", {"kris"}, 100, {{"ui/battle/msg/dumbass", true}})
+    self:registerAct("Test", "", {"kris", "susie"}, 100, {{"ui/battle/msg/dumbass", false}})
+    self:registerAct("Test", "", {"kris", "susie"}, 100, {{"ui/battle/msg/dumbass", true}})
+    self:registerAct("", "", nil, 100, {{"ui/battle/msg/dumbass", false}})
+    self:registerAct("", "", nil, 100, {{"ui/battle/msg/dumbass", true}})
 end
 
 function Dummy:update()
@@ -62,6 +72,9 @@ function Dummy:onAct(battler, name)
 
     -- If the act is none of the above, run the base onAct function
     -- (this handles the Check act)
+    if name ~= "Check" then
+        return "* Nothing happened."
+    end
     return super:onAct(self, battler, name)
 end
 
