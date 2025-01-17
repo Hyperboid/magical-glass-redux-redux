@@ -46,7 +46,6 @@ function LightEnemySprite:setActor(actor)
 
     actor:onSpriteInit(self)
     self:resetSprite()
-
 end
 
 function LightEnemySprite:resetSprite(ignore_actor_callback)

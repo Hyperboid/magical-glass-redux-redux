@@ -1,9 +1,7 @@
-local LightPartyBattler, super = Class(Battler)
+local LightPartyBattler, super = Class()
 
 function LightPartyBattler:init(chara)
     self.chara = chara
-    
-    super.init(self)
 
     self.action = nil
 
@@ -294,8 +292,6 @@ function LightPartyBattler:update()
         end
         self.prev_health = self.chara:getHealth()
     end
-
-    super.update(self)
 end
 
 return LightPartyBattler

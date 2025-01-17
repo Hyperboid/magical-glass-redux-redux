@@ -203,11 +203,7 @@ end
 
 function LightBattle:createPartyBattlers()
     for i = 1, math.min(3, #Game.party) do
-        local party_member = Game.party[i]
-
-        local battler = LightPartyBattler(party_member)
-        battler.visible = false
-        self:addChild(battler)
+        local battler = LightPartyBattler(Game.party[i])
         table.insert(self.party, battler)
     end
 end
@@ -2086,7 +2082,7 @@ function LightBattle:draw()
         self.encounter:drawBackground()
     end
 
-    super:draw(self)
+    super.draw(self)
 
     self.encounter:draw()
 
@@ -2432,10 +2428,6 @@ function LightBattle:removeSingleAction(action)
 
     battler.action = nil
     self.character_actions[action.character_id] = nil
-end
-
-function LightBattle:isHighlighted(battler)
-    return false
 end
 
 function LightBattle:getPartyIndex(string_id)

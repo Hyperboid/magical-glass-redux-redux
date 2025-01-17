@@ -1,7 +1,16 @@
-local LightEnemyBattler, super = Class(Battler)
+local LightEnemyBattler, super = Class(Object)
 
 function LightEnemyBattler:init(actor, use_overlay)
     super.init(self)
+    
+    self.layer = BATTLE_LAYERS["battlers"]
+
+    self:setOrigin(0.5, 1)
+    self:setScale(2)
+    
+    self.sprite = nil
+    self.overlay_sprite = nil
+    
     self.name = "Test Enemy"
 
     if actor then
@@ -397,6 +406,11 @@ function LightEnemyBattler:onMercy(battler)
             return false
         end
     end
+end
+
+function LightEnemyBattler:flash(sprite, offset_x, offset_y, layer)
+    local sprite_to_use = sprite or self.sprite
+    return sprite_to_use:flash(offset_x, offset_y, layer)
 end
 
 function LightEnemyBattler:mercyFlash(color)
@@ -893,7 +907,6 @@ function LightEnemyBattler:freeze()
     end
     sprite:stopShake()
 
-    -- self:recruitMessage("frozen")
     local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255}, true)
     message:resetPhysics()
     message.y = message.y + 50
@@ -959,10 +972,6 @@ function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
     return percent
 end
 
-function LightEnemyBattler:recruitMessage(...)
-    return super.recruitMessage(self, self.width/2, self.height, ...)
-end
-
 function LightEnemyBattler:spawnSpeechBubble(text, options)
     options = options or {}
     options["right"] = options["right"] or self.dialogue_flip
@@ -993,6 +1002,9 @@ function LightEnemyBattler:spawnSpeechBubble(text, options)
     Game.battle:addChild(bubble)
     return bubble
 end
+
+function LightEnemyBattler:onBubbleSpawn(bubble) end
+function LightEnemyBattler:onBubbleRemove(bubble) end
 
 function LightEnemyBattler:defeat(reason, violent)
     self.done_state = reason or "DEFEATED"
@@ -1048,6 +1060,25 @@ function LightEnemyBattler:setActor(actor, use_overlay)
     if self.overlay_sprite then
         self.overlay_sprite.facing = "down"
         self.overlay_sprite.inherit_color = true
+    end
+end
+
+function LightEnemyBattler:setAnimation(animation, callback)
+    return self.sprite:setAnimation(animation, callback)
+end
+
+function LightEnemyBattler:getActiveSprite()
+    if not self.overlay_sprite then
+        return self.sprite
+    else
+        return self.overlay_sprite.visible and self.overlay_sprite or self.sprite
+    end
+end
+
+function LightEnemyBattler:setCustomSprite(sprite, ox, oy, speed, loop, after)
+    self.sprite:setCustomSprite(sprite, ox, oy)
+    if not self.sprite.directional and speed then
+        self.sprite:play(speed, loop, after)
     end
 end
 
