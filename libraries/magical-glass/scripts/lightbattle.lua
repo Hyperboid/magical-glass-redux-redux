@@ -542,8 +542,6 @@ function LightBattle:processAction(action)
             self:battleText(enemy:getSpareText(battler, worked))
             self:finishAction(action)
         else
-            self:toggleSoul(false)
-
             local success = false
             local tired = false
             local active = false
@@ -740,7 +738,6 @@ function LightBattle:processAction(action)
     elseif action.action == "ITEM" then
         local item = action.data
         if item.instant then
-            self:toggleSoul(false)
             self:finishAction(action)
         else
             local result = item:onLightBattleUse(battler, action.target)
@@ -904,6 +901,7 @@ function LightBattle:onStateChange(old,new)
             self:spawnSoul()
         end
 
+        self:toggleSoul(true)
         self.soul.can_move = false
 
         if self.current_selecting < 1 or self.current_selecting > #self.party then
@@ -1042,7 +1040,6 @@ function LightBattle:onStateChange(old,new)
 
     elseif new == "ENEMYDIALOGUE" then
         self.current_selecting = 0
-        self:toggleSoul(false)
         self.battle_ui:clearEncounterText()
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
@@ -1194,6 +1191,7 @@ function LightBattle:onStateChange(old,new)
 
         self.soul:onWaveStart()
     elseif new == "VICTORY" then
+        self:toggleSoul(false)
         self.music:stop()
         self.current_selecting = 0
         self.forced_victory = true
@@ -1671,7 +1669,6 @@ function LightBattle:resetParty()
 end
 
 function LightBattle:shortActText(text)
-    self:toggleSoul(false)
     self:setState("SHORTACTTEXT")
     self.battle_ui:clearEncounterText()
 
@@ -1726,10 +1723,6 @@ function LightBattle:battleText(text,post_func)
         self:setState(target_state)
     end)
 
-    if self.state ~= "FLEEING" and self.soul then
-        self:toggleSoul(false)
-    end
-
     self.battle_ui.encounter_text:setAdvance(true)
     self:setState("BATTLETEXT")
 end
@@ -1743,10 +1736,6 @@ function LightBattle:hasCutscene()
 end
 
 function LightBattle:startCutscene(group, id, ...)
-    if not self.encounter.event then
-        self:toggleSoul(false)
-    end
-
     if self.cutscene then
         local cutscene_name = ""
         if type(group) == "string" then
@@ -2040,7 +2029,6 @@ function LightBattle:updateAttacking()
 
     if not self.attack_done then
         if not self.battle_ui.attacking then
-            self:toggleSoul(false)
             self.battle_ui:beginAttack()
         end
         
@@ -2839,6 +2827,7 @@ function LightBattle:nextParty()
     end
 
     if all_done then
+        self:toggleSoul(false)
         self.selected_character_stack = {}
         self.selected_action_stack = {}
         self.current_action_processing = 1
@@ -3339,7 +3328,6 @@ function LightBattle:handleActionSelectInput(key)
         if Input.isConfirm(key) then
             actbox:select()
             self:playSelectSound()
-            self:toggleSoul(true)
             return
         elseif Input.isCancel(key) then
             local old_selecting = self.current_selecting

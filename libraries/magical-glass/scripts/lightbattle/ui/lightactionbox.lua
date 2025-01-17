@@ -83,7 +83,6 @@ function LightActionBox:snapSoulToButton()
 
         Game.battle.soul.x = self.buttons[self.selected_button].x - 19
         Game.battle.soul.y = self.buttons[self.selected_button].y + 279
-        Game.battle:toggleSoul(true)
     end
 end
 

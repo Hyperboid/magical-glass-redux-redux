@@ -1449,10 +1449,10 @@ function lib:init()
     end)
 
     Utils.hook(DialogueText, "init", function(orig, self, text, x, y, w, h, options)
-        orig(self, text, x, y, w, h, options)
         options = options or {}
         self.default_sound = options["default_sound"] or "default"
         self.no_sound_overlap = options["no_sound_overlap"] or false
+        orig(self, text, x, y, w, h, options)
     end)
 
     Utils.hook(DialogueText, "resetState", function(orig, self)
@@ -1464,26 +1464,32 @@ function lib:init()
         if self.state.skipping and (Input.down("cancel") or self.played_first_sound) then
             return
         end
-    
+
         if current_node.type ~= "character" then
             return
         end
-    
-        local no_sound = {"\n", " ", "^", "!", ".", "?", ",", ":", "/", "\\", "|", "*"}
-    
+
+        local no_sound = { "\n", " ", "^", "!", ".", "?", ",", ":", "/", "\\", "|", "*" }
+
         if (Utils.containsValue(no_sound, current_node.character)) then
             return
         end
-    
+
         if (self.state.typing_sound ~= nil) and (self.state.typing_sound ~= "") then
             self.played_first_sound = true
-            if Kristal.callEvent(KRISTAL_EVENT.onTextSound, self.state.typing_sound, current_node) then
+            if Kristal.callEvent(KRISTAL_EVENT.onTextSound, self.state.typing_sound, current_node, self.state) then
                 return
             end
-            if self.no_sound_overlap then
-                Assets.stopAndPlaySound("voice/"..self.state.typing_sound)
+            if self:getActor()
+                and (self:getActor():getVoice() or "default") == self.state.typing_sound
+                and self:getActor():onTextSound(current_node, self.state) then
+                return
+            end
+            
+            if not self.no_sound_overlap then
+                Assets.playSound("voice/" .. self.state.typing_sound)
             else
-                Assets.playSound("voice/"..self.state.typing_sound)
+                Assets.stopAndPlaySound("voice/" .. self.state.typing_sound, nil, nil, true)
             end
         end
     end)
@@ -1492,10 +1498,8 @@ function lib:init()
         local speed = self.state.speed
 
         if not OVERLAY_OPEN then
-
             if Kristal.getLibConfig("magical-glass", "undertale_text_skipping") == true then
-
-                local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
+                local input = self.can_advance and Input.pressed("confirm")
 
                 if input or self.auto_advance or self.should_advance then
                     self.should_advance = false
@@ -1503,29 +1507,35 @@ function lib:init()
                         self:advance()
                     end
                 end
+                
+                self.fast_skipping_timer = 0
         
-                if self.skippable and (Input.pressed("cancel") and not self.state.noskip) then
+                if self.skippable and not self.state.noskip then
                     if not self.skip_speed then
-                        self.state.skipping = true
+                        if Input.pressed("cancel") then
+                            self.state.skipping = true
+                        end
                     else
-                        speed = speed * 2
+                        if Input.down("cancel") then
+                            speed = speed * 2
+                        end
                     end
                 end
-
             else
                 if Input.pressed("menu") then
                     self.fast_skipping_timer = 1
                 end
-        
-                local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
-        
+
+                local input = self.can_advance and
+                    (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
+
                 if input or self.auto_advance or self.should_advance then
                     self.should_advance = false
                     if not self.state.typing then
                         self:advance()
                     end
                 end
-        
+
                 if Input.down("menu") then
                     if self.fast_skipping_timer < 1 then
                         self.fast_skipping_timer = self.fast_skipping_timer + DTMULT
@@ -1533,7 +1543,7 @@ function lib:init()
                 else
                     self.fast_skipping_timer = 0
                 end
-                
+
                 if self.skippable and ((Input.down("cancel") and not self.state.noskip) or (Input.down("menu") and not self.state.noskip)) then
                     if not self.skip_speed then
                         self.state.skipping = true
@@ -1542,41 +1552,40 @@ function lib:init()
                     end
                 end
             end
-    
         end
-    
+
         if self.state.waiting == 0 then
             self.state.progress = self.state.progress + (DT * 30 * speed)
         else
             self.state.waiting = math.max(0, self.state.waiting - DT)
         end
-    
+
         if self.state.typing then
-            self:drawToCanvas(function()
+            self:drawToCanvas(function ()
                 while (math.floor(self.state.progress) > self.state.typed_characters) or self.state.skipping do
                     local current_node = self.nodes[self.state.current_node]
-    
+
                     if current_node == nil then
                         self.state.typing = false
                         break
                     end
-    
+
                     self:playTextSound(current_node)
                     self:processNode(current_node, false)
-    
+
                     if self.state.skipping then
                         self.state.progress = self.state.typed_characters
                     end
-    
+
                     self.state.current_node = self.state.current_node + 1
                 end
             end)
         end
-    
+
         self:updateTalkSprite(self.state.talk_anim and self.state.typing)
-    
+
         Text.update(self)
-    
+
         self.last_talking = self.state.talk_anim and self.state.typing
     end)
 
@@ -1598,16 +1607,13 @@ function lib:init()
 
     Utils.hook(Bullet, "update", function(orig, self)
         orig(self)
-        if self.remove_outside_of_arena then
-            if self.x < Game.battle.arena.left then
-                self:remove()
-            elseif self.x > Game.battle.arena.right then
-                self:remove()
-            elseif self.y > Game.battle.arena.bottom then
-                self:remove()
-            elseif self.y < Game.battle.arena.top then
-                self:remove()
-            end
+        if self.remove_outside_of_arena and
+            (self.x < Game.battle.arena.left or
+            self.x > Game.battle.arena.right or
+            self.y > Game.battle.arena.bottom or
+            self.y < Game.battle.arena.top)
+            then
+            self:remove()
         end
     end)
 
