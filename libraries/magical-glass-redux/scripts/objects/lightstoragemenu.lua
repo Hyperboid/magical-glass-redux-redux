@@ -105,13 +105,12 @@ function LightStorageMenu:draw()
     Draw.setColor(COLORS["white"])
     love.graphics.setFont(self.font)
     local name = {self:getStorage(1).name, self:getStorage(2).name}
-    if name[1] ~= "BOX" then
-        name[1] = "INVENTORY"
+    for i = 1, #name do
+        if name[i] ~= "BOX" then
+            name[i] = "INVENTORY"
+        end
     end
     Draw.printAlign(name[1], 167, 30, "center")
-    if name[2] ~= "BOX" then
-        name[2] = "INVENTORY"
-    end
     Draw.printAlign(name[2], 469, 30, "center")
 
     if not Input.usingGamepad() then
