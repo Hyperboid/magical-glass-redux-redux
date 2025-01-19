@@ -104,8 +104,15 @@ function LightStorageMenu:draw()
 
     Draw.setColor(COLORS["white"])
     love.graphics.setFont(self.font)
-    Draw.printAlign("INVENTORY", 167, 30, "center")
-    Draw.printAlign("BOX", 469, 30, "center")
+    local name = {self:getStorage(1).name, self:getStorage(2).name}
+    if name[1] ~= "BOX" then
+        name[1] = "INVENTORY"
+    end
+    Draw.printAlign(name[1], 167, 30, "center")
+    if name[2] ~= "BOX" then
+        name[2] = "INVENTORY"
+    end
+    Draw.printAlign(name[2], 469, 30, "center")
 
     if not Input.usingGamepad() then
         love.graphics.print("Press "..Input.getText("cancel").." to Finish", 200, 406)
