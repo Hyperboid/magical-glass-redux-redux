@@ -20,7 +20,7 @@ function spell:onLightCast(user, target)
             target:hurt(damage, user)
             Game.battle:finishAction()
         end)
-        blast.layer = BATTLE_LAYERS["above_ui"]
+        blast.layer = BATTLE_LAYERS["above_bullets"] + 1
         Game.battle:addChild(blast)
     end)
     return false
