@@ -36,6 +36,7 @@ end
 
 function LightStorageMenu:onKeyPressed(key)
     local function getEndRow() return math.min(math.max(1, self:getLimit(self.list), #self:getStorage(self.list) + (#self:getStorage(self.list) >= self:getLimit(self.list) and 1 or 0)), self:getStorage(self.list).max) end
+    local function bottomRow() return math.min(self:getStorage(self.list).max, self.scroll_y[self.list] + (self:getLimit(self.list) - 1)) end
     if Input.is("cancel", key) then
         self:remove()
         Game.world:closeMenu()
@@ -61,17 +62,17 @@ function LightStorageMenu:onKeyPressed(key)
                 adjustPosition()
             end
         end
-    elseif Input.is("right", key) then
+    elseif Input.is("right", key) and self.list < 2 then
         self.list = 2
         self.current_selecting = self.current_selecting + self.scroll_y[2] - self.scroll_y[1]
-        if self.current_selecting >= self:getStorage(self.list).max then
-            self.current_selecting = self:getStorage(self.list).max
+        if self.current_selecting > bottomRow() then
+            self.current_selecting = bottomRow()
         end
-    elseif Input.is("left", key) then
+    elseif Input.is("left", key) and self.list > 1 then
         self.list = 1
         self.current_selecting = self.current_selecting + self.scroll_y[1] - self.scroll_y[2]
-        if self.current_selecting >= self:getStorage(self.list).max then
-            self.current_selecting = self:getStorage(self.list).max
+        if self.current_selecting > bottomRow() then
+            self.current_selecting = bottomRow()
         end
     elseif Input.is("up", key) then
         self.current_selecting = self.current_selecting - 1
@@ -101,14 +102,36 @@ function LightStorageMenu:drawStorage(list)
         
         local item = Game.inventory:getItem(self:getStorage(list), i)
         if item then
+            -- Draw the item name
             Draw.setColor(COLORS["white"])
             love.graphics.setFont(self.font)
             love.graphics.print(item:getName(), x, y - 6 + offset * 32)
         else
+            -- Draw a red line
             Draw.setColor(COLORS["red"])
             love.graphics.setLineWidth(1)
             love.graphics.setLineStyle("rough")
             love.graphics.line(x + 12, y + 16 + offset * 32, x + 192, y + 16 + offset * 32)
+        end
+    end
+    
+    -- Draw scroll arrows if needed
+    if math.min(#self:getStorage(list) + 1, self:getStorage(list).max) > self:getLimit(list) then
+        Draw.setColor(1, 1, 1)
+
+        -- Move the arrows up and down only if we're in the spell selection state
+        local sine_off = 0
+        if self.list == list then
+            sine_off = math.sin((Kristal.getTime()*30)/12) * 3
+        end
+
+        if self.scroll_y[list] > 1 then
+            -- up arrow
+            Draw.draw(self.arrow_sprite, 293 - 4 + (list-1) * 302, (72 + 25 - 3) - sine_off, 0, 1, -1)
+        end
+        if self.scroll_y[list] + self:getLimit(list) <= math.min(#self:getStorage(list) + 1, self:getStorage(list).max) then
+            -- down arrow
+            Draw.draw(self.arrow_sprite, 293 - 4 + (list-1) * 302, (72 + (32 * self:getLimit(list)) - 19) + sine_off)
         end
     end
 end
@@ -142,46 +165,6 @@ function LightStorageMenu:draw()
 
     self:drawStorage(1)
     self:drawStorage(2)
-    
-    -- Draw scroll arrows if needed (Menu 1)
-    if math.min(#self:getStorage(1) + 1, self:getStorage(1).max) > self:getLimit(1) then
-        Draw.setColor(1, 1, 1)
-
-        -- Move the arrows up and down only if we're in the spell selection state
-        local sine_off = 0
-        if self.list == 1 then
-            sine_off = math.sin((Kristal.getTime()*30)/12) * 3
-        end
-
-        if self.scroll_y[1] > 1 then
-            -- up arrow
-            Draw.draw(self.arrow_sprite, 293 - 4, (72 + 25 - 3) - sine_off, 0, 1, -1)
-        end
-        if self.scroll_y[1] + self:getLimit(1) <= math.min(#self:getStorage(1) + 1, self:getStorage(1).max) then
-            -- down arrow
-            Draw.draw(self.arrow_sprite, 293 - 4, (72 + (32 * self:getLimit(1)) - 19) + sine_off)
-        end
-    end
-    
-    -- Draw scroll arrows if needed (Menu 2)
-    if math.min(#self:getStorage(2) + 1, self:getStorage(2).max) > self:getLimit(2) then
-        Draw.setColor(1, 1, 1)
-
-        -- Move the arrows up and down only if we're in the spell selection state
-        local sine_off = 0
-        if self.list == 2 then
-            sine_off = math.sin((Kristal.getTime()*30)/12) * 3
-        end
-
-        if self.scroll_y[2] > 1 then
-            -- up arrow
-            Draw.draw(self.arrow_sprite, 595 - 4, (72 + 25 - 3) - sine_off, 0, 1, -1)
-        end
-        if self.scroll_y[2] + self:getLimit(2) <= math.min(#self:getStorage(2) + 1, self:getStorage(2).max) then
-            -- down arrow
-            Draw.draw(self.arrow_sprite, 595 - 4, (72 + (32 * self:getLimit(2)) - 19) + sine_off)
-        end
-    end
     
     Draw.setColor(Game:getSoulColor())
     Draw.draw(self.heart_sprite, self.list * 302 - 262, 82 + 32 * (self.current_selecting - self.scroll_y[self.list]), 0, 2, 2)
