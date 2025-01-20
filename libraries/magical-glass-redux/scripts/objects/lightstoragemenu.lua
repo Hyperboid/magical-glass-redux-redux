@@ -44,8 +44,8 @@ function LightStorageMenu:onKeyPressed(key)
             if self.current_selecting > getEndRow() then
                 self.current_selecting = getEndRow()
             end
-            if self.current_selecting == getEndRow() and self.current_selecting >= math.min(self:getLimit(self.list), self:getStorage(self.list).max) and self.scroll_y[self.list] > 1 and self.current_selecting < self:getStorage(self.list).max then
-                self.current_selecting = getEndRow() - 1
+            if self.scroll_y[self.list] > 1 and math.min(math.max(1, getEndRow() - (self:getLimit(self.list) - 1)), self.current_selecting) < self.scroll_y[self.list] then
+                self.current_selecting = self.current_selecting - 1
             end
         end
         if self.list == 1 then
