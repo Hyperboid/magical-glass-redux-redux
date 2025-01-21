@@ -1461,7 +1461,7 @@ function lib:init()
     end)
 
     Utils.hook(DialogueText, "playTextSound", function(orig, self, current_node)
-        if self.state.skipping and (Input.down("cancel") or self.played_first_sound) then
+        if self.state.skipping and (Input.down("cancel") and Kristal.getLibConfig("magical-glass", "undertale_text_skipping") ~= true or self.played_first_sound) then
             return
         end
 
