@@ -8,7 +8,7 @@
         "Just Another Random User",     // contributor
     ],
 
-    "version": "v2.21.3",
+    "version": "v2.21.4",
     "engineVer": "v0.10.0-dev",
 
     "config": {
@@ -103,11 +103,11 @@
         /////
         "hp_gauge_length_cap": true,
 
-        ///// Key Item Conversion
+        ///// Item Conversion
         // Like in Deltarune, converts the Dark World inventory to the Ball of Junk and items like the Shadow Crystal to Glass 
         // when traveling to the Light World or back.
         /////
-        "key_item_conversion": true,
+        "item_conversion": true,
         
         ///// Equipment Conversion
         // Like in Deltarune, converts items like the Spookysword to the Halloween Pencil and the Silver Watch to the Wristwatch

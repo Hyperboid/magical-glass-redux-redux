@@ -84,6 +84,9 @@ function lib:load(data, new_file)
         lib.rearrange_cell_calls = false
         
         lib.initialize_armor_conversion = true
+        if not Kristal.getLibConfig("magical-glass", "item_conversion") then
+            Game:setFlag("has_cell_phone", Kristal.getModOption("cell") ~= false)
+        end
     else
         data.magical_glass = data.magical_glass or {}
         lib.kills = data.magical_glass["kills"] or 0
@@ -940,7 +943,7 @@ function lib:init()
         end
     end)
     
-    if not Kristal.getLibConfig("magical-glass", "key_item_conversion") then
+    if not Kristal.getLibConfig("magical-glass", "item_conversion") then
         -- Don't give the ball of junk
         Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
             return Game.dark_inventory
@@ -1015,6 +1018,26 @@ function lib:init()
                         return false, "* (You have too many [color:yellow]DARK ITEMs[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
                     end
                 end
+            end
+        end)
+        
+        Utils.hook(Game, "convertToLight", function(orig, self)
+            local inventory = self.inventory
+
+            self.inventory = inventory:convertToLight()
+
+            for _,chara in pairs(self.party_data) do
+                chara:convertToLight()
+            end
+        end)
+        
+        Utils.hook(Game, "convertToDark", function(orig, self)
+            local inventory = self.inventory
+
+            self.inventory = inventory:convertToDark()
+
+            for _,chara in pairs(self.party_data) do
+                chara:convertToDark()
             end
         end)
     end
