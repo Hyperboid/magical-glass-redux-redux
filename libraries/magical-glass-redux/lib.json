@@ -94,6 +94,7 @@
         //
         // true
         // Limits the gauge at 99. 
+        //
         // false
         // Doesn't limit the gauge.
         //
