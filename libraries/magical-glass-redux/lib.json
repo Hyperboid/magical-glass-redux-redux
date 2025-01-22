@@ -8,7 +8,7 @@
         "Just Another Random User",     // contributor
     ],
 
-    "version": "v2.21.9",
+    "version": "v2.21.10",
     "engineVer": "v0.10.0-dev",
 
     "config": {
@@ -125,13 +125,12 @@
         ///// UNDERTALE Menu Display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
         // Moves the currency amount in the menu to be align with the rest of the amonuts.
-        // Displays a MAGIC stat if any member can cast spells.
         /////
         "undertale_menu_display": false,
         
         ///// Always Show Magic
         // Displays the MAGIC stat and spells in the Light World STAT menu even if there's no
-        // member in the current party who can cast spells or even when not using Undertale stat display.
+        // member in the current party who can cast spells.
         /////
         "always_show_magic": false,
 

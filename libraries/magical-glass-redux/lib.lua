@@ -2825,7 +2825,7 @@ function lib:init()
                 show_magic = true
             end
         end
-        self.show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic") or show_magic and self.undertale_stat_display
+        self.show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic") or show_magic
     
         local old_selecting_party        = self.party_selecting
         local old_selecting_spell        = self.spell_selecting
