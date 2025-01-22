@@ -12,10 +12,6 @@ end
 
 function ImageViewer:update()
     super.update(self)
-    if Game.world:hasCutscene() then
-        self:remove()
-        Game.world:closeMenu()
-    end
 end
 
 function ImageViewer:onKeyPressed(key)
