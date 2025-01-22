@@ -1022,6 +1022,8 @@ function lib:init()
         end)
         
         Utils.hook(Game, "convertToLight", function(orig, self)
+            local inventory = self.inventory
+
             self.inventory = inventory:convertToLight()
 
             for _,chara in pairs(self.party_data) do
@@ -1030,6 +1032,8 @@ function lib:init()
         end)
         
         Utils.hook(Game, "convertToDark", function(orig, self)
+            local inventory = self.inventory
+
             self.inventory = inventory:convertToDark()
 
             for _,chara in pairs(self.party_data) do
