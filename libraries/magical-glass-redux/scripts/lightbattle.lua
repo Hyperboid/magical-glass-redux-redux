@@ -1685,6 +1685,8 @@ function LightBattle:checkGameOver()
             wave:onEnd(true)
         end
     end
+    self.soul.collidable = false
+    self.camera:stopShake()
     if self.encounter:onGameOver() then
         return
     end
