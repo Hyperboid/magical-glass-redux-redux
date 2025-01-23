@@ -1325,7 +1325,7 @@ function LightBattle:onStateChange(old,new)
 
         if self.state_reason == "POSTFADE" then
             self:returnToWorld()
-            Game.fader:fadeIn(nil, {alpha = 1, speed = 12/30})
+            Game.fader:fadeIn(nil, {alpha = 1, speed = 12/30, color = {0, 0, 0}})
         else
             Game.fader:transition(function() self:returnToWorld() end, nil, {speed = (self.encounter.fast_transition and 5 or 12)/30})
         end
