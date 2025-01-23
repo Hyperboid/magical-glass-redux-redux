@@ -402,7 +402,7 @@ function LightSoul:update()
         self:onCollide(bullet)
     end
 
-    if self.inv_timer > 0 then -- 
+    if self.inv_timer > 0 then
         self.inv_flash_timer = self.inv_flash_timer + DT
         local amt = math.floor(self.inv_flash_timer / (2/30)) -- flashing is faster in ut
         if (amt % 2) == 1 then
