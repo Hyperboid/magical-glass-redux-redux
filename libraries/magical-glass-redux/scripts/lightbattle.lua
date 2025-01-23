@@ -1685,18 +1685,14 @@ function LightBattle:checkGameOver()
             wave:onEnd(true)
         end
     end
-    self.soul.collidable = false
-    self.camera:stopShake()
     if self.encounter:onGameOver() then
         return
     end
-    self.timer:after(1/15, function()
-        if self.encounter.invincible then
-            MagicalGlassLib:gameNotOver(self:getSoulLocation())
-        else
-            Game:gameOver(self:getSoulLocation())
-        end
-    end)
+    if self.encounter.invincible then
+        MagicalGlassLib:gameNotOver(self:getSoulLocation())
+    else
+        Game:gameOver(self:getSoulLocation())
+    end
 end
 
 function LightBattle:battleText(text,post_func)

@@ -331,7 +331,7 @@ function LightEncounter:update() end
 function LightEncounter:draw() end
 function LightEncounter:drawBackground()
     love.graphics.setColor(self.background_color)
-    love.graphics.draw(Assets.getTexture(self.background_image), 0, 0)
+    love.graphics.draw(Assets.getTexture(self.background_image))
 end
 
 -- Functions
