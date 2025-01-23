@@ -1699,7 +1699,7 @@ end
 
 function LightBattle:battleText(text,post_func)
     local target_state = self:getState()
-    self.battle_ui.encounter_text.text.line_offset = 4 -- toby jesus christ
+    self.battle_ui.encounter_text.text.line_offset = 4 -- accuracy thing
     
     if type(text) == "table" then
         for key,line in ipairs(text) do
