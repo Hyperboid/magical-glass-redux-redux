@@ -548,7 +548,7 @@ function LightEnemyBattler:isXActionShort(battler)
     return false
 end
 
-function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacked)
+function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, show_status, attacked)
     if self.defeated then
         return
     end
@@ -566,14 +566,16 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacke
     end
     local message
     if amount == 0 or (amount < 0 and Game:getConfig("damageUnderflowFix")) then
-        if attacked and self.special_messages then
-            message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
-            self:onHurt(amount, battler)
-        else
-            message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
-        end
-        if message and anim then
-            message:resetPhysics()
+        if show_status ~= false then
+            if attacked and self.special_messages then
+                message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
+                self:onHurt(amount, battler)
+            else
+                message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
+            end
+            if message and anim then
+                message:resetPhysics()
+            end
         end
         if not attacked then
             self:onDodge(battler, attacked) -- if attacked gets called in item:onLightAttack()
@@ -582,14 +584,15 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacke
         return
     end
 
-    if self.special_messages then
-        message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
-    else
-        message = self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
-    end
-    
-    if message and anim then
-        message:resetPhysics()
+    if show_status ~= false then
+        if self.special_messages then
+            message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
+        else
+            message = self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+        end
+        if message and anim then
+            message:resetPhysics()
+        end
     end
     self.health = self.health - amount
 

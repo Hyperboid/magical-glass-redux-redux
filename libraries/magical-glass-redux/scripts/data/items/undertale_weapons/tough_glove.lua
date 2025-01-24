@@ -174,7 +174,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                 battler.chara:onLightAttackHit(enemy, new_damage)
                 Game.battle:finishActionBy(battler)
             else
-                enemy:hurt(0, battler, nil, nil, true, false)
+                enemy:hurt(0, battler, nil, nil, true, nil, false)
                 Game.battle:finishActionBy(battler)
             end
 

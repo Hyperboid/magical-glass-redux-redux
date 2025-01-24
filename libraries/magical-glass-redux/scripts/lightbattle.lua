@@ -628,7 +628,7 @@ function LightBattle:processAction(action)
                         self:finishAction(action)
                     end
                 else
-                    local result = weapon:onLightMiss(battler, enemy, true, false)
+                    local result = weapon:onLightMiss(battler, enemy, true, nil, false)
                     if result or result == nil then
                         self:finishAction(action)
                     end
@@ -669,7 +669,7 @@ function LightBattle:processAction(action)
                     self:finishAction(action)
                 end
             else
-                local result = weapon:onLightMiss(battler, enemy, true, false)
+                local result = weapon:onLightMiss(battler, enemy, true, nil, false)
                 if result or result == nil then
                     self:finishAction(action)
                 end

@@ -1452,8 +1452,8 @@ function lib:init()
         return false
     end)
 
-    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, anim, attacked)
-        enemy:hurt(0, battler, nil, nil, anim, attacked)
+    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, anim, show_status, attacked)
+        enemy:hurt(0, battler, nil, nil, anim, show_status, attacked)
     end)
 
     Utils.hook(Textbox, "init", function(orig, self, x, y, width, height, default_font, default_font_size, battle_box)
