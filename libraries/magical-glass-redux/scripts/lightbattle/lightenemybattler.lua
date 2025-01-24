@@ -565,7 +565,7 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacke
         battler.delay_turn_end = true
     end
     local message
-    if amount <= 0 then
+    if amount == 0 or (amount < 0 and Game:getConfig("damageUnderflowFix")) then
         if attacked and self.special_messages then
             message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
             self:onHurt(amount, battler)
