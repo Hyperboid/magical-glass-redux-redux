@@ -3573,8 +3573,17 @@ function lib:init()
         end
     end)
 
-    Utils.hook(Game, "gameOver", function(orig, self, x, y)
-        orig(self, x, y)
+    Utils.hook(Game, "gameOver", function(orig, self, x, y, redraw)
+        if redraw == nil then
+            if Game.battle then -- Battle type correction
+                if Game.battle.light then
+                    redraw = true
+                else
+                    redraw = false
+                end
+            end
+        end
+        orig(self, x, y, redraw)
         lib:setGameOvers((lib:getGameOvers() or 0) + 1)
     end)
     
@@ -3585,10 +3594,8 @@ function lib:init()
         end
         if Game.battle then -- Battle type correction
             if Game.battle.light then
-                self.screenshot = nil
                 self.timer = 28
             else
-                self.screenshot = love.graphics.newImage(SCREEN_CANVAS:newImageData())
                 self.timer = 0
             end
         end
@@ -3984,17 +3991,22 @@ function lib:setLightLV(level)
     end
 end
 
-function lib:gameNotOver(x, y)
-    Kristal.hideBorder(0)
-    
-    local reload
-    local encounter = Game.battle and Game.battle.encounter and Game.battle.encounter.id
-    local shop = Game.shop and Game.shop.id
-    if encounter then
-        reload = {"BATTLE", encounter}
-    elseif shop then
-        reload = {"SHOP", shop}
+function lib:gameNotOver(x, y, redraw)
+    if redraw == nil then
+        if Game.battle then -- Battle type correction
+            if Game.battle.light then
+                redraw = true
+            else
+                redraw = false
+            end
+        end
     end
+    
+    if redraw or (redraw == nil and Game:isLight()) then
+        love.draw() -- Redraw the frame so the screenshot will use an updated draw data
+    end
+    
+    Kristal.hideBorder(0)
 
     Game.state = "GAMEOVER"
     if Game.battle   then Game.battle  :remove() end
@@ -4003,7 +4015,7 @@ function lib:gameNotOver(x, y)
     if Game.gameover then Game.gameover:remove() end
     if Game.legend   then Game.legend  :remove() end
 
-    Game.gameover = GameNotOver(x or 0, y or 0, reload)
+    Game.gameover = GameNotOver(x or 0, y or 0)
     Game.stage:addChild(Game.gameover)
 end
 
