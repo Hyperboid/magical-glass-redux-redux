@@ -1680,11 +1680,12 @@ function lib:init()
 
     Utils.hook(Bullet, "update", function(orig, self)
         orig(self)
+        local x, y = self:getScreenPos()
         if self.remove_outside_of_arena and
-            (self.x < Game.battle.arena.left or
-            self.x > Game.battle.arena.right or
-            self.y > Game.battle.arena.bottom or
-            self.y < Game.battle.arena.top)
+            (x < Game.battle.arena.left or
+            x > Game.battle.arena.right or
+            y > Game.battle.arena.bottom or
+            y < Game.battle.arena.top)
             then
             self:remove()
         end
