@@ -972,7 +972,9 @@ end
 
 function LightEnemyBattler:spawnSpeechBubble(text, options)
     options = options or {}
-    options["right"] = options["right"] or self.dialogue_flip
+    if options["right"] == nil then
+        options["right"] = self.dialogue_flip
+    end
 
     local bubble
     if not options["style"] and self.dialogue_bubble then

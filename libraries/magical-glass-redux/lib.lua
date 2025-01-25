@@ -248,20 +248,20 @@ function lib:preInit()
         ["bottom"]             = -1000,
         ["below_battlers"]     = -900,
         ["battlers"]           = -850,
-        ["above_battlers"]     = -800,
-        ["below_ui"]           = -800,
+        ["above_battlers"]     = -800, --┰-- -800
+        ["below_ui"]           = -800, --┙
         ["ui"]                 = -700,
-        ["above_ui"]           = -600,
-        ["below_arena"]        = -600,
+        ["above_ui"]           = -600, --┰-- -600
+        ["below_arena"]        = -600, --┙
         ["arena"]              = -500,
-        ["above_arena"]        = -400,
-        ["below_bullets"]      = -400,
+        ["above_arena"]        = -400, --┰-- -400
+        ["below_bullets"]      = -400, --┙
         ["bullets"]            = -300,
-        ["above_bullets"]      = -200,
-        ["below_soul"]         = -200,
+        ["above_bullets"]      = -200, --┰-- -200
+        ["below_soul"]         = -200, --┙
         ["soul"]               = -150,
-        ["above_soul"]         = -100,
-        ["below_arena_border"] = -100,
+        ["above_soul"]         = -100, --┰-- -100
+        ["below_arena_border"] = -100, --┙
         ["arena_border"]       = -50,
         ["above_arena_border"] = 0,
         ["damage_numbers"]     = 50,
@@ -1515,7 +1515,7 @@ function lib:init()
     Utils.hook(DialogueText, "init", function(orig, self, text, x, y, w, h, options)
         options = options or {}
         self.default_sound = options["default_sound"] or "default"
-        self.no_sound_overlap = options["no_sound_overlap"]
+        self.no_sound_overlap = options["no_sound_overlap"] or false
         if Game.battle and Game.battle.light then
             if options["no_sound_overlap"] == nil then
                 self.no_sound_overlap = true
@@ -3614,7 +3614,7 @@ function lib:init()
 
     Utils.hook(SpeechBubble, "init", function(orig, self, text, x, y, options, speaker)
         orig(self, text, x, y, options, speaker)
-        self.text.no_sound_overlap = options["no_sound_overlap"]
+        self.text.no_sound_overlap = options["no_sound_overlap"] or false
         if Game.battle and Game.battle.light then
             self.layer = LIGHT_BATTLE_LAYERS["above_arena_border"] - 1
             if options["no_sound_overlap"] == nil then
