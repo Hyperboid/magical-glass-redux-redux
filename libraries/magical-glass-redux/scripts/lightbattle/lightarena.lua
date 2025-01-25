@@ -36,7 +36,7 @@ function LightArena:init(x, y, shape)
     self.sprite_border.layer = LIGHT_BATTLE_LAYERS["arena_border"]
     Game.battle:addChild(self.sprite_border)
 
-    self.mask = ArenaMask(Utils.lerp(LIGHT_BATTLE_LAYERS["below_bullets"], LIGHT_BATTLE_LAYERS["bullets"], 0.5), 0, 0, self)
+    self.mask = ArenaMask(1, 0, 0, self)
     self:addChild(self.mask)
 
     self.target_shape = {}
