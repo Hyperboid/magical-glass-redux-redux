@@ -12,7 +12,7 @@ function LightAttackBox:init(x, y)
     self.target_sprite = Game.battle.multi_mode and Sprite("ui/lightbattle/dumbtarget_multi"..is_dark) or Sprite("ui/lightbattle/dumbtarget"..is_dark)
     self.target_sprite:setOrigin(0.5, 0.5)
     self.target_sprite:setPosition(self.arena:getRelativePos(self.arena.width / 2, self.arena.height / 2))
-    self.target_sprite.layer = BATTLE_LAYERS["above_ui"]
+    self.target_sprite.layer = LIGHT_BATTLE_LAYERS["above_arena"]
     Game.battle:addChild(self.target_sprite)
 
     -- called "fatal" for some reason in ut
@@ -92,7 +92,7 @@ function LightAttackBox:createBolts()
                 centerizer = 51 + (#self.attackers - 5) * 2
             end
             bolt.y = math.ceil(bolt.y - (bolt.sprite.height * scale_y * (#self.attackers - Utils.getIndex(self.attackers, lane.battler)))) + centerizer
-            bolt.layer = BATTLE_LAYERS["above_ui"]
+            bolt.layer = LIGHT_BATTLE_LAYERS["above_arena"] + 1
             table.insert(lane.bolts, bolt)
             Game.battle:addChild(bolt)
         end

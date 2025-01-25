@@ -9,7 +9,7 @@ function LightSoul:init(x, y, color)
         self:setColor(1, 0, 0)
     end
 
-    self.layer = BATTLE_LAYERS["soul"]
+    self.layer = LIGHT_BATTLE_LAYERS["soul"]
 
     self.sprite = Sprite("player/heart_light")
     self.sprite:setOrigin(0.5, 0.5)

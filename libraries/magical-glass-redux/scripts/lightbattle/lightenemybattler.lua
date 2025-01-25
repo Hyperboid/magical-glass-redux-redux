@@ -3,7 +3,7 @@ local LightEnemyBattler, super = Class(Object)
 function LightEnemyBattler:init(actor, use_overlay)
     super.init(self)
     
-    self.layer = BATTLE_LAYERS["battlers"]
+    self.layer = LIGHT_BATTLE_LAYERS["battlers"]
 
     self:setOrigin(0.5, 1)
     self:setScale(2)
@@ -291,7 +291,7 @@ function LightEnemyBattler:spare(pacify)
                 dust:spread()
             end)
 
-            dust.layer = BATTLE_LAYERS["above_ui"] + 3
+            dust.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
         end
         
         self:defeat(pacify and "PACIFIED" or "SPARED", false)
@@ -1125,15 +1125,15 @@ function LightEnemyBattler:canDeepCopy()
 end
 
 function LightEnemyBattler:setFlag(flag, value)
-    Game:setFlag("lw_enemy#"..self.id..":"..flag, value)
+    Game:setFlag("lightenemy#"..self.id..":"..flag, value)
 end
 
 function LightEnemyBattler:getFlag(flag, default)
-    return Game:getFlag("lw_enemy#"..self.id..":"..flag, default)
+    return Game:getFlag("lightenemy#"..self.id..":"..flag, default)
 end
 
 function LightEnemyBattler:addFlag(flag, amount)
-    return Game:addFlag("lw_enemy#"..self.id..":"..flag, amount)
+    return Game:addFlag("lightenemy#"..self.id..":"..flag, amount)
 end
 
 return LightEnemyBattler

@@ -22,7 +22,7 @@ function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
     self.enemy = enemy
 
     -- Halfway between UI and the layer above it
-    self.layer = BATTLE_LAYERS["damage_numbers"]
+    self.layer = LIGHT_BATTLE_LAYERS["damage_numbers"]
 
     self.type = msg_type or "msg"
     

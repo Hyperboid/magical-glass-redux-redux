@@ -66,7 +66,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     sprite:setOrigin(0.5)
     local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
     sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
-    sprite.layer = BATTLE_LAYERS["above_ui"] + 5
+    sprite.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
     sprite:play(1/30, true)
@@ -81,7 +81,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         star:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
         star:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
-        star.layer = BATTLE_LAYERS["above_ui"] + 4
+        star.layer = LIGHT_BATTLE_LAYERS["above_arena_border"] - 0.5
         star.physics.direction = math.rad(360 * i) / 8
         star.physics.friction = 0.34
         star.physics.speed = 8

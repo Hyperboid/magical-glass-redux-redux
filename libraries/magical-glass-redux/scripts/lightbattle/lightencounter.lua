@@ -334,8 +334,6 @@ function LightEncounter:drawBackground()
     love.graphics.draw(Assets.getTexture(self.background_image))
 end
 
--- Functions
-
 function LightEncounter:addEnemy(enemy, x, y, ...)
     local enemy_obj
     if type(enemy) == "string" then
@@ -439,17 +437,17 @@ end
 
 function LightEncounter:setFlag(flag, value)
     if self.id == nil then return end
-    Game:setFlag("lw_encounter#"..self.id..":"..flag, value)
+    Game:setFlag("lightencounter#"..self.id..":"..flag, value)
 end
 
 function LightEncounter:getFlag(flag, default)
     if self.id == nil then return end
-    return Game:getFlag("lw_encounter#"..self.id..":"..flag, default)
+    return Game:getFlag("lightencounter#"..self.id..":"..flag, default)
 end
 
 function LightEncounter:addFlag(flag, amount)
     if self.id == nil then return end
-    return Game:addFlag("lw_encounter#"..self.id..":"..flag, amount)
+    return Game:addFlag("lightencounter#"..self.id..":"..flag, amount)
 end
 
 function LightEncounter:canDeepCopy()

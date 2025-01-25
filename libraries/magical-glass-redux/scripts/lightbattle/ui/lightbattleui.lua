@@ -3,7 +3,7 @@ local LightBattleUI, super = Class(Object)
 function LightBattleUI:init()
     super.init(self, 0, 270)
 
-    self.layer = BATTLE_LAYERS["ui"]
+    self.layer = LIGHT_BATTLE_LAYERS["ui"]
 
     self.current_encounter_text = Game.battle.encounter.text
 
@@ -55,7 +55,7 @@ function LightBattleUI:init()
 
     for i,battler in ipairs(Game.battle.party) do
         self.action_box_ut = LightActionBox(20, 0, i, battler)
-        self.action_box_ut.layer = BATTLE_LAYERS["below_ui"] + 2
+        self.action_box_ut.layer = LIGHT_BATTLE_LAYERS["ui"] - 1
         self.action_box_ut:move(self:getRelativePos())
         Game.battle:addChild(self.action_box_ut)
         table.insert(self.action_boxes, self.action_box_ut)
@@ -116,7 +116,7 @@ function LightBattleUI:init()
     Game.battle.arena:addChild(self.flee_text)
     
     self.status_display = LightStatusDisplay(0, 390, Game.battle.encounter.event and not Game.battle.multi_mode)
-    self.status_display.layer = BATTLE_LAYERS["below_ui"]
+    self.status_display.layer = LIGHT_BATTLE_LAYERS["ui"] - 2
     Game.battle:addChild(self.status_display)
 end
 

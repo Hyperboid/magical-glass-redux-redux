@@ -4,6 +4,6 @@
         "Sam Deluxe"
     ],
     "dependencies": ["magical-glass"],
-    "version": "v1.1.2",
+    "version": "v1.1.3",
     "engineVer": "v0.9.0-dev",
 }

@@ -3,7 +3,7 @@ local LightGauge, super = Class(Object)
 function LightGauge:init(type, amount, x, y, enemy, color)
     super.init(self, x, y)
 
-    self.layer = BATTLE_LAYERS["damage_numbers"]
+    self.layer = LIGHT_BATTLE_LAYERS["damage_numbers"]
     self.timer = Timer()
     self:addChild(self.timer)
 

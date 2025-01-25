@@ -28,6 +28,7 @@ function lib:unload()
     MagicalGlassLib          = nil
     MG_PALETTE               = nil
     MG_EVENT                 = nil
+    LIGHT_BATTLE_LAYERS      = nil
     TweenManager             = nil
     LightBattle              = nil
     LightPartyBattler        = nil
@@ -49,6 +50,11 @@ function lib:unload()
     LightStatusDisplay       = nil
     RandomEncounter          = nil
     LightShop                = nil
+    
+    Textbox.REACTION_X_BATTLE = ORIG_REACTION_X_BATTLE
+    Textbox.REACTION_Y_BATTLE = ORIG_REACTION_Y_BATTLE
+    ORIG_REACTION_X_BATTLE = nil
+    ORIG_REACTION_Y_BATTLE = nil
 end
 
 function lib:save(data)
@@ -176,6 +182,9 @@ function lib:clearGlobalSave()
 end
 
 function lib:preInit()
+    ORIG_REACTION_X_BATTLE = Textbox.REACTION_X_BATTLE
+    ORIG_REACTION_Y_BATTLE = Textbox.REACTION_Y_BATTLE
+    
     MG_PALETTE = {
         ["tension_maxtext"] = PALETTE["tension_maxtext"],
         ["tension_back"] = PALETTE["tension_back"],
@@ -233,6 +242,30 @@ function lib:preInit()
         onRegisterLightEnemies = "onRegisterLightEnemies",
         onRegisterLightWaves = "onRegisterLightWaves",
         onRegisterLightShops = "onRegisterLightShops",
+    }
+    
+    LIGHT_BATTLE_LAYERS = {
+        ["bottom"]             = -1000,
+        ["below_battlers"]     = -900,
+        ["battlers"]           = -850,
+        ["above_battlers"]     = -800,
+        ["below_ui"]           = -800,
+        ["ui"]                 = -700,
+        ["above_ui"]           = -600,
+        ["below_arena"]        = -600,
+        ["arena"]              = -500,
+        ["above_arena"]        = -400,
+        ["below_bullets"]      = -400,
+        ["bullets"]            = -300,
+        ["above_bullets"]      = -200,
+        ["below_soul"]         = -200,
+        ["soul"]               = -150,
+        ["above_soul"]         = -100,
+        ["below_arena_border"] = -100,
+        ["arena_border"]       = -50,
+        ["above_arena_border"] = 0,
+        ["damage_numbers"]     = 50,
+        ["top"]                = 1000
     }
 
     self.random_encounters = {}
@@ -1428,7 +1461,7 @@ function lib:init()
         end
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 8)
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
-        sprite.layer = BATTLE_LAYERS["above_ui"] + 5
+        sprite.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
         enemy.parent:addChild(sprite)
         -- sprite:play((stretch^(1/1.5) / 4) / 1.5, false, function(this)
         sprite:play(Game:isLight() and ((stretch^(1/1.5) / 4) / 1.5) or 1/8, false, function(this) -- dark stuff here
@@ -1459,22 +1492,35 @@ function lib:init()
     Utils.hook(Textbox, "init", function(orig, self, x, y, width, height, default_font, default_font_size, battle_box)
         orig(self, x, y, width, height, default_font, default_font_size, battle_box)
         
-        if battle_box and Game.battle.light then
-            self.face_x = 6
-            self.face_y = -3
+        if battle_box then
+            if Game.battle.light then
+                Textbox.REACTION_X_BATTLE = Textbox.REACTION_X
+                Textbox.REACTION_Y_BATTLE = Textbox.REACTION_Y
             
-            self.text_x = 0
-            self.text_y = -2
-            
-            self.face:setPosition(self.face_x, self.face_y)
-            self.text:setPosition(self.text_x, self.text_y)
+                self.face_x = 6
+                self.face_y = -3
+                
+                self.text_x = 0
+                self.text_y = -2
+                
+                self.face:setPosition(self.face_x, self.face_y)
+                self.text:setPosition(self.text_x, self.text_y)
+            else
+                Textbox.REACTION_X_BATTLE = ORIG_REACTION_X_BATTLE
+                Textbox.REACTION_Y_BATTLE = ORIG_REACTION_Y_BATTLE
+            end
         end
     end)
 
     Utils.hook(DialogueText, "init", function(orig, self, text, x, y, w, h, options)
         options = options or {}
         self.default_sound = options["default_sound"] or "default"
-        self.no_sound_overlap = options["no_sound_overlap"] or false
+        self.no_sound_overlap = options["no_sound_overlap"]
+        if Game.battle and Game.battle.light then
+            if options["no_sound_overlap"] == nil then
+                self.no_sound_overlap = true
+            end
+        end
         orig(self, text, x, y, w, h, options)
     end)
 
@@ -1617,7 +1663,11 @@ function lib:init()
         if Game:isLight() then
             self.inv_timer = 1
         end
-        self.bonus_damage = true -- Whether the bullet deals bonus damage when having more HP (Light Battles only)
+        if Game.battle.light then
+            self.destroy_on_hit = "alt"
+            self.layer = LIGHT_BATTLE_LAYERS["bullets"]
+        end
+        self.bonus_damage = true -- Whether the bullet deals bonus damage when having more HP (Light World only)
         self.remove_outside_of_arena = false
     end)
     
@@ -1637,6 +1687,16 @@ function lib:init()
             self.y < Game.battle.arena.top)
             then
             self:remove()
+        end
+    end)
+    
+    Utils.hook(Bullet, "onCollide", function(orig, self, soul)
+        if self.destroy_on_hit and soul.inv_timer == 0 or self.destroy_on_hit == true then
+            self:remove()
+        end
+        
+        if soul.inv_timer == 0 then
+            self:onDamage(soul)
         end
     end)
 
@@ -3554,8 +3614,12 @@ function lib:init()
 
     Utils.hook(SpeechBubble, "init", function(orig, self, text, x, y, options, speaker)
         orig(self, text, x, y, options, speaker)
+        self.text.no_sound_overlap = options["no_sound_overlap"]
         if Game.battle and Game.battle.light then
-            self.text.no_sound_overlap = options["no_sound_overlap"] or true
+            self.layer = LIGHT_BATTLE_LAYERS["above_arena_border"] - 1
+            if options["no_sound_overlap"] == nil then
+                self.text.no_sound_overlap = true
+            end
         end
     end)
 

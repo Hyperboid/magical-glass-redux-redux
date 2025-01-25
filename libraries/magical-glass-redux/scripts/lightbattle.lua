@@ -24,7 +24,7 @@ function LightBattle:init()
     self.max_hp_display = nil
 
     self.fader = Fader()
-    self.fader.layer = BATTLE_LAYERS["top"]
+    self.fader.layer = LIGHT_BATTLE_LAYERS["top"]
     self.fader.alpha = 1
     self:addChild(self.fader)
 
@@ -64,7 +64,7 @@ function LightBattle:init()
 
     self.transitioned = false
 
-    self.mask = ArenaMask()
+    self.mask = ArenaMask(Utils.lerp(LIGHT_BATTLE_LAYERS["below_bullets"], LIGHT_BATTLE_LAYERS["bullets"], 0.5))
     self:addChild(self.mask)
 
     self.timer = Timer()
@@ -147,26 +147,10 @@ function LightBattle:init()
     self.menu_wave_timer = 0
 
     self.darkify_fader = Fader()
-    self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
+    self.darkify_fader.layer = LIGHT_BATTLE_LAYERS["below_arena"]
     self:addChild(self.darkify_fader)
     
     self.multi_mode = Kristal.getLibConfig("magical-glass", "multi_always_on") or #self.party > 1
-    
-    Textbox.REACTION_X_BATTLE = {
-            ["left"] = 70  -38,
-         ["leftmid"] = 160 -38,
-             ["mid"] = 260 -38,
-          ["middle"] = 260 -38,
-        ["rightmid"] = 360 -38,
-           ["right"] = 400 -38,
-    }
-    Textbox.REACTION_Y_BATTLE = {
-              ["top"] = -10 -4,
-              ["mid"] =  30 -4,
-           ["middle"] =  30 -4,
-        ["bottommid"] =  50 -4,
-           ["bottom"] =  68 -4,
-    }
 end
 
 function LightBattle:isPagerMenu()
@@ -247,7 +231,7 @@ function LightBattle:postInit(state, encounter)
     end
 
     self.arena = LightArena(SCREEN_WIDTH/2, 320)
-    self.arena.layer = BATTLE_LAYERS["ui"] - 1
+    self.arena.layer = LIGHT_BATTLE_LAYERS["ui"] - 1
     self:addChild(self.arena)
 
     self.battle_ui = LightBattleUI()
@@ -255,7 +239,6 @@ function LightBattle:postInit(state, encounter)
 
     self.tension_bar = LightTensionBar(25, 55, true)
     self.tension_bar.visible = self.tension
-    self.tension_bar.layer = BATTLE_LAYERS["below_ui"] + 1
     self:addChild(self.tension_bar)
 
     if Game.encounter_enemies then
@@ -891,7 +874,7 @@ function LightBattle:onStateChange(old,new)
     end
 
     if new == "ACTIONSELECT" then
-        self.arena.layer = BATTLE_LAYERS["ui"] - 1
+        self.arena.layer = LIGHT_BATTLE_LAYERS["ui"] - 1
 
         if not self.soul then
             self:spawnSoul()
@@ -908,7 +891,7 @@ function LightBattle:onStateChange(old,new)
         end
         
         self.fader:fadeIn(function()
-            self.soul.layer = BATTLE_LAYERS["soul"]
+            self.soul.layer = LIGHT_BATTLE_LAYERS["soul"]
         end, {speed=5/30})
 
         self.battle_ui.encounter_text.text.line_offset = 5
@@ -1170,7 +1153,7 @@ function LightBattle:onStateChange(old,new)
 
         self.encounter:onDialogueEnd()
     elseif new == "DEFENDING" then
-        self.arena.layer = BATTLE_LAYERS["arena"]
+        self.arena.layer = LIGHT_BATTLE_LAYERS["arena"]
 
         self.wave_length = 0
         self.wave_timer = 0
@@ -1610,22 +1593,6 @@ function LightBattle:returnToWorld()
     self.encounter.defeated_enemies = self.defeated_enemies
     Game.battle = nil
     Game.state = "OVERWORLD"
-    
-    Textbox.REACTION_X_BATTLE = {
-            ["left"] = 60  -40,
-         ["leftmid"] = 160 -40,
-             ["mid"] = 260 -40,
-          ["middle"] = 260 -40,
-        ["rightmid"] = 360 -40,
-           ["right"] = 460 -40,
-    }
-    Textbox.REACTION_Y_BATTLE = {
-              ["top"] = -10 -2,
-              ["mid"] =  30 -2,
-           ["middle"] =  30 -2,
-        ["bottommid"] =  45 -2,
-           ["bottom"] =  56 -2,
-    }
 
     MagicalGlassLib.current_battle_system = nil
 end
@@ -1906,9 +1873,9 @@ function LightBattle:update()
         end
         
         if alt_darken then
-            self.darkify_fader.layer = BATTLE_LAYERS["below_ui"] + 1.5
+            self.darkify_fader.layer = LIGHT_BATTLE_LAYERS["ui"] - 1.5
         else
-            self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
+            self.darkify_fader.layer = LIGHT_BATTLE_LAYERS["below_arena"]
         end
 
         if darken and self.wave_timer <= time - 9/30 then

@@ -8,7 +8,7 @@ function LightTensionBar:init(x, y, dont_animate)
 
     super.init(self, x or 25, y or 55)
 
-    self.layer = BATTLE_LAYERS["ui"] - 1
+    self.layer = LIGHT_BATTLE_LAYERS["ui"] - 2
 
     self.tp_bar_fill = Assets.getTexture("ui/lightbattle/tp_bar_fill")
     self.tp_bar_outline = Assets.getTexture("ui/lightbattle/tp_bar_outline")
