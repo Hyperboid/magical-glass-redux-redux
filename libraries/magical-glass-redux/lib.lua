@@ -264,7 +264,7 @@ function lib:preInit()
         ["below_arena_border"] = -100, --┙
         ["arena_border"]       = -50,
         ["above_arena_border"] = 0,
-        ["damage_numbers"]     = 50,
+        ["damage_numbers"]     = 150,
         ["top"]                = 1000
     }
 
