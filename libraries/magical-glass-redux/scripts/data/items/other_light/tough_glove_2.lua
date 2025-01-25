@@ -120,7 +120,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             Assets.stopAndPlaySound("saber3")
         end
 
-        Game.battle:shakeCamera(2, 2, 0.35, 1)
+        Game.battle:shakeCamera(2, 2, 0.35)
     end
     Game.battle:shakeAttackSprite(sprite)
 

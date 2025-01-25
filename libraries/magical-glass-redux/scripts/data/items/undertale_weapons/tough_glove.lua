@@ -98,7 +98,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         sprite.color = {battler.chara:getLightMultiboltAttackColor()}
         enemy.parent:addChild(sprite)
         
-        Game.battle:shakeCamera(2, 2, 0.35, 1)
+        Game.battle:shakeCamera(2, 2, 0.35)
         Game.battle:shakeAttackSprite(sprite)
 
         sprite:play(2/30, false, function(this)
@@ -235,7 +235,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                         src:setPitch(self:getLightAttackPitch() or 1)
                         
                         local punch = Sprite("effects/lightattack/hyperfist")
-                        Game.battle:shakeCamera(2, 2, 0.35, 1)
+                        Game.battle:shakeCamera(2, 2, 0.35)
                         punch.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
                         table.insert(enemy.dmg_sprites, punch)
                         punch:setOrigin(0.5)

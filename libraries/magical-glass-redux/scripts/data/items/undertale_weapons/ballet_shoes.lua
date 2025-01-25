@@ -91,7 +91,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     sprite.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
-    Game.battle:shakeCamera(2, 2, 0.35, 1)
+    Game.battle:shakeCamera(2, 2, 0.35)
 
     if crit then
         sprite:setColor(1, 1, 130/255)
