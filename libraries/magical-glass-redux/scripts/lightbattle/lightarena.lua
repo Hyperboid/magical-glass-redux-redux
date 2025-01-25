@@ -251,7 +251,7 @@ end
 
 function LightArena:changePosition(pos, move_soul, callback)
     self.target_position = pos
-    self.move_soul = move_soul or true
+    self.move_soul = move_soul ~= false
     self.target_position_callback = callback
 end
 
