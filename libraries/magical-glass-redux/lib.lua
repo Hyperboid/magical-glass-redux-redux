@@ -1692,12 +1692,13 @@ function lib:init()
     end)
     
     Utils.hook(Bullet, "onCollide", function(orig, self, soul)
-        if self.destroy_on_hit and soul.inv_timer == 0 or self.destroy_on_hit == true then
-            self:remove()
-        end
-        
         if soul.inv_timer == 0 then
             self:onDamage(soul)
+            if self.destroy_on_hit then
+                self:remove()
+            end
+        elseif self.destroy_on_hit == true then
+            self:remove()
         end
     end)
 
