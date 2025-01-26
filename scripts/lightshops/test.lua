@@ -36,7 +36,7 @@ function TestShop:init()
     self:registerItem("undertale/legendary_hero")
     self:registerItem("undertale/temy_armor")
     self:registerItem("undertale/annoying_dog")
-    self:registerItem("custom/tough_glove_2")
+    self:registerItem("test/tough_glove_2")
 
     self:registerTalk("Reflect")
     self:registerTalk("Where I Am")

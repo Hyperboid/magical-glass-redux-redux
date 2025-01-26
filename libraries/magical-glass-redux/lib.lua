@@ -3887,6 +3887,36 @@ function lib:registerDebugOptions(debug)
         end)
     end
     
+    debug:registerMenu("give_item", "Give Item")
+    
+    debug:registerOption("give_item", "Give Dark Item", "Give a dark item.", function()
+        debug:enterMenu("dark_give_item", 0)
+    end)
+    debug:registerOption("give_item", "Give Light Item", "Give a light item.", function()
+        debug:enterMenu("light_give_item", 0)
+    end)
+    debug:registerOption("give_item", "Give Undertale Item", "Give an Undertale item.", function()
+        debug:enterMenu("ut_give_item", 0)
+    end)
+    
+    debug:registerMenu("dark_give_item", "Give Dark Item", "search")
+    debug:registerMenu("light_give_item", "Give Light Item", "search")
+    debug:registerMenu("ut_give_item", "Give Undertale Item", "search")
+    for id, item_data in pairs(Registry.items) do
+        local item = item_data()
+        local menu
+        if string.sub(item.id, 1, 10) == "undertale/" then
+            menu = "ut_give_item"
+        elseif item.light then
+            menu = "light_give_item"
+        else
+            menu = "dark_give_item"
+        end
+        debug:registerOption(menu, item.name, item.description, function ()
+            Game.inventory:tryGiveItem(item_data())
+        end)
+    end
+    
     local in_game = function () return Kristal.getState() == Game end
     local in_overworld = function () return in_game() and Game.state == "OVERWORLD" end
     local in_dark_battle = function () return in_game() and Game.state == "BATTLE" and not Game.battle.light end
