@@ -29,7 +29,11 @@ function LightStatusDisplay:drawStatusStripEvent()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
     love.graphics.setColor(MG_PALETTE["player_text"])
-    love.graphics.print(level_name.." " .. level, x - karma_mode_offset - (#level_name - 2) * 15 - (#tostring(level) > 2 and (#tostring(level) * 15) - 30 or 0), y)
+    local lenght = love.graphics.getFont():getWidth(level_name) - 30
+    if love.graphics.getFont():getWidth(level) > 30 then
+        lenght = lenght + love.graphics.getFont():getWidth(level) - 30
+    end
+    love.graphics.print(level_name.." "..level, x - karma_mode_offset - lenght, y)
 
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 74 - karma_mode_offset, y + 5)
 

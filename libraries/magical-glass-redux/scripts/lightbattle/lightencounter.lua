@@ -193,7 +193,6 @@ function LightEncounter:setBattleState()
     if Game.battle.forced_victory then return end
     if self.event then
         Game.battle:setState("ENEMYDIALOGUE")
-        Game.battle.soul.can_move = true
     else
         Game.battle:setState("ACTIONSELECT")
     end

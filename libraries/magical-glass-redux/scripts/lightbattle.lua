@@ -1068,7 +1068,7 @@ function LightBattle:onStateChange(old,new)
                     end
                 end
                 if not enemy_found then
-                    self.enemies[love.math.random(1, #self.enemies)].selected_wave = self.state_reason[1]
+                    self.enemies[Utils.random(1, #self.enemies, 1)].selected_wave = self.state_reason[1]
                 end
             else
                 self:setWaves(self.encounter:getNextWaves())
@@ -1084,8 +1084,8 @@ function LightBattle:onStateChange(old,new)
                 soul_y = wave.soul_start_y or soul_y
                 soul_offset_x = wave.soul_offset_x or soul_offset_x
                 soul_offset_y = wave.soul_offset_y or soul_offset_y
-                arena_x = wave.arena_x or arena_x or self.arena.home_x
-                arena_y = wave.arena_y or arena_y or self.arena.home_y
+                arena_x = wave.arena_x or arena_x
+                arena_y = wave.arena_y or arena_y
                 arena_w = wave.arena_width and math.max(wave.arena_width, arena_w or 0) or arena_w
                 arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
                 if wave.has_arena then
@@ -1100,18 +1100,21 @@ function LightBattle:onStateChange(old,new)
             end
     
             arena_w, arena_h = arena_w or 160, arena_h or 130
-            arena_x, arena_y = self.arena.home_x, self.arena.home_y
+            arena_x, arena_y = arena_x or self.arena.home_x, arena_y or self.arena.home_y
 
             if fullscreen and #self.waves > 0 then
                 if self.encounter.event then
-                    self.arena:changePosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+                    self.arena:setPosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
                     self.arena:setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+                    self.arena:update()
                 else
                     self.arena:changeShape({SCREEN_WIDTH-10, self.arena.height})
                 end
             elseif has_arena then
                 if self.encounter.event then
+                    self.arena:setPosition(arena_x, arena_y)
                     self.arena:setSize(arena_w, arena_h)
+                    self.arena:update()
                 else
                     self.arena:changeShape({arena_w, self.arena.height})
                 end
@@ -1121,22 +1124,11 @@ function LightBattle:onStateChange(old,new)
 
             local center_x, center_y = self.arena:getCenter()
     
-            if has_soul then
-                if not self.encounter.event then
-                    self.timer:after(1/30, function() -- Undertale has a few frames where the soul doesn't appear
-                        soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
-                        soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
-                        self.soul:setPosition(soul_x or center_x, soul_y or center_y)
-                        self:toggleSoul(true)
-                        self.soul.can_move = self.debug_wave
-                    end)
-                else
-                    soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
-                    soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
-                    self.soul:setPosition(soul_x or center_x, soul_y or center_y)
-                    self:toggleSoul(true)
-                end
-            end
+            self:toggleSoul(has_soul)
+            soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
+            soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
+            self.soul:setPosition(soul_x or center_x, soul_y or center_y)
+            self.soul.can_move = self.encounter.event
 
             update_enemies()
         end
@@ -1855,8 +1847,8 @@ function LightBattle:update()
         end
 
         if self.arena:isNotTransitioning() then
+            self:setState("DEFENDING")
             self.soul.can_move = true
-            self:setState("DEFENDING") 
         end
     elseif self.state == "DEFENDING" then
         local darken = false
