@@ -2593,7 +2593,7 @@ function lib:init()
             end
         end
         
-        self:lightLVStats()
+        self.lw_stats = self:lightLVStats()
         for stat,amount in pairs(self.lw_stats_bonus) do
             self.lw_stats[stat] = self.lw_stats[stat] + amount
         end
@@ -2604,7 +2604,7 @@ function lib:init()
     end)
     
     Utils.hook(PartyMember, "lightLVStats", function(orig, self)
-        self.lw_stats = {
+        return {
             health = self:getLightLV() == 20 and 99 or 16 + self:getLightLV() * 4,
             attack = 8 + self:getLightLV() * 2,
             defense = 9 + math.ceil(self:getLightLV() / 4),
