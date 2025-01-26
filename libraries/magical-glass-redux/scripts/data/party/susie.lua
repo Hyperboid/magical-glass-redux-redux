@@ -29,4 +29,11 @@ function character:lightLVStats()
     }
 end
 
+function character:onLightTurnStart(battler)
+    super.onLightTurnStart(self, battler)
+    if self:getFlag("auto_attack", false) then
+        Game.battle:pushForcedAction(battler, "AUTOATTACK", Game.battle:getActiveEnemies()[1], nil, {points = 150})
+    end
+end
+
 return character

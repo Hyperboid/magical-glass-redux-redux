@@ -898,22 +898,22 @@ function LightBattle:onStateChange(old,new)
         self.battle_ui:clearEncounterText()
         self.battle_ui.encounter_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. "[noskip][wait:1][noskip:false]" ..self.battle_ui.current_encounter_text)
 
-        local had_started = self.started
+        local party = self.party[self.current_selecting]
+        party.chara:onLightActionSelect(party, false)
+        self.encounter:onCharacterTurn(party, false)
+        
         if not self.started then
             self.started = true
 
             if self.encounter.music then
                 self.music:play(self.encounter.music)
             end
-        end
-
-        local party = self.party[self.current_selecting]
-        party.chara:onLightActionSelect(party, false)
-        self.encounter:onCharacterTurn(party, false)
-        for _,action_box in ipairs(Game.battle.battle_ui.action_boxes) do
-            if action_box.battler == party then
-                action_box:update()
-                break
+            
+            for _,action_box in ipairs(Game.battle.battle_ui.action_boxes) do
+                if action_box.battler == party then
+                    action_box:update()
+                    break
+                end
             end
         end
 
@@ -931,7 +931,6 @@ function LightBattle:onStateChange(old,new)
         self.battle_ui:clearEncounterText()
         self.battle_ui.encounter_text:setText("[noskip][wait:1][noskip:false]"..self.battle_ui.current_encounter_text)
 
-        local had_started = self.started
         if not self.started then
             self.started = true
 
@@ -2868,21 +2867,6 @@ function LightBattle:parseEnemyIdentifier(id)
     return enemies[args[2] and tonumber(args[2]) or 1]
 end
 
-function LightBattle:getTargetForItem(item, default_ally, default_enemy)
-    -- deltatraveler etc
-    if not item.target or item.target == "none" then
-        return nil
-    elseif item.target == "ally" then
-        return default_ally or self.party[1]
-    elseif item.target == "enemy" then
-        return default_enemy or self:getActiveEnemies()[1]
-    elseif item.target == "party" then
-        return self.party
-    elseif item.target == "enemies" then
-        return self:getActiveEnemies()
-    end
-end
-
 function LightBattle:clearMenuItems()
     self.menu_items = {}
 end
@@ -3312,7 +3296,6 @@ end
 
 function LightBattle:handleAttackingInput(key)
     if Input.isConfirm(key) then
-
         if not self.attack_done and not self.cancel_attack and self.battle_ui.attack_box then
             local closest
             local closest_attacks = {}
