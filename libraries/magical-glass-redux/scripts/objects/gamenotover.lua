@@ -124,7 +124,7 @@ function GameNotOver:update()
                 Game:enterShop(self.reload[2])
             end
         end
-        Game.fader:fadeIn(nil, {alpha = 1, speed = 1.1, color = {1, 1, 1}})
+        Game.fader:fadeIn(nil, {alpha = 1, speed = 1.2, color = {1, 1, 1}})
     end
 end
 
