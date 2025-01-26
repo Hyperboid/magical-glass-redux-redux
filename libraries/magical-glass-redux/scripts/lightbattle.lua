@@ -910,6 +910,12 @@ function LightBattle:onStateChange(old,new)
         local party = self.party[self.current_selecting]
         party.chara:onLightActionSelect(party, false)
         self.encounter:onCharacterTurn(party, false)
+        for _,action_box in ipairs(Game.battle.battle_ui.action_boxes) do
+            if action_box.battler == party then
+                action_box:update()
+                break
+            end
+        end
 
     elseif new == "BUTNOBODYCAME" then
         self.current_selecting = 0
