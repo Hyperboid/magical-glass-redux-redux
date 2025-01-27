@@ -98,7 +98,7 @@ function LightBattleUI:init()
     
     self.xact_text = {}
     for i = 1, 3 do
-        self.xact_text[i] = Text("", self.style == "undertale" and 290 or 312, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
+        self.xact_text[i] = Text("", 122, 15 + 32 * (i-1), nil, nil, {["font"] = "main_mono"})
         Game.battle.arena:addChild(self.xact_text[i])
     end
     
@@ -437,6 +437,18 @@ function LightBattleUI:drawState()
             end
         end
         
+        local xact_x_pos = 122
+        for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
+            local enemy_name = "* " .. enemy.name .. (self.enemy_counter[enemy.id] > 1 and enemy.index ~= "" and " " .. enemy.index or "")
+            if xact_x_pos < font_mono:getWidth(enemy_name) + 122 then
+                xact_x_pos = font_mono:getWidth(enemy_name) + 122
+            end
+        end
+        for _,text in ipairs(self.xact_text) do
+            text.x = xact_x_pos
+            text.visible = not self.draw_mercy or xact_x_pos <= 314 -- The xact text is overlapping with the mercy bar, hide it
+        end
+        
         local remainder = #enemies % 3
         if remainder == 0 then
             remainder = #enemies
@@ -537,6 +549,11 @@ function LightBattleUI:drawState()
                 elseif self.style ~= "undertale" then
                     comment_text.x = 74 + font_mono:getWidth(name)
                     comment_text:setColor(128/255, 128/255, 128/255, 1)
+                    if font_mono:getWidth(name) + (font_mono:getWidth(enemy.comment) / 2) < 264 then
+                        comment_text:setScale(1, 1)
+                    else
+                        comment_text:setScale(0.5, 1)
+                    end
                     comment_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."]" .. enemy.comment)
                 end
 
