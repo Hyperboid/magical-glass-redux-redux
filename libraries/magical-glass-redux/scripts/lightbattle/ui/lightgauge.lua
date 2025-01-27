@@ -89,7 +89,6 @@ function LightGauge:draw()
         Draw.setColor(self.color)
         love.graphics.rectangle("fill", 0, 8, self.value * self.extra_width, self.height)
     end
-
 end
 
 return LightGauge

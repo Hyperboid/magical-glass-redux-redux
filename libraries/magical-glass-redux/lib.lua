@@ -226,7 +226,6 @@ function lib:preInit()
     MG_EVENT = {
         onLightBattleActionBegin = "onLightBattleActionBegin",
         onLightBattleActionEnd = "onLightBattleActionEnd",
-        onLightBattleActionEndAnimation = "onLightBattleActionEndAnimation",
         onLightBattleActionCommit = "onLightBattleActionCommit",
         onLightBattleActionUndo = "onLightBattleActionUndo",
         onLightBattleMenuSelect = "onLightBattleMenuSelect",

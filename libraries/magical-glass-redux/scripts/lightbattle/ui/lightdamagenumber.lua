@@ -1,12 +1,4 @@
----@class LightDamageNumber : Object
----@overload fun(...) : LightDamageNumber
 local LightDamageNumber, super = Class(Object)
-
--- Types: "mercy", "damage", "msg"
--- Arg:
---    "mercy"/"damage": amount
---    "msg": message sprite name ("mercy", "miss")
---    (use "_special" for the amalgamate damage popup)
 
 function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
     super.init(self, x, y)
@@ -21,7 +13,6 @@ function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
     
     self.enemy = enemy
 
-    -- Halfway between UI and the layer above it
     self.layer = LIGHT_BATTLE_LAYERS["damage_numbers"]
 
     self.type = msg_type or "msg"
@@ -64,7 +55,6 @@ function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
     end
 
     self.timer = 0
-    self.delay = 2
     self.special_timer = 0
     
     self.special_messages = type(self.enemy.special_messages) == "table" and self.enemy.special_messages or {
@@ -105,6 +95,8 @@ end
 function LightDamageNumber:update()
     if not self.start_x then
         self.start_x = self.x
+    end
+    if not self.start_y then
         self.start_y = self.y
     end
 
@@ -112,64 +104,55 @@ function LightDamageNumber:update()
 
     self.timer = self.timer + DTMULT
 
-    if (self.timer >= self.delay) and (not self.do_once) then
+    if not self.do_once then
         self.do_once = true
         self.start_speed_y = self.physics.speed_y
     end
 
-    if self.timer >= self.delay then
-
-        if self.y - 5 > self.start_y then
-            self:resetPhysics()
-            self.y = self.start_y
-        end
-
-        self.kill_timer = self.kill_timer + DTMULT
-        if self.kill_timer > 40 then
-            for _,obj in ipairs(self.parent.children) do
-                if isClass(obj) and obj:includes(LightGauge) then
-                    obj:remove()
-                end
-            end
-            self:remove()
-            self.enemy.active_msg = self.enemy.active_msg - 1
-            return
-        end
-
+    if self.y - 7 >= self.start_y then
+        self:resetPhysics()
+        self.y = self.start_y
     end
 
-    if self.x >= 600 then
+    self.kill_timer = self.kill_timer + DTMULT
+    if self.kill_timer >= 48 then
+        for _,obj in ipairs(self.parent.children) do
+            if isClass(obj) and obj:includes(LightGauge) then
+                obj:remove()
+            end
+        end
+        self:remove()
+        self.enemy.active_msg = self.enemy.active_msg - 1
+        return
+    end
+
+    if self.x > 600 then
         self.x = 600
     end
 end
 
 function LightDamageNumber:draw()
-   
+    super.draw(self)
+
     if self.type == "msg" and self.message == "_special" then
         self.width = 100
-        if self.timer >= self.delay then
-            self.special_timer = self.special_timer + DTMULT
-            Draw.setColor(self:getDrawColor())
-            love.graphics.setFont(Assets.getFont("main"))
-            if self.special_timer >= 1 then
-                self.special_message = Utils.pick(self.special_messages)
-                self.special_timer = 0
-            end
-            love.graphics.print(self.special_message)
+        self.special_timer = self.special_timer + DTMULT
+        Draw.setColor(self:getDrawColor())
+        love.graphics.setFont(Assets.getFont("main"))
+        if self.special_timer >= 1 then
+            self.special_message = Utils.pick(self.special_messages)
+            self.special_timer = 0
         end
+        love.graphics.print(self.special_message)
     else
-        if self.timer >= self.delay then
-            Draw.setColor(self:getDrawColor())
-            if self.texture then
-                Draw.draw(self.texture, 0, 0)
-            elseif self.text then
-                love.graphics.setFont(self.font)
-                love.graphics.print(self.text, 0, 0)
-            end
+        Draw.setColor(self:getDrawColor())
+        if self.texture then
+            Draw.draw(self.texture, 0, 0)
+        elseif self.text then
+            love.graphics.setFont(self.font)
+            love.graphics.print(self.text, 0, 0)
         end
     end
-
-    super.draw(self)
 end
 
 return LightDamageNumber

@@ -134,7 +134,6 @@ function LightBattle:init()
     self.selected_item = nil
 
     self.should_finish_action = false
-    self.on_finish_keep_animation = nil
     self.on_finish_action = nil
 
     self.background_fade_alpha = 0
@@ -772,17 +771,16 @@ function LightBattle:allActionsDone()
     return true
 end
 
-function LightBattle:markAsFinished(action, keep_animation)
+function LightBattle:markAsFinished(action)
     if self:getState() ~= "BATTLETEXT" then
-        self:finishAction(action, keep_animation)
+        self:finishAction(action)
     else
-        self.on_finish_keep_animation = keep_animation
         self.on_finish_action = action
         self.should_finish_action = true
     end
 end
 
-function LightBattle:finishAction(action, keep_animation)
+function LightBattle:finishAction(action)
     action = action or self.current_actions[self.current_action_index]
 
     local battler = self.party[action.character_id]
@@ -800,57 +798,14 @@ function LightBattle:finishAction(action, keep_animation)
             for _,iaction in ipairs(Utils.copy(self.current_actions)) do
                 local ibattler = self.party[iaction.character_id]
 
-                local party_num = 1
-                local callback = function()
-                    party_num = party_num - 1
-                    if party_num == 0 then
-                        Utils.removeFromTable(self.current_actions, iaction)
-                        self:tryProcessNextAction()
-                    end
-                end
-
-                if iaction.party then
-                    for _,party in ipairs(iaction.party) do
-                        local jbattler = self.party[self:getPartyIndex(party)]
-
-                        if jbattler ~= ibattler then
-                            party_num = party_num + 1
-
-                            local dont_end = false
-                            if (keep_animation) then
-                                if Utils.containsValue(keep_animation, party) then
-                                    dont_end = true
-                                end
-                            end
-
-                            if not dont_end then
-                                self:endActionAnimation(jbattler, iaction, callback)
-                            else
-                                callback()
-                            end
-                        end
-                    end
-                end
-
-
-                local dont_end = false
-                if (keep_animation) then
-                    if Utils.containsValue(keep_animation, ibattler.chara.id) then
-                        dont_end = true
-                    end
-                end
-
-                if not dont_end then
-                    self:endActionAnimation(ibattler, iaction, callback)
-                else
-                    callback()
-                end
+                Utils.removeFromTable(self.current_actions, iaction)
+                self:tryProcessNextAction()
 
                 if iaction.action == "DEFEND" then
                     ibattler.defending = false
                 end
 
-                Kristal.callEvent(MG_EVENT.onLightBattleActionEnd, iaction, iaction.action, ibattler, iaction.target, dont_end)
+                Kristal.callEvent(MG_EVENT.onLightBattleActionEnd, iaction, iaction.action, ibattler, iaction.target)
             end
         else
             -- Process actions if we can
@@ -859,7 +814,7 @@ function LightBattle:finishAction(action, keep_animation)
     end
     
     if battler.delay_turn_end then
-        Game.battle.timer:after(43/30, function() finish() end)
+        Game.battle.timer:after(1, function() finish() end)
     else
         finish()
     end
@@ -1600,9 +1555,8 @@ function LightBattle:setActText(text, dont_finish)
             self:finishAction()
         end
         if self.should_finish_action then
-            self:finishAction(self.on_finish_action, self.on_finish_keep_animation)
+            self:finishAction(self.on_finish_action)
             self.on_finish_action = nil
-            self.on_finish_keep_animation = nil
             self.should_finish_action = false
         end
         self:setState("ACTIONS", "BATTLETEXT")
@@ -2107,23 +2061,6 @@ function LightBattle:advanceBoxes()
     if all_done then
         self:setState("DIALOGUEEND")
     end
-end
-
-function LightBattle:endActionAnimation(battler, action, callback)
-local _callback = callback
-    callback = function()
-        if battler.action then
-            battler.action.icon = nil
-        end
-        local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
-        if _callback then
-            _callback()
-        end
-    end
-    if Kristal.callEvent(MG_EVENT.onLightBattleActionEndAnimation, action, action.action, battler, action.target, callback, _callback) then
-        return
-    end
-    callback()
 end
 
 function LightBattle:powerAct(spell, battler, user, target)

@@ -944,6 +944,12 @@ function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
         self.light_hit_count = 0
         self.x_number_offset = self.x_number_offset + 1
     end
+    
+    if (type == "damage" and self:getHPVisibility()) or (type == "mercy" and self:getMercyVisibility()) then
+        local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
+        self.parent:addChild(gauge)
+    end
+    
     local percent
     if type == "mercy" and self:getMercyVisibility() or type ~= "mercy" then
         percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
@@ -960,11 +966,6 @@ function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
                 self.light_hit_count = self.light_hit_count - 1
             end
         end
-    end
-
-    if (type == "damage" and self:getHPVisibility()) or (type == "mercy" and self:getMercyVisibility()) then
-        local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
-        self.parent:addChild(gauge)
     end
 
     return percent
