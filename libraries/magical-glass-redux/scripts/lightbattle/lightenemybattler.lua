@@ -355,7 +355,7 @@ function LightEnemyBattler:addMercy(amount)
     
     if Kristal.getLibConfig("magical-glass", "mercy_messages") and self:getMercyVisibility() then
         if amount == 0 then
-            self:lightStatusMessage("msg", "miss", COLORS.silver)
+            self:lightStatusMessage("text", "MISS", COLORS.silver)
         else
             if amount > 0 then
                 local pitch = 0.8
@@ -568,10 +568,10 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, show_st
     if amount == 0 or (amount < 0 and Game:getConfig("damageUnderflowFix")) then
         if show_status ~= false then
             if attacked and self.special_messages then
-                message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
+                message = self:lightStatusMessage("special", nil, color or (battler and {battler.chara:getLightDamageColor()}))
                 self:onHurt(amount, battler)
             else
-                message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
+                message = self:lightStatusMessage("text", "MISS", color or (battler and {battler.chara:getLightMissColor()}))
             end
             if message and anim then
                 message:resetPhysics()
@@ -586,7 +586,7 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, show_st
 
     if show_status ~= false then
         if self.special_messages then
-            message = self:lightStatusMessage("msg", "_special", color or (battler and {battler.chara:getLightDamageColor()}))
+            message = self:lightStatusMessage("special", nil, color or (battler and {battler.chara:getLightDamageColor()}))
         else
             message = self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
         end
@@ -905,7 +905,7 @@ function LightEnemyBattler:freeze()
     end
     sprite:stopShake()
 
-    local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255}, true)
+    local message = self:lightStatusMessage("text", "FROZEN", {58/255, 147/255, 254/255}, true)
     message:resetPhysics()
     message.y = message.y + 50
 

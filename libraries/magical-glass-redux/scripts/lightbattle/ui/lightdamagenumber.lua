@@ -15,17 +15,25 @@ function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
 
     self.layer = LIGHT_BATTLE_LAYERS["damage_numbers"]
 
-    self.type = msg_type or "msg"
+    self.type = msg_type or "text"
     
     self.color = color or (self.type == "damage" and COLORS.red or COLORS.silver)
 
     if self.type == "text" then
-        self.text = arg or ""
+        self.text = arg or "MISSING"
+    elseif self.type == "special" then
+        if type(arg) == "table" then
+            self.special_messages = arg
+        elseif arg then
+            self.special_messages = {arg}
+        elseif arg == false then
+            self.special_messages = false
+        end
     elseif self.type == "msg" then
-        self.message = arg or "miss"
+        self.message = arg
     elseif self.type == "damage" and string.sub(tostring(arg or 0), 1, 1) == "+" and self.enemy.health + tonumber(arg) >= self.enemy.max_health then
-        self.type = "msg"
-        self.message = "max"
+        self.type = "text"
+        self.text = "MAX"
     else
         self.amount = arg or 0
         if self.type == "mercy" then
@@ -45,19 +53,21 @@ function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
         self.text = self.text:upper()
     end
 
-    if self.message and self.message ~= "_special" then
-        self.texture = Assets.getTexture("ui/lightbattle/msg/"..self.message)
-        self.width = self.texture:getWidth()
-        self.height = self.texture:getHeight()
-    elseif self.text then
-        self.width = self.font:getWidth(self.text)
-        self.height = self.font:getHeight()
+    if self.type ~= "special" then
+        if self.message then
+            self.texture = Assets.getTexture("ui/lightbattle/msg/"..self.message)
+            self.width = self.texture:getWidth()
+            self.height = self.texture:getHeight()
+        elseif self.text then
+            self.width = self.font:getWidth(self.text)
+            self.height = self.font:getHeight()
+        end
     end
 
     self.timer = 0
     self.special_timer = 0
     
-    self.special_messages = type(self.enemy.special_messages) == "table" and self.enemy.special_messages or {
+    self.special_messages = self.special_messages or self.special_messages ~= false and type(self.enemy.special_messages) == "table" and self.enemy.special_messages or {
         "Don't worry about it.",
         "Absorbed",
         "I'm lovin' it.",
@@ -134,7 +144,7 @@ end
 function LightDamageNumber:draw()
     super.draw(self)
 
-    if self.type == "msg" and self.message == "_special" then
+    if self.type == "special" then
         self.width = 100
         self.special_timer = self.special_timer + DTMULT
         Draw.setColor(self:getDrawColor())
