@@ -446,7 +446,16 @@ function LightBattleUI:drawState()
         end
         for _,text in ipairs(self.xact_text) do
             text.x = xact_x_pos
-            text.visible = not self.draw_mercy or xact_x_pos <= 314 -- The xact text is overlapping with the mercy bar, hide it
+            if not self.draw_mercy or xact_x_pos <= 314 then
+                text:setScale(1, 1)
+                text.visible = true
+            elseif xact_x_pos <= 378 then
+                text:setScale(0.5, 1)
+                text.visible = true
+            else
+                text:setScale(1, 1)
+                text.visible = false
+            end
         end
         
         local remainder = #enemies % 3
