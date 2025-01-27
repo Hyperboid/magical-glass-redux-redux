@@ -135,10 +135,6 @@ function LightDamageNumber:update()
         self.enemy.active_msg = self.enemy.active_msg - 1
         return
     end
-
-    if self.x > 600 then
-        self.x = 600
-    end
 end
 
 function LightDamageNumber:draw()
