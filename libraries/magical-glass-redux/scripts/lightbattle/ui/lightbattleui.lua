@@ -118,6 +118,12 @@ function LightBattleUI:init()
     self.status_display = LightStatusDisplay(0, 390, Game.battle.encounter.event and not Game.battle.multi_mode)
     self.status_display.layer = LIGHT_BATTLE_LAYERS["ui"] - 2
     Game.battle:addChild(self.status_display)
+    
+    self:resetXACTOffset()
+end
+
+function LightBattleUI:resetXACTOffset()
+    self.xact_x_offset = 122
 end
 
 function LightBattleUI:clearEncounterText()
@@ -437,19 +443,18 @@ function LightBattleUI:drawState()
             end
         end
         
-        local xact_x_pos = 122
         for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
             local enemy_name = "* " .. enemy.name .. (self.enemy_counter[enemy.id] > 1 and enemy.index ~= "" and " " .. enemy.index or "")
-            if xact_x_pos < font_mono:getWidth(enemy_name) + 122 then
-                xact_x_pos = font_mono:getWidth(enemy_name) + 122
+            if self.xact_x_offset < font_mono:getWidth(enemy_name) + 122 then
+                self.xact_x_offset = font_mono:getWidth(enemy_name) + 122
             end
         end
         for _,text in ipairs(self.xact_text) do
-            text.x = xact_x_pos
-            if not self.draw_mercy or xact_x_pos <= 314 then
+            text.x = self.xact_x_offset
+            if not self.draw_mercy or self.xact_x_offset <= 314 then
                 text:setScale(1, 1)
                 text.visible = true
-            elseif xact_x_pos <= 378 then
+            elseif self.xact_x_offset <= 378 then
                 text:setScale(0.5, 1)
                 text.visible = true
             else
