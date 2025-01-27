@@ -1892,12 +1892,15 @@ function LightBattle:updateChildren()
 end
 
 function LightBattle:shakeAttackSprite(sprite)
+    sprite.timer = 0
     local function sprite_exist() return sprite.parent end
     self.timer:doWhile(sprite_exist, function()
-        sprite.x = sprite.x - 2 * DTMULT
-        sprite.y = sprite.y - 2 * DTMULT
-        sprite.x = sprite.x + Utils.random(4) * DTMULT
-        sprite.y = sprite.y + Utils.random(4) * DTMULT
+        sprite.timer = sprite.timer + DTMULT
+        if sprite.timer >= 1 then
+            sprite:move(-2, -2)
+            sprite:move(Utils.random(4), Utils.random(4))
+            sprite.timer = 0
+        end
     end)
 end
 
