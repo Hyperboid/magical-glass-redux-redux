@@ -264,7 +264,7 @@ function lib:preInit()
         ["arena_border"]       = -50,
         ["above_arena_border"] = 0,
         ["damage_numbers"]     = 150,
-        ["speech_bubble"]      = 300,
+        ["speech_bubble"]      = 400-1,
         ["top"]                = 1000
     }
 
