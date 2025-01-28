@@ -3,12 +3,12 @@ local UnderPlayer, super = Class(Player, "UnderPlayer")
 function UnderPlayer:init(chara, x, y)
     super.init(self, chara, x, y)
 
-	-- If 'true', the player will be unable to run, like in Undertale
+    -- If 'true', the player will be unable to run, like in Undertale
     self.force_walk = not Kristal.getLibConfig("magical-glass", "undertale_movement_can_run")
-	-- The movement speed of the player.
+    -- The movement speed of the player.
     self.walk_speed = Game:isLight() and 6 or 4
     
-	-- Don't edit the stuff below
+    -- Don't edit the stuff below
     self.dance = nil
     self.fix_movement = {false, false}
     self.can_move_x = true
@@ -194,8 +194,8 @@ function UnderPlayer:doMoveAmount(type, amount, other_amount)
             end
             Object.endCache()
 
-			self.can_move_x = true
-			self.can_move_y = true
+            self.can_move_x = true
+            self.can_move_y = true
 
             if collided then
                 self[type] = last_a
@@ -203,9 +203,9 @@ function UnderPlayer:doMoveAmount(type, amount, other_amount)
 
                 if not target:includes("Event") then
                     if self.moving_y < 0 and (Input.down("up") and Input.down("down")) then
-						if not self["last_collided_"..other] == true then
-							self[type] = self[type] + self.speed
-						end
+                        if not self["last_collided_"..other] == true then
+                            self[type] = self[type] + self.speed
+                        end
                         self.facing = "down"
                         self.sprite.facing = self.facing
                         local collided, target = self.world:checkCollision(self.collider, self.enemy_collision)
@@ -280,13 +280,13 @@ function UnderPlayer:move(x, y, speed, keep_facing)
 end
 
 function UnderPlayer:update()
-	if not self["last_collided_x"] == true then
-		self.can_move_y = true
-	end
-	if not self["last_collided_y"] == true then
-		self.can_move_x = true
-	end
-	super.update(self)
+    if not self["last_collided_x"] == true then
+        self.can_move_y = true
+    end
+    if not self["last_collided_y"] == true then
+        self.can_move_x = true
+    end
+    super.update(self)
 end
 
 return UnderPlayer
