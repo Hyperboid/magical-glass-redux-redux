@@ -264,7 +264,6 @@ function lib:preInit()
         ["arena_border"]       = -50,
         ["above_arena_border"] = 0,
         ["damage_numbers"]     = 150,
-        ["speech_bubble"]      = 400-1,
         ["top"]                = 1000
     }
 
@@ -3618,7 +3617,6 @@ function lib:init()
         orig(self, text, x, y, options, speaker)
         self.text.no_sound_overlap = options["no_sound_overlap"] or false
         if Game.battle and Game.battle.light then
-            self.layer = LIGHT_BATTLE_LAYERS["speech_bubble"]
             if options["no_sound_overlap"] == nil then
                 self.text.no_sound_overlap = true
             end
