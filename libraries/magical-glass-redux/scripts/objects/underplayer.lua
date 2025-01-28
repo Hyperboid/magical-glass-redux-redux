@@ -11,7 +11,7 @@ function UnderPlayer:init(chara, x, y)
 	-- Don't edit the stuff below
     self.dance = nil
     self.fix_movement = {false, false}
-	self.can_move_x = true
+    self.can_move_x = true
     self.can_move_y = true
     self.event_collide = {}
     self.gone_direction = {}
