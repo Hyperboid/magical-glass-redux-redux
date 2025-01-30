@@ -482,6 +482,20 @@ function lib:init()
         lib.viewing_image = false
     end)
     
+    Utils.hook(World, "showHealthBars", function(orig, self)
+        if Game:isLight() then
+            if self.healthbar then
+                self.healthbar:transitionIn()
+            else
+                self.healthbar = LightHealthBar()
+                self.healthbar.layer = WORLD_LAYERS["ui"] + 1
+                self:addChild(self.healthbar)
+            end
+        else
+            orig(self)
+        end
+    end)
+    
     Utils.hook(Game, "enterShop", function(orig, self, shop, options, light)
         if lib.in_light_shop or light then
             MagicalGlassLib:enterLightShop(shop, options)

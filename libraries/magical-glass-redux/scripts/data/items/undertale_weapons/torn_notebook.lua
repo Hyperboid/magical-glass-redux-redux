@@ -83,13 +83,11 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         sprite:setColor(1, 1, 130/255)
     end
     
-    Game.battle.timer:during(27/30, function()
+    Game.battle.timer:during(26/30, function()
         timer = timer + DTMULT
-        siner = siner + DTMULT
-
-        if timer < 15 then
+        if timer <= 14 then
             sprite.scale_x = (math.cos(siner / 2) * 2)
-        elseif timer > 15 then
+        else
             if not hit then
                 sprite:setScale(2, 2)
                 Assets.stopAndPlaySound("punchstrong")
@@ -112,7 +110,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                 end
             end
         end
-
+        siner = siner + DTMULT
     end,
     function(this)
         local sound = enemy:getDamageSound() or "damage"
