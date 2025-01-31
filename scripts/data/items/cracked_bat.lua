@@ -20,7 +20,7 @@ function item:init()
     self.description = "A light, wooden bat with a noticable crack on it."
 
     -- Light world check text
-    self.check = "Weapon AT 8\n* A light,[wait:5] wooden bat with a noticable crack on it."
+    self.check = "Weapon AT 8\n* A light, wooden bat with a noticable crack on it."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
