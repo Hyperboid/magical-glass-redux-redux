@@ -5,7 +5,7 @@ function encounter:init()
 
     self.text = "* Holy FUCK 2.0"
 
-    self.music = Game:isLight() and "battle2ut" or "battle2dt"
+    self.music = Game:isLight() and "battle2_ut" or "battle2_dt"
     
     for i = 1, 100 do
         local frog = self:addEnemy("froggit", Utils.random(SCREEN_WIDTH), Utils.random(SCREEN_HEIGHT/2) + 50)

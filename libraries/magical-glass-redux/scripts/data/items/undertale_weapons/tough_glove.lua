@@ -44,7 +44,6 @@ function item:init()
     self.attack_sound = "punchstrong"
 
     self.tags = {"punch"}
-
 end
 
 function item:getLightBoltSpeed()

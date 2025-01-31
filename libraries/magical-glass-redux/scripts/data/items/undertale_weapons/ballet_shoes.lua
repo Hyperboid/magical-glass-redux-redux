@@ -35,7 +35,7 @@ function item:init()
 
     self.light_bolt_count = 3
     self.light_bolt_speed = 10
-    self.light_bolt_speed_variance = nil
+    self.light_bolt_speed_variance = 0
     self.light_bolt_start = -90
     self.light_bolt_miss_threshold = 2
     self.light_bolt_direction = "right"

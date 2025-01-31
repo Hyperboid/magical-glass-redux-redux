@@ -940,8 +940,8 @@ function lib:init()
     end)
 
     Utils.hook(Item, "init", function(orig, self)
-    
         orig(self)
+        
         -- Short name for the light battle item menu
         self.short_name = nil
         -- Serious name for the light battle item menu
@@ -961,6 +961,35 @@ function lib:init()
         
         -- Whether this equipment item can convert on light change
         self.equip_can_convert = nil
+        
+        self.equip_display_name = nil
+        
+        self.heal_bonus = 0
+        self.inv_bonus = 0
+        self.flee_bonus = 0
+
+        self.light_bolt_count = 1
+
+        self.light_bolt_speed = 11
+        self.light_bolt_speed_variance = 2
+        
+        self.light_bolt_acceleration = 0
+
+        self.light_bolt_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
+        self.light_multibolt_variance = nil
+
+        self.light_bolt_direction = nil -- "right", "left", or "random"
+
+        self.light_bolt_miss_threshold = nil -- (Defaults: 280 for slice weapons | 2 for shoe weapons)
+
+        self.attack_sprite = "effects/lightattack/strike"
+
+        -- Sound played when attacking, defaults to laz_c
+        self.attack_sound = "laz_c"
+        
+        self.tags = {}
+
+        self.attack_pitch = 1
     end)
     
     Utils.hook(Item, "getName", function(orig, self)
@@ -1094,34 +1123,7 @@ function lib:init()
         
         self.storage, self.index = nil, nil
 
-        self.equip_display_name = nil
-
         self.target = "ally"
-
-        self.heal_bonus = 0
-        self.inv_bonus = 0
-        self.flee_bonus = 0
-
-        self.light_bolt_count = 1
-
-        self.light_bolt_speed = 11
-        self.light_bolt_speed_variance = 2
-
-        self.light_bolt_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
-        self.light_multibolt_variance = nil
-
-        self.light_bolt_direction = "right" -- "right", "left", or "random"
-
-        self.light_bolt_miss_threshold = nil -- (Defaults: 280 for slice weapons | 2 for shoe weapons)
-
-        self.attack_sprite = "effects/lightattack/strike"
-
-        -- Sound played when attacking, defaults to laz_c
-        self.attack_sound = "laz_c"
-        
-        self.tags = {}
-
-        self.attack_pitch = 1
     end)
     
     Utils.hook(LightEquipItem, "onManualEquip", function(orig, self, target, replacement)
@@ -1137,66 +1139,10 @@ function lib:init()
         return can_equip
     end)
     
-    Utils.hook(LightEquipItem, "getEquipDisplayName", function(orig, self)
-        return self.equip_display_name or self:getName()
-    end)
-    
-    Utils.hook(LightEquipItem, "getHealBonus", function(orig, self) return self.heal_bonus end)
-    Utils.hook(LightEquipItem, "getInvBonus", function(orig, self) return self.inv_bonus end)
-    Utils.hook(LightEquipItem, "getFleeBonus", function(orig, self) return self.flee_bonus end)
-    
-    Utils.hook(LightEquipItem, "getLightBoltCount", function(orig, self) return self.light_bolt_count end)
-    
-    Utils.hook(LightEquipItem, "getLightBoltSpeed", function(orig, self)
-        if Game.battle.multi_mode then
-            return nil
-        else
-            return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
-        end
-    end)
-    
-    Utils.hook(LightEquipItem, "getLightBoltSpeedVariance", function(orig, self) return self.light_bolt_speed_variance or 0 end)
-    
-    Utils.hook(LightEquipItem, "getLightBoltStart", function(orig, self)
-        if Game.battle.multi_mode then
-            return nil
-        elseif type(self.light_bolt_start) == "table" then
-            return Utils.pick(self.light_bolt_start)
-        elseif type(self.light_bolt_start) == "number" then
-            return self.light_bolt_start
-        end
-    end)
-    
     Utils.hook(LightEquipItem, "onBattleSelect", function(orig, self, user, target)
         self.storage, self.index = Game.inventory:getItemIndex(self)
         return true
     end)
-    
-    Utils.hook(LightEquipItem, "getLightMultiboltVariance", function(orig, self, index)
-        if Game.battle.multi_mode or self.light_multibolt_variance == nil then
-            return nil
-        elseif type(self.light_multibolt_variance) == "number" then
-            return self.light_multibolt_variance * index
-        elseif self.light_multibolt_variance[index] then
-            return type(self.light_multibolt_variance[index]) == "table" and Utils.pick(self.light_multibolt_variance[index]) or self.light_multibolt_variance[index]
-        else
-            return (type(self.light_multibolt_variance[#self.light_multibolt_variance]) == "table" and Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) or self.light_multibolt_variance[#self.light_multibolt_variance]) * (index - #self.light_multibolt_variance + 1)
-        end
-    end)
-    
-    Utils.hook(LightEquipItem, "getLightBoltDirection", function(orig, self)
-        if self.light_bolt_direction == "random" then
-            return Utils.pick({"right", "left"})
-        else
-            return self.light_bolt_direction
-        end
-    end)
-    
-    Utils.hook(LightEquipItem, "getLightAttackMissZone", function(orig, self) return self.light_bolt_miss_threshold end)
-    
-    Utils.hook(LightEquipItem, "getLightAttackSprite", function(orig, self) return self.attack_sprite end)
-    Utils.hook(LightEquipItem, "getLightAttackSound", function(orig, self) return self.attack_sound end)
-    Utils.hook(LightEquipItem, "getLightAttackPitch", function(orig, self) return self.attack_pitch end)
     
     Utils.hook(LightEquipItem, "showEquipText", function(orig, self, target)
         Game.world:showText("* " .. target:getNameOrYou() .. " equipped the " .. self:getName() .. ".")
@@ -1336,7 +1282,65 @@ function lib:init()
         self.storage, self.index = nil, nil
     end)
     
-    Utils.hook(LightEquipItem, "onLightBoltHit", function(orig, self, battler) end)
+    Utils.hook(Item, "getEquipDisplayName", function(orig, self)
+        return self.equip_display_name or self:getName()
+    end)
+    
+    Utils.hook(Item, "getHealBonus", function(orig, self) return self.heal_bonus end)
+    Utils.hook(Item, "getInvBonus", function(orig, self) return self.inv_bonus end)
+    Utils.hook(Item, "getFleeBonus", function(orig, self) return self.flee_bonus end)
+    
+    Utils.hook(Item, "getLightBoltCount", function(orig, self) return self.light_bolt_count end)
+    
+    Utils.hook(Item, "getLightBoltSpeed", function(orig, self)
+        if Game.battle.multi_mode then
+            return nil
+        else
+            return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
+        end
+    end)
+    
+    Utils.hook(Item, "getLightBoltAcceleration", function(orig, self) return self.light_bolt_acceleration end)
+    
+    Utils.hook(Item, "getLightBoltSpeedVariance", function(orig, self) return self.light_bolt_speed_variance end)
+    
+    Utils.hook(Item, "getLightBoltStart", function(orig, self)
+        if Game.battle.multi_mode then
+            return nil
+        elseif type(self.light_bolt_start) == "table" then
+            return Utils.pick(self.light_bolt_start)
+        elseif type(self.light_bolt_start) == "number" then
+            return self.light_bolt_start
+        end
+    end)
+    
+    Utils.hook(Item, "getLightMultiboltVariance", function(orig, self, index)
+        if Game.battle.multi_mode or self.light_multibolt_variance == nil then
+            return nil
+        elseif type(self.light_multibolt_variance) == "number" then
+            return self.light_multibolt_variance * index
+        elseif self.light_multibolt_variance[index] then
+            return type(self.light_multibolt_variance[index]) == "table" and Utils.pick(self.light_multibolt_variance[index]) or self.light_multibolt_variance[index]
+        else
+            return (type(self.light_multibolt_variance[#self.light_multibolt_variance]) == "table" and Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) or self.light_multibolt_variance[#self.light_multibolt_variance]) * (index - #self.light_multibolt_variance + 1)
+        end
+    end)
+    
+    Utils.hook(Item, "getLightBoltDirection", function(orig, self)
+        if self.light_bolt_direction == "random" or not self.light and self.light_bolt_direction == nil then
+            return Utils.pick({"right", "left"})
+        else
+            return self.light_bolt_direction or "right"
+        end
+    end)
+    
+    Utils.hook(Item, "getLightAttackMissZone", function(orig, self) return self.light_bolt_miss_threshold end)
+    
+    Utils.hook(Item, "getLightAttackSprite", function(orig, self) return self.attack_sprite end)
+    Utils.hook(Item, "getLightAttackSound", function(orig, self) return self.attack_sound end)
+    Utils.hook(Item, "getLightAttackPitch", function(orig, self) return self.attack_pitch end)
+    
+    Utils.hook(Item, "onLightBoltHit", function(orig, self, battler) end)
     
     Utils.hook(Item, "getLightBattleText", function(orig, self, user, target)
         if self.target == "ally" then
@@ -3127,11 +3131,11 @@ function lib:init()
             local armor_name = "None"
 
             if party:getWeapon() then
-                weapon_name = party:getWeapon().getEquipDisplayName and party:getWeapon():getEquipDisplayName() or party:getWeapon():getName()
+                weapon_name = party:getWeapon():getEquipDisplayName()
             end
 
             if party:getArmor(1) then
-                armor_name = party:getArmor(1).getEquipDisplayName and party:getArmor(1):getEquipDisplayName() or party:getArmor(1):getName()
+                armor_name = party:getArmor(1):getEquipDisplayName()
             end
             
             love.graphics.print("WEAPON: "..weapon_name, 4, 256)

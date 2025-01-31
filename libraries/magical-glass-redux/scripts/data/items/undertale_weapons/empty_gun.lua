@@ -40,7 +40,7 @@ function item:init()
 
     self.light_bolt_count = 4
     self.light_bolt_speed = 15
-    self.light_bolt_speed_variance = nil
+    self.light_bolt_speed_variance = 0
     self.light_bolt_start = 120
     self.light_bolt_miss_threshold = 3
     self.light_multibolt_variance = {{180, 210, 240}, {300, 330, 360}, {400, 430, 460}}
