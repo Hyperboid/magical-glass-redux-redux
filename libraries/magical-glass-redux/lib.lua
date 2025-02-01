@@ -2310,9 +2310,14 @@ function lib:init()
     Utils.hook(EnemyBattler, "defeat", function(orig, self, reason, violent)
         orig(self, reason, violent)
         if violent then
+            if Game:isLight() and (self.done_state == "KILLED" or self.done_state == "FROZEN") then
+                MagicalGlassLib.kills = MagicalGlassLib.kills + 1
+            end
             if MagicalGlassLib.random_encounter and MagicalGlassLib:createRandomEncounter(MagicalGlassLib.random_encounter).population then
                 MagicalGlassLib:createRandomEncounter(MagicalGlassLib.random_encounter):addFlag("violent", 1)
             end
+        else
+            Game.battle.xp = Game.battle.xp - self.experience
         end
     end)
 

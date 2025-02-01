@@ -131,10 +131,6 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.show_mercy = true
 end
 
-function LightEnemyBattler:getMoney()
-    return self.money
-end
-
 function LightEnemyBattler:toggleOverlay(overlay, reset)
     if overlay == nil then
         overlay = self.sprite.visible
@@ -1014,7 +1010,7 @@ function LightEnemyBattler:defeat(reason, violent)
 
     if violent then
         Game.battle.used_violence = true
-        if self.done_state == "KILLED" or self.done_state == "FROZEN" then
+        if Game:isLight() and (self.done_state == "KILLED" or self.done_state == "FROZEN") then
             MagicalGlassLib.kills = MagicalGlassLib.kills + 1
         end
         Game.battle.xp = Game.battle.xp + self.experience
@@ -1023,7 +1019,7 @@ function LightEnemyBattler:defeat(reason, violent)
         end
     end
     
-    Game.battle.money = Game.battle.money + self:getMoney()
+    Game.battle.money = Game.battle.money + self.money
     
     Game.battle:removeEnemy(self, true)
 end
