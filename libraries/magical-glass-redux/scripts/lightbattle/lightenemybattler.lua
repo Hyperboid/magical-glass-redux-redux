@@ -841,9 +841,9 @@ function LightEnemyBattler:onDefeatVaporized(damage, battler)
     local death_x, death_y = sprite:getRelativePos(0, 0, self)
     local death
     if self.large_dust then
-        death = DustEffectLarge(sprite:getTexture(), death_x, death_y, function() self:remove() end)
+        death = DustEffectLarge(sprite:getTexture(), death_x, death_y, false, function() self:remove() end)
     else
-        death = DustEffect(sprite:getTexture(), death_x, death_y, function() self:remove() end)
+        death = DustEffect(sprite:getTexture(), death_x, death_y, false, function() self:remove() end)
     end
      
     death:setColor(sprite:getDrawColor())
