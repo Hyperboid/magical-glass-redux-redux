@@ -34,6 +34,7 @@ function item:onLightAttack(battler, enemy, damage, stretch)
         enemy:onDodge(battler, true)
     end
     self.counter = 0
+    self.strike = 0
     Game.battle.timer:everyInstant(stretch / 1.5, function()
         self.counter = self.counter + 1
         local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
@@ -56,12 +57,13 @@ function item:onLightAttack(battler, enemy, damage, stretch)
                 Assets.stopAndPlaySound(sound)
             end
             enemy:hurt(damage, battler)
+            self.strike = self.strike + 1
 
             battler.chara:onLightAttackHit(enemy, damage)
             this:remove()
             Utils.removeFromTable(enemy.dmg_sprites, this)
             
-            if self.counter >= self.attacks_amount then
+            if self.strike >= self.attacks_amount then
                 Game.battle:finishActionBy(battler)
             end
         end)

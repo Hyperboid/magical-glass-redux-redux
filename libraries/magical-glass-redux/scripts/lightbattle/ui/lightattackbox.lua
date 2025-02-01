@@ -246,13 +246,12 @@ end
 
 function LightAttackBox:update()
     super.update(self)
-
+    
     if Game.battle == nil then return end -- prevents a crash
-
+    
     self.timer = self.timer + DTMULT
-
-    -- if (not Game.battle.multi_mode and self.timer > 1 or Game.battle.multi_mode and self.timer > 5) and #self.lanes == 0 then
-    if self.timer > 1 and #self.lanes == 0 then
+    
+    if self.timer >= 7 and #self.lanes == 0 then
         self:createBolts()
     end
     
@@ -320,7 +319,7 @@ function LightAttackBox:update()
                 end
             end
         end
-
+        
         if Game.battle.cancel_attack or self.fading then
             if self.shoe_finished < #self.attackers or #self.attackers == 0 then
                 self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT

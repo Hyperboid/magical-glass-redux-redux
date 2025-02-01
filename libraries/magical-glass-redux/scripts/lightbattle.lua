@@ -90,7 +90,6 @@ function LightBattle:init()
     self.cancel_attack = false
     self.auto_attack_timer = 0
     self.auto_attacker_index = 0
-    self.finished_full_auto = false
 
     self.post_battletext_func = nil
     self.post_battletext_state = "ACTIONSELECT"
@@ -308,7 +307,6 @@ function LightBattle:resetAttackers()
         self.normal_attackers = {}
         self.auto_attackers = {}
         self.auto_attacker_index = 0
-        self.finished_full_auto = false
         if self.battle_ui.attacking then
             self.battle_ui:endAttack()
         end
@@ -1912,10 +1910,10 @@ function LightBattle:updateAttacking()
     
     local function autoAttack(only_auto)
         if #self.auto_attackers > 0 then
-            if self.auto_attack_timer < 4 then
+            if self.auto_attack_timer < 8 then
                 self.auto_attack_timer = self.auto_attack_timer + DTMULT
 
-                if self.auto_attack_timer >= 4 or self:allActionsDone() then
+                if self.auto_attack_timer >= 8 or not only_auto and self:allActionsDone() then
                     self.auto_attacker_index = self.auto_attacker_index + 1
                     local next_attacker = self.auto_attackers[self.auto_attacker_index]
 
@@ -1924,9 +1922,8 @@ function LightBattle:updateAttacking()
                         self:beginAction(next_action)
                         self:processAction(next_action)
                     end
-                    if #self.auto_attackers <= self.auto_attacker_index then
-                        if only_auto and not self.finished_full_auto then
-                            self.finished_full_auto = true
+                    if #self.auto_attackers == self.auto_attacker_index then
+                        if only_auto then
                             local function all_actions_done() return self:allActionsDone() end
                             self.timer:afterCond(all_actions_done, function()
                                 if self.forced_victory then return false end
