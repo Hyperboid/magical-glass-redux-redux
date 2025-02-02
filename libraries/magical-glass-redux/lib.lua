@@ -445,17 +445,6 @@ function lib:init()
         end
     end)
     
-    Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
-        local music = {"toomuch"}
-        for lib_id,_ in Kristal.iterLibraries() do
-            music = Kristal.libCall(lib_id, "getPresistentWorldMusic", music) or music
-        end
-        music = Kristal.modCall("getPresistentWorldMusic", music) or music
-        if not Utils.containsValue(music, self.music.current) then
-            orig(self, next, fade_out)
-        end
-    end)
-    
     Utils.hook(World, "mapTransition", function(orig, self, ...)
         orig(self, ...)
         lib.map_transitioning = true
