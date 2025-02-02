@@ -1,4 +1,4 @@
-local TestShop, super = Class(LightShop,  "test")
+local TestShop, super = Class(LightShop,  "light_test")
 
 function TestShop:init()
     super.init(self)
