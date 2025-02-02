@@ -503,6 +503,21 @@ function lib:init()
             orig(self, shop, options)
         end
     end)
+    
+    Utils.hook(Game, "setupShop", function(orig, self, shop)
+        local check_shop
+        if type(shop) == "string" then
+            check_shop = Registry.getShop(shop)
+        else
+            check_shop = shop
+        end
+        
+        if check_shop:includes(LightShop) then
+            error("Attempted to use LightShop in a Shop. Convert the shop file to a Shop")
+        end
+        
+        orig(self, shop)
+    end)
 
     Utils.hook(World, "lightShopTransition", function(orig, self, shop, options)
         self:fadeInto(function()
@@ -541,7 +556,7 @@ function lib:init()
             end
 
             if self.target.shop and self.target.lightshop then
-                error("Transition cannot have both shop and lightshop.")
+                error("Transition cannot have both shop and lightshop")
             elseif self.target.shop then
                 self.world:shopTransition(self.target.shop, {x=x, y=y, marker=marker, facing=facing, map=self.target.map})
             elseif self.target.lightshop then
@@ -602,7 +617,7 @@ function lib:init()
         end
         
         if check_encounter:includes(LightEncounter) then
-            error("Attempted to use LightEncounter in a DarkBattle. Convert the encounter file to an Encounter.")
+            error("Attempted to use LightEncounter in a DarkBattle. Convert the encounter file to an Encounter")
         end
     
         orig(self, state, encounter)
@@ -940,7 +955,7 @@ function lib:init()
 
     Utils.hook(ChaserEnemy, "onCollide", function(orig, self, player)
         if self.encounter and self.light_encounter then
-            error("ChaserEnemy cannot have both encounter and lightencounter.")
+            error("ChaserEnemy cannot have both encounter and lightencounter")
         elseif not self.light_encounter then
             orig(self, player)
         else
@@ -981,7 +996,7 @@ function lib:init()
                 wave = Registry.getWave(wave)
             end
             if wave:includes(LightWave) then
-                error("Attempted to use LightWave in a DarkBattle. Convert '"..waves[i].."' to a Wave.")
+                error("Attempted to use LightWave in a DarkBattle. Convert '"..waves[i].."' to a Wave")
             end
         end
         return orig(self, waves, allow_duplicates)
@@ -4053,8 +4068,19 @@ function lib:registerDebugOptions(debug)
 end
 
 function lib:setupLightShop(shop)
+    local check_shop
+    if type(shop) == "string" then
+        check_shop =  MagicalGlassLib:getLightShop(shop)
+    else
+        check_shop = shop
+    end
+    
+    if check_shop:includes(Shop) then
+        error("Attempted to use Shop in a LightShop. Convert the shop file to a LightShop")
+    end
+    
     if Game.shop then
-        error("Attempt to enter shop while already in shop")
+        error("Attempt to enter light shop while already in shop")
     end
 
     if type(shop) == "string" then
@@ -4062,7 +4088,7 @@ function lib:setupLightShop(shop)
     end
 
     if shop == nil then
-        error("Attempt to enter shop with nil shop")
+        error("Attempt to enter light shop with nil shop")
     end
 
     Game.shop = shop

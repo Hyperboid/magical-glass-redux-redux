@@ -191,6 +191,17 @@ function LightBattle:createPartyBattlers()
 end
 
 function LightBattle:postInit(state, encounter)
+    local check_encounter
+    if type(encounter) == "string" then
+        check_encounter = MagicalGlassLib:getLightEncounter(encounter)
+    else
+        check_encounter = encounter
+    end
+    
+    if check_encounter:includes(Encounter) then
+        error("Attempted to use Encounter in a LightBattle. Convert the encounter file to a LightEncounter")
+    end
+    
     self.state = state
     
     self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
@@ -199,10 +210,6 @@ function LightBattle:postInit(state, encounter)
         self.encounter = MagicalGlassLib:createLightEncounter(encounter)
     else
         self.encounter = encounter
-    end
-
-    if self.encounter:includes(Encounter) then
-        error("Attempted to use Encounter in a LightBattle. Convert the encounter file to a LightEncounter.")
     end
 
     if Game.world.music:isPlaying() and self.encounter.music then
@@ -2581,12 +2588,17 @@ function LightBattle:setWaves(waves)
     self.finished_waves = false
     local added_wave = {}
     for i,wave in ipairs(waves) do
+        if type(wave) == "string" then
+            wave = MagicalGlassLib:getLightWave(wave)
+        end
+        if not wave:includes(LightWave) then
+            error("Attempted to use Wave in a LightBattle. Convert '"..waves[i].."' to a LightWave")
+        end
+    end
+    for i,wave in ipairs(waves) do
         local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
         if type(wave) == "string" then
             wave = MagicalGlassLib:createLightWave(wave)
-        end
-        if not wave:includes(LightWave) then
-            error("Attempted to use Wave in a LightBattle. Convert '"..waves[i].."' to a LightWave.")
         end
         if wave:getAllowDuplicates() or not exists then
             wave.encounter = self.encounter
@@ -2606,12 +2618,17 @@ function LightBattle:setMenuWaves(waves)
     self.finished_menu_waves = false
     local added_wave = {}
     for i,wave in ipairs(waves) do
+        if type(wave) == "string" then
+            wave = MagicalGlassLib:getLightWave(wave)
+        end
+        if not wave:includes(LightWave) then
+            error("Attempted to use Wave in a LightBattle. Convert '"..waves[i].."' to a LightWave")
+        end
+    end
+    for i,wave in ipairs(waves) do
         local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
         if type(wave) == "string" then
             wave = MagicalGlassLib:createLightWave(wave)
-        end
-        if not wave:includes(LightWave) then
-            error("Attempted to use Wave in a LightBattle. Convert '"..waves[i].."' to a LightWave.")
         end
         if wave:getAllowDuplicates() or not exists then
             wave.encounter = self.encounter
