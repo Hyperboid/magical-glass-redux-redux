@@ -31,7 +31,7 @@ function LightDamageNumber:init(msg_type, arg, x, y, color, enemy)
         end
     elseif self.type == "msg" then
         self.message = arg
-    elseif self.type == "damage" and string.sub(tostring(arg or 0), 1, 1) == "+" and self.enemy.health + tonumber(arg) >= self.enemy.max_health then
+    elseif self.type == "damage" and Utils.sub(tostring(arg or 0), 1, 1) == "+" and self.enemy.health + tonumber(arg) >= self.enemy.max_health then
         self.type = "text"
         self.text = "MAX"
     else

@@ -2593,7 +2593,7 @@ function lib:init()
     end)
     
     Utils.hook(PartyMember, "getShortName", function(orig, self)
-        return self.short_name or string.sub(self:getName(), 1, 6)
+        return self.short_name or Utils.sub(self:getName(), 1, 6)
     end)
     
     Utils.hook(PartyMember, "getUndertaleMovement", function(orig, self)

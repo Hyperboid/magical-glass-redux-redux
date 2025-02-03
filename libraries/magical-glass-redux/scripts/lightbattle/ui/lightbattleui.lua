@@ -511,7 +511,7 @@ function LightBattleUI:drawState()
                     if enemy_special_text.enemy ~= enemy or enemy_special_text.enemy_name ~= enemy.name .. (enemy.index ~= "" and " " .. enemy.index or "") then
                         enemy_special_text.enemy = enemy
                         enemy_special_text.enemy_name = enemy.name .. (enemy.index ~= "" and " " .. enemy.index or "")
-                        enemy_special_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."][wave:7,15,11]" .. string.sub(name, 3))
+                        enemy_special_text:setText("[shake:"..MagicalGlassLib.light_battle_shake_text.."][wave:7,15,11]" .. Utils.sub(name, 3))
                         enemy_special_text.text_width = enemy_special_text.text_width + 24
                         enemy_special_text.text_height = enemy_special_text.text_height + 10
                     end

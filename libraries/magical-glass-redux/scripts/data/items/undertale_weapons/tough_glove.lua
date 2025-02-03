@@ -119,7 +119,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
         local confirm_button
         local press = Sprite("ui/lightbattle/pressz_press")
-        local confirm_key = string.sub(Input.getText("confirm"), 2, -2)
+        local confirm_key = Utils.sub(Input.getText("confirm"), 2, -2)
         local relative_pos_x, relative_pos_y = 0, 0
         if Input.usingGamepad() then
             confirm_button = Sprite(Input.getTexture("confirm"))
