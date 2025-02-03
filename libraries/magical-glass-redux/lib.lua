@@ -3989,7 +3989,7 @@ function lib:registerDebugOptions(debug)
     for id, item_data in pairs(Registry.items) do
         local item = item_data()
         local menu
-        if string.sub(item.id, 1, 10) == "undertale/" then
+        if Utils.sub(item.id, 1, 10) == "undertale/" then
             menu = "ut_give_item"
         elseif item.light then
             menu = "light_give_item"
