@@ -748,9 +748,10 @@ function lib:init()
         end
     end)
     
-    Utils.hook(Soul, "onDamage", function(orig, self, bullet, amount)
+    Utils.hook(Soul, "onDamage", function(orig, self, bullet, amount, battlers)
+        orig(self, bullet, amount, battlers)
         local best_amount
-        for _,battler in ipairs(Game.battle.party) do
+        for _,battler in ipairs(battlers) do
             local equip_amount = 0
             for _,equip in ipairs(battler.chara:getEquipment()) do
                 if equip.getInvBonus then
@@ -761,8 +762,7 @@ function lib:init()
                 best_amount = equip_amount
             end
         end
-        self.inv_timer = self.inv_timer + best_amount
-        orig(self, bullet, amount)
+        self.inv_timer = self.inv_timer + (best_amount or 0)
     end)
     
     Utils.hook(Soul, "init", function(orig, self, x, y, color)
@@ -1746,10 +1746,16 @@ function lib:init()
     end)
     
     Utils.hook(Bullet, "onDamage", function(orig, self, soul)
-        lib.bonus_damage = self.bonus_damage
-        local battlers = orig(self, soul)
-        lib.bonus_damage = nil
-        return battlers
+        local damage = self:getDamage()
+        if damage > 0 then
+            lib.bonus_damage = self.bonus_damage
+            local battlers = Game.battle:hurt(damage, false, self:getTarget())
+            soul.inv_timer = self.inv_timer
+            soul:onDamage(self, damage, battlers)
+            lib.bonus_damage = nil
+            return battlers
+        end
+        return {}
     end)
 
     Utils.hook(Bullet, "update", function(orig, self)
