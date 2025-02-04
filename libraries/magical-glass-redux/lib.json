@@ -31,7 +31,7 @@
         /////
         "default_battle_system": ["deltarune", false],
         
-        ///// Shared Light EXP and LV
+        ///// Shared Light EXP
         // Whether EXP is global to all party members or local to each
         /////
         "shared_light_exp": false,
