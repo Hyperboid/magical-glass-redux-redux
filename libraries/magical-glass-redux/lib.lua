@@ -29,6 +29,7 @@ function lib:unload()
     MG_PALETTE               = nil
     MG_EVENT                 = nil
     LIGHT_BATTLE_LAYERS      = nil
+    
     TweenManager             = nil
     LightBattle              = nil
     LightPartyBattler        = nil
@@ -63,7 +64,7 @@ function lib:save(data)
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["spare_color"] = lib.spare_color
     data.magical_glass["spare_color_name"] = lib.spare_color_name
-    data.magical_glass["lw_save_lv"] = Game.party[1] and Game.party[1]:getLightLV() or 0
+    data.magical_glass["save_level"] = Game.party[1] and Game.party[1]:getLightLV() or 0
     data.magical_glass["in_light_shop"] = lib.in_light_shop
     data.magical_glass["current_battle_system"] = lib.current_battle_system
     data.magical_glass["random_encounter"] = lib.random_encounter
@@ -78,34 +79,26 @@ function lib:load(data, new_file)
     
     Game.light = Kristal.getLibConfig("magical-glass", "default_battle_system")[2] or false
     
+    data.magical_glass = data.magical_glass or {}
+    lib.kills = data.magical_glass["kills"] or 0
+    lib.serious_mode = data.magical_glass["serious_mode"] or false
+    lib.spare_color = data.magical_glass["spare_color"] or COLORS.yellow
+    lib.spare_color_name = data.magical_glass["spare_color_name"] or "YELLOW"
+    lib.in_light_shop = data.magical_glass["in_light_shop"] or false
+    lib.current_battle_system = data.magical_glass["current_battle_system"] or nil
+    lib.random_encounter = data.magical_glass["random_encounter"] or nil
+    lib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
+    lib.rearrange_cell_calls = data.magical_glass["rearrange_cell_calls"] or false
+    
     if new_file then
-        lib.kills = 0
-        lib.serious_mode = false
-        lib.spare_color = COLORS.yellow
-        lib.spare_color_name = "YELLOW"
-        lib.lw_save_lv = 0
-        lib.in_light_shop = false
         self:setGameOvers(0)
-        lib.light_battle_shake_text = 0
-        lib.rearrange_cell_calls = false
         
         lib.initialize_armor_conversion = true
         if not Kristal.getLibConfig("magical-glass", "item_conversion") then
             Game:setFlag("has_cell_phone", Kristal.getModOption("cell") ~= false)
         end
     else
-        data.magical_glass = data.magical_glass or {}
-        lib.kills = data.magical_glass["kills"] or 0
         self:setGameOvers(self:getGameOvers() or 0)
-        lib.serious_mode = data.magical_glass["serious_mode"] or false
-        lib.spare_color = data.magical_glass["spare_color"] or COLORS.yellow
-        lib.spare_color_name = data.magical_glass["spare_color_name"] or "YELLOW"
-        lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
-        lib.in_light_shop = data.magical_glass["in_light_shop"] or false
-        lib.current_battle_system = data.magical_glass["current_battle_system"] or nil
-        lib.random_encounter = data.magical_glass["random_encounter"] or lib.random_encounter or nil
-        lib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
-        lib.rearrange_cell_calls = data.magical_glass["rearrange_cell_calls"] or false
         
         for _,party in pairs(Game.party_data) do -- Fixes a crash with existing saves
             if not party.lw_stats["magic"] then
@@ -3434,7 +3427,7 @@ function lib:init()
         local mg        = data.magical_glass     or {}
 
         local name      = data.name              or "EMPTY"
-        local level     = mg.lw_save_lv          or 0
+        local level     = mg.save_level          or 0
         local playtime  = data.playtime          or 0
         local room_name = data.room_name         or "--"
     
