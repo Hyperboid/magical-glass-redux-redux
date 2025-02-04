@@ -170,7 +170,7 @@ function LightAttackBox:hit(battler)
         battler.weapon:onLightBoltHit(battler)
     end
     if battler.attack_type == "shoe" then
-        local close = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) < -20 and 3 or 1))
+        local close = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) <= -20 and 3 or 1))
 
         local eval = self:evaluateHit(battler, close)
         
@@ -202,7 +202,7 @@ function LightAttackBox:hit(battler)
 
         return self:checkAttackEnd(battler, battler.score, battler.bolts, close), Utils.clamp(battler.score / battler.weapon:getLightBoltCount() / 110 * 1.2, 0.5, 1)
     elseif battler.attack_type == "slice" then
-        battler.score = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) < -20 and 3 or 1))
+        battler.score = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) <= -20 and 3 or 1))
         if battler.score == 0 then
             battler.score = 1
         end
