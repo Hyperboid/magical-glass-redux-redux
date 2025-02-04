@@ -2767,14 +2767,14 @@ function lib:init()
     Utils.hook(ActionBox, "init", function(orig, self, x, y, index, battler)
         orig(self, x, y, index, battler)
         if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") and Game:isLight() then
-            self.head_sprite:addFX(ShaderFX(lib:colorShader(MG_PALETTE["light_world_dark_battle_color"])))
+            self.head_sprite:addFX(ShaderFX("color", {targetColor = MG_PALETTE["light_world_dark_battle_color"]}))
         end
     end)
     
     Utils.hook(AttackBox, "init", function(orig, self, battler, offset, index, x, y)
         orig(self, battler, offset, index, x, y)
         if Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") and Game:isLight() then
-            self.head_sprite:addFX(ShaderFX(lib:colorShader(MG_PALETTE["light_world_dark_battle_color"])))
+            self.head_sprite:addFX(ShaderFX("color", {targetColor = MG_PALETTE["light_world_dark_battle_color"]}))
         end
     end)
 
@@ -4197,24 +4197,6 @@ function lib:gameNotOver(x, y)
     Game.gameover = GameNotOver(x or 0, y or 0, reload)
     Game.stage:addChild(Game.gameover)
 end
-
-function lib:colorShader(color)
-    local targetColor = color or {1, 1, 1, 1}
-    local nonBlackToColorShader = love.graphics.newShader([[
-        extern vec4 targetColor;
-        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-            vec4 texcolor = Texel(texture, texture_coords);
-            if (texcolor.r > 0.0 || texcolor.g > 0.0 || texcolor.b > 0.0) {
-                return targetColor * color; // Non-black pixels to target color
-            } else {
-                return texcolor * color; // Keep black pixels unchanged
-            }
-        }
-    ]])
-    nonBlackToColorShader:send("targetColor", targetColor)
-    return nonBlackToColorShader
-end
-
 function lib:postUpdate()
     Game.lw_xp = nil
     for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP

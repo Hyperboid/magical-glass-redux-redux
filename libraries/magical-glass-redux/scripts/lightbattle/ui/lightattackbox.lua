@@ -5,18 +5,16 @@ function LightAttackBox:init(x, y)
 
     self.arena = Game.battle.arena
 
-    local is_dark = ""
-    if not Game:isLight() then
-        is_dark = "_dark"
-    end
-    self.target_sprite = Game.battle.multi_mode and Sprite("ui/lightbattle/dumbtarget_multi"..is_dark) or Sprite("ui/lightbattle/dumbtarget"..is_dark)
+    self.target_sprite = Game.battle.multi_mode and Sprite("ui/lightbattle/target_multi") or Sprite("ui/lightbattle/target")
     self.target_sprite:setOrigin(0.5, 0.5)
     self.target_sprite:setPosition(self.arena:getRelativePos(self.arena.width / 2, self.arena.height / 2))
     self.target_sprite.layer = LIGHT_BATTLE_LAYERS["above_arena"]
+    if not Game:isLight() then
+        self.target_sprite:addFX(ShaderFX("hsv", {hue_shift = 180}))
+    end
     Game.battle:addChild(self.target_sprite)
 
-    -- called "fatal" for some reason in ut
-    self.bolt_target = Game.battle.multi_mode and self.arena.x / 2 - 9 or self.arena.x
+    self.bolt_target = Game.battle.multi_mode and self.arena.x / 2 - 34 or self.arena.x
 
     self.shoe_finished = 0
     self.attackers = Game.battle.normal_attackers
@@ -50,7 +48,7 @@ function LightAttackBox:createBolts()
         end
 
         offset = offset + last_offset
-        local randomizer = #self.attackers == 1 and 115 or 115 - offset
+        local randomizer = #self.attackers == 1 and 118 or 118 - offset
         last_offset = Utils.pick{0, 11, 22} * 5
         local start_x
         if lane.direction == "left" then
@@ -226,7 +224,7 @@ function LightAttackBox:checkMiss(battler)
             return self:getClose(battler) > (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
         end
     elseif battler.attack_type == "slice" then
-        return (battler.direction == "left" and self:getClose(battler) - (Game.battle.multi_mode and self.arena.x / 2 + 9 + 3 or 0) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) - (Game.battle.multi_mode and self.arena.x / 2 + 9 - 3 or 0) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
+        return (battler.direction == "left" and self:getClose(battler) - (Game.battle.multi_mode and self.arena.x / 2 + 34 + 3 or 0) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) - (Game.battle.multi_mode and self.arena.x / 2 + 34 - 3 or 0) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
     end
 end
 
