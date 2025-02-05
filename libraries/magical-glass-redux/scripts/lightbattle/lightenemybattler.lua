@@ -694,7 +694,7 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
             total_damage = (lane.battler.chara:getStat("attack") * 3.375 - self.defense * 1.363) + Utils.random(0, 2, 1)
         end
         if points <= 12 then
-            total_damage = Utils.round(total_damage * 2.2)
+            total_damage = Utils.round(total_damage * (lane.weapon and Utils.containsValue(lane.weapon.tags, "damage_alt") and 2.1 or 2.2))
             crit = true
         else
             total_damage = Utils.round((total_damage * stretch) * 2)
