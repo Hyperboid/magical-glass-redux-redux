@@ -50,7 +50,7 @@ function item:init()
 
     self.attack_sound = "punchstrong"
 
-    self.tags = {"punch"}
+    self.tags = {"punch", "crit_nerf"}
 
 end
 
