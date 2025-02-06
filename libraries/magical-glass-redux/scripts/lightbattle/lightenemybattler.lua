@@ -668,10 +668,9 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
             total_damage = (lane.battler.chara:getStat("attack") * 3.375 - self.defense * 1.363)
         end
         total_damage = total_damage * ((points / 160) * (4 / bolt_count))
-        total_damage = Utils.round(total_damage) + Utils.random(0, 2, 1)
+        total_damage = Utils.round(total_damage * (points > (400 * (bolt_count / 4)) and Utils.containsValue(lane.weapon.tags, "crit_nerf") and (21/22) or 1)) + Utils.random(0, 2, 1)
 
         if points > (400 * (bolt_count / 4)) then
-            total_damage = Utils.round(total_damage * (lane.weapon and Utils.containsValue(lane.weapon.tags, "crit_nerf") and (21/22) or 1))
             crit = true
         end
         
