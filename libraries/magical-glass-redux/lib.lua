@@ -349,7 +349,8 @@ function lib:init()
             end
             
             if self.ui_sound ~= false and self.current_choice ~= old_choice then
-                Game.battle:playMoveSound()
+                Game.battle.ui_move:stop()
+                Game.battle.ui_move:play()
             end
 
             if Input.pressed("confirm") then
