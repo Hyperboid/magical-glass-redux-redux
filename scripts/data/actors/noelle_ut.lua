@@ -9,8 +9,6 @@ function actor:init()
     -- Width and height for this actor, used to determine its center
     self.width = 58
     self.height = 117
-    
-    self.use_light_battler_sprite = false
 
     -- Hitbox for this actor in the overworld (optional, uses width and height by default)
     -- self.hitbox = {0, 25, 19, 14}
@@ -38,22 +36,8 @@ function actor:init()
     
     -- Table of sprite offsets (indexed by sprite name)
     self.offsets = {
-        ["idle"] = {-1, 0},
+        ["idle"] = {0, 0},
     }
-
-    -- self:addLightBattlerPart("body", {
-        -- -- path, function that returns a path, or a function that returns a sprite object
-        -- -- if one's not defined, get the default animation
-        -- ["sprite"] = function()
-            -- self.sprite = Sprite(self.path.."/lightbattle/body")
-            -- return self.sprite
-        -- end,
-
-        -- ["init"] = function() 
-            -- self.siner = 0
-        -- end
-    -- })
-
 end
 
 return actor
