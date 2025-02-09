@@ -117,25 +117,25 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
     if battler.chara:getWeapon() then -- attacking without a weapon
         if crit then
-            sprite:setColor(1, 1, 130/255)
+            if Utils.equal({battler.chara:getLightMultiboltAttackColor()}, COLORS.white) then
+                sprite:setColor(Utils.lerp(COLORS.white, COLORS.yellow, 0.5))
+            else
+                sprite:setColor(Utils.lerp({battler.chara:getLightMultiboltAttackColor()}, COLORS.white, 0.5))
+            end
             Assets.stopAndPlaySound("saber3")
         end
 
         Game.battle:shakeCamera(2, 2, 0.35)
     end
     Game.battle:shakeAttackSprite(sprite)
+    
+    Game.battle.timer:after(10/30, function()
+        self:onLightAttackHurt(battler, enemy, damage, stretch, crit)
+    end)
 
     sprite:play(2/30, false, function(this)   
-        local sound = enemy:getDamageSound() or "damage"
-        if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
-            Assets.stopAndPlaySound(sound)
-        end
-        enemy:hurt(damage, battler)
-
-        battler.chara:onLightAttackHit(enemy, damage)
         this:remove()
         Utils.removeFromTable(enemy.dmg_sprites, this)
-        Game.battle:finishActionBy(battler)
     end)
     return false
 end

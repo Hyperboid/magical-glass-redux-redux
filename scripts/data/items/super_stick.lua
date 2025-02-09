@@ -51,21 +51,14 @@ function item:onLightAttack(battler, enemy, damage, stretch)
         sprite.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
         sprite.color = {battler.chara:getLightAttackColor()}
         enemy.parent:addChild(sprite)
-        sprite:play((stretch^(1/1.5) / 4) / 1.5, false, function(this)
-            local sound = enemy:getDamageSound() or "damage"
-            if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
-                Assets.stopAndPlaySound(sound)
-            end
-            enemy:hurt(damage, battler)
+        sprite:play((stretch / 4) / 1.6, false, function(this)
             self.strikes = self.strikes + 1
-
-            battler.chara:onLightAttackHit(enemy, damage)
+            Game.battle.timer:after(3/30, function()
+                self:onLightAttackHurt(battler, enemy, damage, stretch, crit, true, self.strikes >= self.attacks_amount)
+            end)
+            
             this:remove()
             Utils.removeFromTable(enemy.dmg_sprites, this)
-            
-            if self.strikes >= self.attacks_amount then
-                Game.battle:finishActionBy(battler)
-            end
         end)
     end, self.attacks_amount)
 
