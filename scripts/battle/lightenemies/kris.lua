@@ -1,7 +1,7 @@
 local Dummy, super = Class(LightEnemyBattler)
 
 function Dummy:init()
-    super:init(self)
+    super.init(self)
 
     -- Enemy name
     self.name = "Kris"
@@ -75,7 +75,7 @@ function Dummy:onAct(battler, name)
     if name ~= "Check" then
         return "* Nothing happened."
     end
-    return super:onAct(self, battler, name)
+    return super.onAct(self, battler, name)
 end
 
 return Dummy
