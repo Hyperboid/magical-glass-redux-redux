@@ -53,7 +53,7 @@ function Dummy:init()
 end
 
 function Dummy:update()
-    super:update(self)
+    super.update(self)
     local head = self:getSpritePart("head")
     if self.bubble and self.bubble:isTyping() then
         if not head.playing then
