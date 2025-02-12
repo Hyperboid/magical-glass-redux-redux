@@ -742,23 +742,6 @@ function lib:init()
         end
     end)
     
-    Utils.hook(Soul, "onDamage", function(orig, self, bullet, amount, battlers)
-        orig(self, bullet, amount, battlers)
-        local best_amount
-        for _,battler in ipairs(battlers) do
-            local equip_amount = 0
-            for _,equip in ipairs(battler.chara:getEquipment()) do
-                if equip.getInvBonus then
-                    equip_amount = equip_amount + equip:getInvBonus()
-                end
-            end
-            if not best_amount or equip_amount > best_amount then
-                best_amount = equip_amount
-            end
-        end
-        self.inv_timer = self.inv_timer + (best_amount or 0)
-    end)
-    
     Utils.hook(Soul, "init", function(orig, self, x, y, color)
         orig(self, x, y, color)
         self.speed = self.speed + Game.battle.soul_speed_bonus
@@ -1748,16 +1731,27 @@ function lib:init()
     end)
     
     Utils.hook(Bullet, "onDamage", function(orig, self, soul)
-        local damage = self:getDamage()
-        if damage > 0 then
-            lib.bonus_damage = self.bonus_damage
-            local battlers = Game.battle:hurt(damage, false, self:getTarget())
-            soul.inv_timer = self.inv_timer
-            soul:onDamage(self, damage, battlers)
-            lib.bonus_damage = nil
-            return battlers
+        lib.bonus_damage = self.bonus_damage
+        local battlers = orig(self, soul)
+        lib.bonus_damage = nil
+        
+        if self:getDamage() > 0 then
+            local best_amount
+            for _,battler in ipairs(battlers) do
+                local equip_amount = 0
+                for _,equip in ipairs(battler.chara:getEquipment()) do
+                    if equip.getInvBonus then
+                        equip_amount = equip_amount + equip:getInvBonus()
+                    end
+                end
+                if not best_amount or equip_amount > best_amount then
+                    best_amount = equip_amount
+                end
+            end
+            soul.inv_timer = soul.inv_timer + (best_amount or 0)
         end
-        return {}
+        
+        return battlers
     end)
 
     Utils.hook(Bullet, "update", function(orig, self)
