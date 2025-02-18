@@ -49,8 +49,8 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 ### Resources:
 * UNDERTALE Team
 * DELTATRAVELER Team
-* AccurateJaney (Kris and Noelle Light World Sprites)
-* Discarded_Vessel (Susie Light World Sprites)
+* AccurateJaney (Susie and Noelle Light World Sprites)
+* Discarded_Vessel (Kris Light World Sprites)
 
 ### Sound Effects and Music:
 * UNDERTALE Team
