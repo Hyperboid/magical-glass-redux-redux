@@ -1760,6 +1760,14 @@ function lib:init()
         
         return battlers
     end)
+    
+    Utils.hook(Bullet, "getDamage", function(orig, self)
+        if Game:isLight() then
+            return self.damage or (self.attacker and self.attacker.attack) or 0
+        else
+            return orig(self)
+        end
+    end)
 
     Utils.hook(Bullet, "update", function(orig, self)
         orig(self)
@@ -2370,13 +2378,30 @@ function lib:init()
             local def = self.chara:getStat("defense")
             local hp = self.chara:getHealth()
             
-            local bonus = lib.bonus_damage ~= false and hp > 20 and math.min(1 + math.floor((hp - 20) / 10), 8) or 0
-            amount = Utils.round(amount / 5 + bonus - def / 5)
+            local bonus = (lib.bonus_damage ~= false and self.bonus_damage ~= false) and hp > 20 and math.min(1 + math.floor((hp - 20) / 10), 8) or 0
+            amount = Utils.round(amount + bonus - def / 5)
             
             return math.max(amount, 1)
         else
             return orig(self, amount)
         end
+    end)
+    
+    Utils.hook(PartyBattler, "calculateDamageSimple", function(orig, self, amount)
+        if Game:isLight() then
+            return math.ceil(amount - (self.chara:getStat("defense") / 5))
+        else
+            return orig(self, amount)
+        end
+    end)
+    
+    Utils.hook(PartyBattler, "hurt", function(orig, self, amount, exact, color, options)
+        if type(exact) == "string" then
+            exact = false
+            self.bonus_damage = false
+        end
+        orig(self, amount, exact, color, options)
+        self.bonus_damage = nil
     end)
     
     Utils.hook(EnemyBattler, "getAttackDamage", function(orig, self, damage, battler, points)
