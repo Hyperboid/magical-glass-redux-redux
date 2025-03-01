@@ -1847,6 +1847,10 @@ function LightBattle:update()
         end
     end
     
+    for _,battler in ipairs(self.party) do
+        battler:update()
+    end
+    
     if self.state == "ACTIONSELECT" then
         local actbox = self.battle_ui.action_boxes[self.current_selecting]
         if actbox then
