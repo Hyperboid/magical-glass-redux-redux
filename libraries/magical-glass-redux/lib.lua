@@ -1733,12 +1733,18 @@ function lib:init()
             self.destroy_on_hit = "alt"
             self.layer = LIGHT_BATTLE_LAYERS["bullets"]
         end
-        self.bonus_damage = true -- Whether the bullet deals bonus damage when having more HP (Light World only)
+        self.bonus_damage = nil -- Whether the bullet deals bonus damage when having more HP (Light World only)
         self.remove_outside_of_arena = false
     end)
     
     Utils.hook(Bullet, "onDamage", function(orig, self, soul)
-        lib.bonus_damage = self.bonus_damage
+        lib.bonus_damage = nil
+        if self.attacker then
+            lib.bonus_damage = self.attacker.bonus_damage
+        end
+        if self.bonus_damage ~= nil then
+            lib.bonus_damage = self.bonus_damage
+        end
         local battlers = orig(self, soul)
         lib.bonus_damage = nil
         
@@ -2402,6 +2408,13 @@ function lib:init()
         end
         orig(self, amount, exact, color, options)
         self.bonus_damage = nil
+    end)
+    
+    Utils.hook(EnemyBattler, "init", function(orig, self, actor, use_overlay)
+        orig(self, actor, use_overlay)
+        
+        -- Whether the enemy deals bonus damage when having more HP (Light World only)
+        self.bonus_damage = true
     end)
     
     Utils.hook(EnemyBattler, "getAttackDamage", function(orig, self, damage, battler, points)

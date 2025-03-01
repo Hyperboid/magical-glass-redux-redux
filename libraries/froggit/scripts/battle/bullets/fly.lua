@@ -31,9 +31,6 @@ function bullet:init(x, y)
     Game.battle.timer:every(1.5, function()
         self.physics.speed = 3
     end)
-    
-    -- Whether the bullet deals bonus damage when having more HP (Light World only)
-    self.bonus_damage = false
 end
 
 return bullet

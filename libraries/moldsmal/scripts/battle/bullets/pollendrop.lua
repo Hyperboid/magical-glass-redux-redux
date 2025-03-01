@@ -14,9 +14,6 @@ function bullet:init(x, y)
     self.vspeed = 1.2
     self.physics.gravity = 0.02
     self.physics.gravity_direction = math.rad(90)
-    
-    -- Whether the bullet deals bonus damage when having more HP (Light World only)
-    self.bonus_damage = false
 end
 
 function bullet:update()

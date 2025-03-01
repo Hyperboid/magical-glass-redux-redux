@@ -21,6 +21,9 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.health = 100
     self.attack = 1
     self.defense = 0
+    
+    -- Whether the enemy deals bonus damage when having more HP (Light World only)
+    self.bonus_damage = true
 
     self.money = 0
     self.experience = 0
