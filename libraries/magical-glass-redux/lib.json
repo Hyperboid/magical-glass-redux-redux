@@ -8,7 +8,7 @@
         "Just Another Random User",     // contributor
     ],
 
-    "version": "v2.26.14",
+    "version": "v2.26.15",
     "engineVer": "v0.10.0-dev",
 
     "config": {
@@ -194,6 +194,19 @@
         // Whether when playing with multiple party members, the leader name will be mentioned as 'You'.
         /////
         "multi_leader_mentioned_as_you": false,
+
+        ///// Savepoint Style
+        // Determines the appearance of savepoints drawn in the light world.
+        ///// Values:
+        //
+        // "undertale"
+        // UNDERTALE-styled savepoints. (yellow, doesn't fade)
+        //
+        // "deltarune"
+        // deltarune-styled savepoints. (white, fades depending on the player's distance from it)
+        //
+        /////
+        "savepoint_style": "undertale",
         
         ///// Debug Mode
         // Determines whether the library is in its debug mode state.
