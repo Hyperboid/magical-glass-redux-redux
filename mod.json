@@ -3,7 +3,7 @@
     "name": "Magical Glass: Redux",
     "subtitle": "The Undertale Library!",
 
-    "version": "v2.26.15",
+    "version": "v2.26.16",
     "engineVer": "v0.10.0-dev",
 
     "chapter": 2,
@@ -42,6 +42,7 @@
             "enemy_bar_percentages": true,
             "expanded_light_save_menu": true,
             "undertale_movement_can_run": true,
+            "savepoint_style": "undertale",
             "debug": true,
         }
     }
