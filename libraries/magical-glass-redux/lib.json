@@ -206,7 +206,7 @@
         // deltarune-styled savepoints. (white, fades depending on the player's distance from it)
         //
         /////
-        "savepoint_style": "undertale",
+        "savepoint_style": "deltarune",
         
         ///// Debug Mode
         // Determines whether the library is in its debug mode state.
