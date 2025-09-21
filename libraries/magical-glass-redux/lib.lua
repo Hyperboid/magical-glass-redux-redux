@@ -3469,9 +3469,8 @@ function lib:init()
 
     Utils.hook(Savepoint, "init", function(orig, self, x, y, properties)
         orig(self, x, y, properties)
-        self.style = Kristal.getLibConfig("magical-glass", "savepoint_style")
         Game.world.timer:after(1/30, function()
-            if Game:isLight() and self.style == "undertale" then
+            if Game:isLight() and Kristal.getLibConfig("magical-glass", "savepoint_style") == "undertale" then
                 self:setSprite("world/events/lightsavepoint", 1/6)
             end
         end)
@@ -3497,22 +3496,11 @@ function lib:init()
         end
     end)
 
-    Utils.hook(Savepoint, "update", function(orig, self)
-        Interactable.update(self)
-
-        if Game:isLight() and self.style == "deltarune" then
-            self.sprite.alpha = 0.5
-
-            if Game.world.player then
-                local dist = Utils.dist(self.x, self.y, Game.world.player.x, Game.world.player.y)
-
-
-                if dist <= 80 then
-                    self.sprite.alpha = math.min(1, ((1 - (dist/80)) + 0.5))
-                end
-            end
-        end
-    end)
+    if Kristal.getLibConfig("magical-glass", "savepoint_style") == "undertale" then
+        Utils.hook(Savepoint, "update", function(orig, self)
+            Interactable.update(self)
+        end)
+    end
 
     Utils.hook(LightSaveMenu, "update", function(orig, self)
         if self.state == "MAIN" and (Input.pressed("left") or Input.pressed("right")) then
