@@ -1,7 +1,7 @@
 local Dummy, super = Class(LightEnemyBattler)
 
 function Dummy:init()
-    super.init(self)
+    super:init(self)
 
     -- Enemy name
     self.name = "Kris"
@@ -53,7 +53,7 @@ function Dummy:init()
 end
 
 function Dummy:update()
-    super.update(self)
+    super:update(self)
     local head = self:getSpritePart("head")
     if self.bubble and self.bubble:isTyping() then
         if not head.playing then
@@ -75,7 +75,7 @@ function Dummy:onAct(battler, name)
     if name ~= "Check" then
         return "* Nothing happened."
     end
-    return super.onAct(self, battler, name)
+    return super:onAct(self, battler, name)
 end
 
 return Dummy

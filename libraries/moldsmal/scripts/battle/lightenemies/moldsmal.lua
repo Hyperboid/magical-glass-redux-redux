@@ -1,7 +1,7 @@
 local Moldsmal, super = Class(LightEnemyBattler)
 
 function Moldsmal:init()
-    super.init(self)
+    super:init(self)
 
     -- Enemy name
     self.name = "Moldsmal"
@@ -14,7 +14,6 @@ function Moldsmal:init()
     self.money = 3
     self.experience = 3
     self.mercy = 100
-    self.bonus_damage = false
 
     self.scalevalue = 0.01
     self.yscale = 1
@@ -60,7 +59,7 @@ function Moldsmal:onAct(battler, name)
         return "* You wiggle your hips.[wait:10]\n* Moldsmal wiggles back.[wait:10]\n* What a meaningful conversation!"
     end
 
-    return super.onAct(self, battler, name)
+    return super:onAct(self, battler, name)
 end
 
 function Moldsmal:onHurt(...)

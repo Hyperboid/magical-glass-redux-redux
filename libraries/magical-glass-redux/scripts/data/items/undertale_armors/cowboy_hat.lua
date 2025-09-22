@@ -39,6 +39,7 @@ function item:init()
         defense = 12,
         attack = 5
     }
+
 end
 
 return item

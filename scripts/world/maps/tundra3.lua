@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 12,
-  nextobjectid = 86,
+  nextobjectid = 83,
   properties = {
     ["border"] = "undertale/tundra",
     ["light"] = true,
@@ -168,11 +168,11 @@ return {
         },
         {
           id = 75,
-          name = "shop_exit",
+          name = "entry2",
           type = "",
           shape = "point",
-          x = 669,
-          y = 315,
+          x = 720,
+          y = 360,
           width = 0,
           height = 0,
           rotation = 0,
@@ -199,19 +199,6 @@ return {
           shape = "point",
           x = 80,
           y = 400,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 85,
-          name = "entry2",
-          type = "",
-          shape = "point",
-          x = 715,
-          y = 354,
           width = 0,
           height = 0,
           rotation = 0,
@@ -342,22 +329,6 @@ return {
           rotation = 0,
           visible = true,
           properties = {}
-        },
-        {
-          id = 84,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 642,
-          y = 160,
-          width = 56,
-          height = 38,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["lightshop"] = "light_test",
-            ["marker"] = "shop_exit"
-          }
         }
       }
     },
@@ -725,9 +696,9 @@ return {
           name = "",
           type = "",
           shape = "rectangle",
-          x = 699,
+          x = 640,
           y = 240,
-          width = 101,
+          width = 160,
           height = 40,
           rotation = 0,
           visible = true,
@@ -787,19 +758,6 @@ return {
           y = 0,
           width = 40,
           height = 160,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 83,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 699,
-          y = 160,
-          width = 40,
-          height = 79,
           rotation = 0,
           visible = true,
           properties = {}

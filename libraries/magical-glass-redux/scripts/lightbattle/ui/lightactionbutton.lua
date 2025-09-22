@@ -187,7 +187,7 @@ function LightActionButton:select()
                 ["name"] = "Defend",
                 ["special"] = "defend",
                 ["callback"] = function(menu_item)
-                    Game.battle:pushAction("DEFEND", nil, {tp = -Game.battle:getDefendTension(self.battler)})
+                    Game.battle:pushAction("DEFEND", nil, {tp = -16})
                 end
             })
         end
@@ -217,8 +217,7 @@ function LightActionButton:select()
                     if chance >= Utils.random(1, 100, 1) then
                         Game.battle:setState("FLEEING")
                     else
-                        Game.battle.ui_select:stop()
-                        Game.battle.ui_select:play()
+                        Game.battle:playSelectSound()
                         Game.battle:setState("FLEEFAIL")
                     end
                 end
@@ -229,7 +228,7 @@ function LightActionButton:select()
         self.battler.manual_spare = true
         Game.battle:setState("ENEMYSELECT", "SPARE")
     elseif self.type == "defend" then
-        Game.battle:pushAction("DEFEND", nil, {tp = -Game.battle:getDefendTension(self.battler)})
+        Game.battle:pushAction("DEFEND", nil, {tp = -16})
     end
 end
 

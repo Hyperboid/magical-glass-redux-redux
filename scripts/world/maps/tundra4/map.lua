@@ -1,7 +1,7 @@
 local room, super = Class(Map)
 
 function room:load()
-  super.load(self)
+  super:load(self)
 
   for _, tree in pairs(Game.world.map:getEvents("tree")) do
     tree.wrap_texture_x = true

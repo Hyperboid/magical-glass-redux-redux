@@ -33,6 +33,7 @@ function item:init()
     self.bonuses = {
         defense = 11
     }
+
 end
 
 function item:showEquipText(target)

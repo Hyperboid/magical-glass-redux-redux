@@ -20,7 +20,7 @@ end
 function ArenaHazard:update()
     -- For more complicated bullet behaviours, code here gets called every update
 
-    super.update(self)
+    super:update(self)
 end
 
 return ArenaHazard

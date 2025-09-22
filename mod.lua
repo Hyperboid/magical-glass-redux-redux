@@ -25,15 +25,6 @@ function Mod:init()
         
         -- Object.draw(self)
     -- end)
-    
-    --[[
-    for _,item in pairs(Registry.items) do
-        local item = item()
-        if item.light == false and item.type == "item" and #item:getShortName() > 11 then
-            print(item:getShortName())
-        end 
-    end
-    ]]
 end
 
 function Mod:load(data, new_file)

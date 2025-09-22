@@ -20,8 +20,6 @@ function item:init()
     -- Light world check text
     self.check = "Weapon AT 0\n* Its bark is worse than\nits bite."
 
-    -- Consumable target mode ("ally", "party", "enemy", "enemies", or "none")
-    self.target = "none"
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
@@ -29,7 +27,7 @@ function item:init()
 end
 
 function item:onWorldUse(target)
-    Game.world:showText("* You threw the stick away.\n* Then picked it back up.")
+    Game.world:showText("* "..target:getNameOrYou().." threw the stick away.\n* Then picked it back up.")
     return false
 end
 
@@ -47,7 +45,11 @@ function item:getLightBattleText(user, target)
     if Game.battle.encounter.onStickUse then
         return Game.battle.encounter:onStickUse(self, user, target)
     else
-        return "* "..user.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
+        local text = "* "..target.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
+        if user ~= target then
+            text = "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n" .. "* "..target.chara:getNameOrYou().." threw it away.\n* Then picked it back up."
+        end
+        return text
     end
 end
 
@@ -55,7 +57,11 @@ function item:getBattleText(user, target)
     if Game.battle.encounter.onStickUse then
         return Game.battle.encounter:onStickUse(self, user, target)
     else
-        return "* "..user.chara:getName().." threw the stick away.\n* Then picked it back up."
+        local text = "* "..target.chara:getName().." threw the stick away.\n* Then picked it back up."
+        if user ~= target then
+            text = "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().."!\n" .. "* "..target.chara:getName().." threw it away.\n* Then picked it back up."
+        end
+        return text
     end
 end
 

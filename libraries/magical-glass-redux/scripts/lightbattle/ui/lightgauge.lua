@@ -3,7 +3,7 @@ local LightGauge, super = Class(Object)
 function LightGauge:init(type, amount, x, y, enemy, color)
     super.init(self, x, y)
 
-    self.layer = LIGHT_BATTLE_LAYERS["damage_numbers"]
+    self.layer = BATTLE_LAYERS["damage_numbers"]
     self.timer = Timer()
     self:addChild(self.timer)
 
@@ -12,9 +12,9 @@ function LightGauge:init(type, amount, x, y, enemy, color)
 
     if not color then
         if self.type == "damage" then
-            self.color = MG_PALETTE["gauge_health"]
+            self.color = PALETTE["action_health"]
         elseif self.type == "mercy" then
-            self.color = MG_PALETTE["gauge_mercy"]
+            self.color = COLORS["yellow"]
         end
     else
         self.color = color
@@ -30,7 +30,7 @@ function LightGauge:init(type, amount, x, y, enemy, color)
         self.real_value = self.enemy.health
         self.max_value = self.enemy.max_health
         self.extra_width = (self.width / self.max_value)
-        self.reversed = (Utils.sub(tostring(amount), 1, 1) == "+" or amount < 0) and true or false -- heal
+        self.reversed = (string.sub(tostring(amount), 1, 1) == "+" or amount < 0) and true or false -- heal
     elseif self.type == "mercy" then
         self.value = self.enemy.mercy
         self.real_value = self.enemy.mercy
@@ -81,14 +81,15 @@ end
 function LightGauge:draw()
     super.draw(self)
     
-    Draw.setColor(MG_PALETTE["gauge_outline"])
+    Draw.setColor(COLORS["black"])
     love.graphics.rectangle("fill", -1, 7, self.max_value * self.extra_width + 2, self.height + 2)
-    Draw.setColor(MG_PALETTE["gauge_bg"])
+    Draw.setColor(64 / 255, 64 / 255, 64 / 255)
     love.graphics.rectangle("fill", 0, 8, self.max_value * self.extra_width, self.height)
     if self.value > 0 then
         Draw.setColor(self.color)
         love.graphics.rectangle("fill", 0, 8, self.value * self.extra_width, self.height)
     end
+
 end
 
 return LightGauge

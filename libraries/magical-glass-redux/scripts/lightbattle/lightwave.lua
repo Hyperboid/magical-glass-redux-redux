@@ -46,7 +46,7 @@ function LightWave:getMenuAttackers()
     local result = {}
     for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
         local wave = enemy.selected_menu_wave
-        if isClass(wave) and wave.id == self.id or wave == self.id then
+        if type(wave) == "table" and wave.id == self.id or wave == self.id then
             table.insert(result, enemy)
         end
     end

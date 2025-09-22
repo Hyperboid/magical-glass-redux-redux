@@ -1,7 +1,7 @@
 local Noelle, super = Class(LightEncounter)
 
 function Noelle:init()
-    super.init(self)
+    super:init(self)
 
     -- Text displayed at the bottom of the screen at the start of the encounter
     self.text = "* Here they come!\n* (Undefined placement test :3)"
@@ -15,6 +15,7 @@ function Noelle:init()
     self:addEnemy("noelle")
     self:addEnemy("froggit")
     self:addEnemy("froggit")
+
 end
 
 return Noelle

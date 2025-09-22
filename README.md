@@ -49,10 +49,29 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 ### Resources:
 * UNDERTALE Team
 * DELTATRAVELER Team
-* AccurateJaney (Susie and Noelle Light World Sprites)
-* Discarded_Vessel (Kris Light World Sprites)
+* AccurateJaney (Kris and Noelle Light World Sprites)
+* Discarded_Vessel (Susie Light World Sprites)
+
+### Emotional Support <3:
+* Lots of people from the Kristal Discord and its subcommunities
+* Eli
+* Danny
+* Juell
+* Nathan
+* Trihan
+* Garon
+* Rachel
+* Cris
+* skysakura
+* NVI
+* Welt
+* Lynel
+* Star Artsy
+* Techno
+
+### Programming Assistance:
+* Kristal Team
 
 ### Sound Effects and Music:
 * UNDERTALE Team
 * deltarune Team
-* DELTATRAVELER Team

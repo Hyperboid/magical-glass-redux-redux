@@ -35,16 +35,17 @@ function item:init()
 
     self.light_bolt_count = 4
     self.light_bolt_speed = 10
-    self.light_bolt_speed_variance = 0
+    self.light_bolt_speed_variance = nil
     self.light_bolt_start = -80
     self.light_bolt_miss_threshold = 2
     self.light_multibolt_variance = {{0, 25, 50}, {100, 125, 150}, {200}}
     self.light_bolt_direction = "left"
     
     self.bolt_count = 4
-    self.multibolt_variance = {{50, 75}}
+    self.multibolt_variance = {{50, 75}, {50, 75, 100}, 100}
 
     self.attack_sound = "frypan"
+    
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch, crit)
@@ -65,17 +66,13 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     sprite:setOrigin(0.5)
     local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
     sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
-    sprite.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
+    sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
     sprite:play(1/30, true)
 
     if crit then
-        if Utils.equal({battler.chara:getLightMultiboltAttackColor()}, COLORS.white) then
-            sprite:setColor(Utils.lerp(COLORS.white, COLORS.yellow, 0.5))
-        else
-            sprite:setColor(Utils.lerp({battler.chara:getLightMultiboltAttackColor()}, COLORS.white, 0.5))
-        end
+        sprite:setColor(1, 1, 130/255)
         Assets.stopAndPlaySound("saber3")
     end
 
@@ -84,18 +81,14 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         star:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
         star:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
-        star.layer = LIGHT_BATTLE_LAYERS["above_arena_border"] - 0.5
+        star.layer = BATTLE_LAYERS["above_ui"] + 4
         star.physics.direction = math.rad(360 * i) / 8
         star.physics.friction = 0.34
         star.physics.speed = 8
         star.ang = 12.25
         star.color = {battler.chara:getLightMultiboltAttackColor()}
         if crit then
-            if Utils.equal({battler.chara:getLightMultiboltAttackColor()}, COLORS.white) then
-                star:setColor(Utils.lerp(COLORS.white, COLORS.yellow, 0.5))
-            else
-                star:setColor(Utils.lerp({battler.chara:getLightMultiboltAttackColor()}, COLORS.white, 0.5))
-            end
+            star:setColor(1, 1, 130/255)
         end
         enemy.parent:addChild(star)
         star.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
@@ -128,23 +121,28 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                 end
             end
 
-            star.rotation = star.rotation - math.rad(star.ang) * DTMULT
+            star.rotation = star.rotation + math.rad(star.ang) * DTMULT
             if star.alpha < 0.05 then
                 star:remove()
             end
         end
     end,
     function()
+        local sound = enemy:getDamageSound() or "damage"
+        if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
+            Assets.stopAndPlaySound(sound)
+        end
+        enemy:hurt(damage, battler)
+
+        battler.chara:onLightAttackHit(enemy, damage)
         sprite:remove()
         Utils.removeFromTable(enemy.dmg_sprites, sprite)
         for _,star in ipairs(stars) do
             star:remove()
             Utils.removeFromTable(enemy.dmg_sprites, star)
         end
-    end)
-    
-    Game.battle.timer:after(20/30, function()
-        self:onLightAttackHurt(battler, enemy, damage, stretch, crit)
+
+        Game.battle:finishActionBy(battler)
     end)
 
     return false

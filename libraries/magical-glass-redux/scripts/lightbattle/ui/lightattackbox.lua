@@ -5,16 +5,18 @@ function LightAttackBox:init(x, y)
 
     self.arena = Game.battle.arena
 
-    self.target_sprite = Game.battle.multi_mode and Sprite("ui/lightbattle/target_multi") or Sprite("ui/lightbattle/target")
+    local is_dark = ""
+    if not Game:isLight() then
+        is_dark = "_dark"
+    end
+    self.target_sprite = Game.battle.multi_mode and Sprite("ui/lightbattle/dumbtarget_multi"..is_dark) or Sprite("ui/lightbattle/dumbtarget"..is_dark)
     self.target_sprite:setOrigin(0.5, 0.5)
     self.target_sprite:setPosition(self.arena:getRelativePos(self.arena.width / 2, self.arena.height / 2))
-    self.target_sprite.layer = LIGHT_BATTLE_LAYERS["above_arena"]
-    if not Game:isLight() then
-        self.target_sprite:addFX(ShaderFX("hsv", {hue_shift = 180}))
-    end
+    self.target_sprite.layer = BATTLE_LAYERS["above_ui"]
     Game.battle:addChild(self.target_sprite)
 
-    self.bolt_target = Game.battle.multi_mode and self.arena.x / 2 - 34 or self.arena.x
+    -- called "fatal" for some reason in ut
+    self.bolt_target = Game.battle.multi_mode and self.arena.x / 2 - 10 or self.arena.x
 
     self.shoe_finished = 0
     self.attackers = Game.battle.normal_attackers
@@ -34,8 +36,7 @@ function LightAttackBox:createBolts()
         lane.battler = battler
         lane.bolts = {}
         lane.weapon = battler.chara:getWeapon()
-        lane.speed = lane.weapon and lane.weapon.getLightBoltSpeed and lane.weapon:getLightBoltSpeed() or 11 + (not Game.battle.multi_mode and Utils.random(0, 2, 1) or 0)
-        lane.acceleration = lane.weapon and lane.weapon.getLightBoltAcceleration and lane.weapon:getLightBoltAcceleration() or 0
+        lane.speed = lane.weapon and lane.weapon.getLightBoltSpeed and lane.weapon:getLightBoltSpeed() or 11 + (not Game.battle.multi_mode and Utils.random(0, 2, 1) or 1)
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
@@ -48,8 +49,8 @@ function LightAttackBox:createBolts()
         end
 
         offset = offset + last_offset
-        local randomizer = #self.attackers == 1 and 118 or 118 - offset
-        last_offset = Utils.pick{0, 11, 22} * 5
+        local randomizer = #self.attackers == 1 and 120 or 120 - offset
+        last_offset = Utils.pick{0, 10, 15} * 5
         local start_x
         if lane.direction == "left" then
             start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) - (Game.battle.multi_mode and randomizer or 0)
@@ -61,25 +62,37 @@ function LightAttackBox:createBolts()
 
         for i = 1, lane.weapon and lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1 do
             local bolt
-            local scale_y = 1 / #self.attackers
-            local sprite_height = 128 * scale_y
-            local y = 320 + (sprite_height * (Utils.getIndex(self.attackers, lane.battler) - 1)) - (#self.attackers - 1) * sprite_height / 2
+            local scale_y = (1 / #self.attackers)
             if i == 1 then
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), y, battler, scale_y)
+                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler, scale_y)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), y, battler, scale_y)
+                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler, scale_y)
                 end
             else
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or 94 + 110 * (i - 2)), y, battler, scale_y)
+                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or 84 + 100 * (i - 2)), 319, battler, scale_y)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or 94 + 110 * (i - 2)), y, battler, scale_y)
+                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or 84 + 100 * (i - 2)), 319, battler, scale_y)
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
-            bolt.target_magnet = 0
-            bolt.layer = LIGHT_BATTLE_LAYERS["above_arena"] + 1
+            local centerizer = 0
+            if #self.attackers == 1 then
+                centerizer = 1
+            elseif #self.attackers == 2 then
+                centerizer = 33
+            elseif #self.attackers == 3 then
+                centerizer = 43
+            elseif #self.attackers == 4 then
+                centerizer = 49
+            elseif #self.attackers == 5 then
+                centerizer = 51
+            else
+                centerizer = 51 + (#self.attackers - 5) * 2
+            end
+            bolt.y = math.ceil(bolt.y - (bolt.sprite.height * scale_y * (#self.attackers - Utils.getIndex(self.attackers, lane.battler)))) + centerizer
+            bolt.layer = BATTLE_LAYERS["above_ui"]
             table.insert(lane.bolts, bolt)
             Game.battle:addChild(bolt)
         end
@@ -89,7 +102,7 @@ end
 
 function LightAttackBox:getClose(battler)
     if battler.attack_type == "shoe" then
-        return (battler.bolts[1].x - self.bolt_target) / battler.speed
+        return battler.bolts[1].x / battler.speed - self.bolt_target / battler.speed
     elseif battler.attack_type == "slice" then
         return battler.bolts[1].x - self.bolt_target
     end
@@ -100,27 +113,30 @@ function LightAttackBox:getFirstBolt(battler)
 end
 
 function LightAttackBox:evaluateHit(battler, close)
+    local value = 0
     if close < 1 then
-        return 110
+        value = value + 110
     elseif close < 2 then
-        return 90
+        value = value + 90
     elseif close < 3 then
-        return 80 
+        value = value + 80 
     elseif close < 4 then
-        return 70
+        value = value + 70
     elseif close < 5 then
-        return 50
+        value = value + 50
     elseif close < 10 then
-        return 40
+        value = value + 40
     elseif close < 16 then
-        return 20
+        value = value + 20
     elseif close < 22 then
-        return 15
+        value = value + 15
     elseif close < 28 then
-        return 10
+        value = value + 10
     else
-        return 0
+        value = value + 0
     end
+
+    return value
 end
 
 function LightAttackBox:checkAttackEnd(battler, score, bolts, close)
@@ -135,7 +151,7 @@ function LightAttackBox:checkAttackEnd(battler, score, bolts, close)
             if score > 430 then
                 score = score * 1.8
             end
-            if score >= 400 then
+            if score > 400 then
                 score = score * 1.25
             end
         end
@@ -149,12 +165,11 @@ end
 
 function LightAttackBox:hit(battler)
     local bolt = battler.bolts[1]
-    bolt:resetPhysics()
     if battler.weapon and battler.weapon.onLightBoltHit then
         battler.weapon:onLightBoltHit(battler)
     end
     if battler.attack_type == "shoe" then
-        local close = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) <= -20 and 3 or 1))
+        local close = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) < -20 and 3 or 1))
 
         local eval = self:evaluateHit(battler, close)
         
@@ -173,6 +188,8 @@ function LightAttackBox:hit(battler)
         elseif close < 5 then
             Assets.stopAndPlaySound("hit")
             bolt.sprite:setColor(128/255, 1, 1)
+        elseif close < 28 then
+            bolt.sprite:setColor(192/255, 0, 0)
         else
             bolt.sprite:setColor(192/255, 0, 0)
         end
@@ -184,7 +201,7 @@ function LightAttackBox:hit(battler)
 
         return self:checkAttackEnd(battler, battler.score, battler.bolts, close), Utils.clamp(battler.score / battler.weapon:getLightBoltCount() / 110 * 1.2, 0.5, 1)
     elseif battler.attack_type == "slice" then
-        battler.score = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) <= -20 and 3 or 1))
+        battler.score = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) < -20 and 3 or 1))
         if battler.score == 0 then
             battler.score = 1
         end
@@ -206,7 +223,7 @@ function LightAttackBox:checkMiss(battler)
             return self:getClose(battler) > (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
         end
     elseif battler.attack_type == "slice" then
-        return (battler.direction == "left" and self:getClose(battler) - (Game.battle.multi_mode and self.arena.x / 2 + 34 + 3 or 0) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) - (Game.battle.multi_mode and self.arena.x / 2 + 34 - 3 or 0) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
+        return (battler.direction == "left" and self:getClose(battler) - (Game.battle.multi_mode and 180 or 0) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
     end
 end
 
@@ -226,12 +243,13 @@ end
 
 function LightAttackBox:update()
     super.update(self)
-    
+
     if Game.battle == nil then return end -- prevents a crash
-    
+
     self.timer = self.timer + DTMULT
-    
-    if self.timer >= 7 and #self.lanes == 0 then
+
+    -- if (not Game.battle.multi_mode and self.timer > 1 or Game.battle.multi_mode and self.timer > 5) and #self.lanes == 0 then
+    if self.timer > 1 and #self.lanes == 0 then
         self:createBolts()
     end
     
@@ -247,59 +265,22 @@ function LightAttackBox:update()
 
         if not self.done then
             for _,lane in ipairs(self.lanes) do
-                local acceleration = (lane.acceleration * (lane.speed / 11)) / 10
                 if lane.direction == "right" then
                     for _,bolt in ipairs(lane.bolts) do
                         if not bolt.hit then
-                            if acceleration > 0 then
-                                if bolt.x >= self.bolt_target - lane.speed and bolt.target_magnet < 1 then
-                                    if not bolt.last_speed then
-                                        bolt.last_speed = bolt.physics.speed_x
-                                    end
-                                    bolt:resetPhysics()
-                                    bolt.x = self.bolt_target
-                                    bolt.target_magnet = bolt.target_magnet + DTMULT
-                                else
-                                    if bolt.last_speed then
-                                        bolt.physics.speed_x = bolt.last_speed
-                                        bolt.last_speed = nil
-                                    end
-                                    bolt.physics.gravity = acceleration
-                                    bolt.physics.gravity_direction = math.pi*2
-                                end
-                            else
-                                bolt:move((lane.speed) * DTMULT, 0)
-                            end
+                            bolt:move(lane.speed * DTMULT, 0)
                         end
                     end
                 elseif lane.direction == "left" then
                     for _,bolt in ipairs(lane.bolts) do
                         if not bolt.hit then
-                            if acceleration > 0 then
-                                if bolt.x <= self.bolt_target + lane.speed and bolt.target_magnet < 1 then
-                                    if not bolt.last_speed then
-                                        bolt.last_speed = bolt.physics.speed_x
-                                    end
-                                    bolt:resetPhysics()
-                                    bolt.x = self.bolt_target
-                                    bolt.target_magnet = bolt.target_magnet + DTMULT
-                                else
-                                    if bolt.last_speed then
-                                        bolt.physics.speed_x = bolt.last_speed
-                                        bolt.last_speed = nil
-                                    end
-                                    bolt.physics.gravity = acceleration
-                                    bolt.physics.gravity_direction = math.pi
-                                end
-                            else
-                                bolt:move((-lane.speed) * DTMULT, 0)
-                            end
+                            bolt:move(-lane.speed * DTMULT, 0)
                         end
                     end
                 end
             end
         end
-        
+
         if Game.battle.cancel_attack or self.fading then
             if self.shoe_finished < #self.attackers or #self.attackers == 0 then
                 self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
@@ -323,7 +304,7 @@ function LightAttackBox:draw()
         local offset = 0
         for _,battler in ipairs(self.lanes) do
             Draw.setColor(1, 1, 1, 1)
-            if battler.bolts[1] then
+            if not battler.attacked then
                 Game.battle:debugPrintOutline("close: "    .. self:getClose(battler),         0, -200)
             end
             if battler.score then

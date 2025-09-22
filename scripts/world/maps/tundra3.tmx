@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="12" nextobjectid="86">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="12" nextobjectid="83">
  <editorsettings>
   <export target="tundra3.lua" format="lua"/>
  </editorsettings>
@@ -50,16 +50,13 @@
   <object id="20" name="spawn" x="260" y="360">
    <point/>
   </object>
-  <object id="75" name="shop_exit" x="669" y="315">
+  <object id="75" name="entry2" x="720" y="360">
    <point/>
   </object>
   <object id="77" name="entry3" x="420" y="110">
    <point/>
   </object>
   <object id="76" name="entry" x="80" y="400">
-   <point/>
-  </object>
-  <object id="85" name="entry2" x="715" y="354">
    <point/>
   </object>
  </objectgroup>
@@ -104,12 +101,6 @@ about coming back.)</property>
    </properties>
   </object>
   <object id="82" name="storagebox" x="560.667" y="191.333" width="41.3333" height="42"/>
-  <object id="84" name="transition" x="642" y="160" width="56" height="38">
-   <properties>
-    <property name="lightshop" value="light_test"/>
-    <property name="marker" value="shop_exit"/>
-   </properties>
-  </object>
  </objectgroup>
  <layer id="7" name="tiles3" width="20" height="12">
   <data encoding="csv">
@@ -185,13 +176,12 @@ about coming back.)</property>
    <polygon points="0,0 40,-40 0,-40"/>
   </object>
   <object id="56" x="320" y="0" width="40" height="80"/>
-  <object id="58" x="699" y="240" width="101" height="40"/>
+  <object id="58" x="640" y="240" width="160" height="40"/>
   <object id="59" x="600" y="160" width="40" height="80"/>
   <object id="63" x="640" y="280">
    <polygon points="0,0 0,-40 -40,-40 0,0"/>
   </object>
   <object id="64" x="524" y="154" width="80" height="40"/>
   <object id="65" x="484" y="0" width="40" height="160"/>
-  <object id="83" x="699" y="160" width="40" height="79"/>
  </objectgroup>
 </map>

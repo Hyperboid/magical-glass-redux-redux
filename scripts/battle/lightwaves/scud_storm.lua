@@ -18,7 +18,7 @@ end
 function ScudStorm:update()
     -- Code here gets called every frame
 
-    super.update(self)
+    super:update(self)
 end
 
 return ScudStorm

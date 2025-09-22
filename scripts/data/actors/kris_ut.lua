@@ -9,6 +9,8 @@ function actor:init()
     -- Width and height for this actor, used to determine its center
     self.width = 20
     self.height = 30
+    
+    self.use_light_battler_sprite = true
 
     -- Hitbox for this actor in the overworld (optional, uses width and height by default)
     self.hitbox = {0, 25, 19, 14}

@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 13,
-  nextobjectid = 95,
+  nextobjectid = 89,
   properties = {
     ["border"] = "undertale/tundra",
     ["name"] = "Snowdin - Dark Zone"
@@ -177,19 +177,6 @@ return {
           rotation = 0,
           visible = true,
           properties = {}
-        },
-        {
-          id = 94,
-          name = "shop_exit",
-          type = "",
-          shape = "point",
-          x = 671.333,
-          y = 312,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
         }
       }
     },
@@ -266,22 +253,6 @@ return {
           properties = {
             ["actor"] = "dummy_ut",
             ["lightencounter"] = "dummy"
-          }
-        },
-        {
-          id = 93,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 642,
-          y = 161,
-          width = 56,
-          height = 38,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["marker"] = "shop_exit",
-            ["shop"] = "dark_test"
           }
         }
       }
@@ -646,6 +617,19 @@ return {
           properties = {}
         },
         {
+          id = 58,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 640,
+          y = 240,
+          width = 160,
+          height = 40,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
           id = 59,
           name = "",
           type = "",
@@ -725,32 +709,6 @@ return {
           y = -41,
           width = 125,
           height = 41,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 89,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 699.333,
-          y = 239.333,
-          width = 101,
-          height = 40,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 90,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 699,
-          y = 159.333,
-          width = 40,
-          height = 79,
           rotation = 0,
           visible = true,
           properties = {}

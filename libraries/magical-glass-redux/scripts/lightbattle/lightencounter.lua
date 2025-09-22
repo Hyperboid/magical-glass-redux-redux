@@ -18,11 +18,11 @@ function LightEncounter:init()
 
     -- Whether the default grid background is drawn
     self.background = true
-    self.background_image = "ui/lightbattle/backgrounds/standard"
+    self.background_image = "ui/lightbattle/backgrounds/battle"
     self.background_color = Game:isLight() and {34/255, 177/255, 76/255, 1} or {175/255, 35/255, 175/255, 1}
 
     -- The music used for this encounter
-    self.music = Game:isLight() and "battle_ut" or "battle_dt"
+    self.music = Game:isLight() and "battleut" or "battledt"
 
     -- Whether characters have the X-Action option in their spell menu
     self.default_xactions = Game:getConfig("partyActions")
@@ -54,8 +54,6 @@ function LightEncounter:init()
         "* Don't slow me down.", --1/20
         "* Escaped..." --17/20
     }
-
-    self.reduced_tension = false
 end
 
 function LightEncounter:onSoulTransition()
@@ -195,6 +193,7 @@ function LightEncounter:setBattleState()
     if Game.battle.forced_victory then return end
     if self.event then
         Game.battle:setState("ENEMYDIALOGUE")
+        Game.battle.soul.can_move = true
     else
         Game.battle:setState("ACTIONSELECT")
     end
@@ -275,8 +274,8 @@ function LightEncounter:onFlee()
                 end
                 
                 for _,party in ipairs(Utils.removeDuplicates(party_to_lvl_up)) do
-                    party.level_up_count = party.level_up_count + 1
-                    party:onLevelUp(party.level_up_count)
+                    Game.level_up_count = Game.level_up_count + 1
+                    party:onLevelUp(Game.level_up_count)
                 end
 
                 self.used_flee_message = "* Ran away with " .. money .. " " .. Game:getConfig("darkCurrencyShort") .. ".\n* "..stronger.." became stronger."
@@ -335,6 +334,8 @@ function LightEncounter:drawBackground()
     love.graphics.draw(Assets.getTexture(self.background_image))
 end
 
+-- Functions
+
 function LightEncounter:addEnemy(enemy, x, y, ...)
     local enemy_obj
     if type(enemy) == "string" then
@@ -353,7 +354,7 @@ function LightEncounter:addEnemy(enemy, x, y, ...)
     if x and y then
         enemy_obj:setPosition(x, y)
     else
-        local x, y = SCREEN_WIDTH/2 - 1 + math.floor((#enemies + 1) / 2) * 152 * ((#enemies % 2 == 0) and -1 or 1), 244
+        local x, y = SCREEN_WIDTH/2 + math.floor((#enemies + 1) / 2) * 150 * ((#enemies % 2 == 0) and -1 or 1), 240
         enemy_obj:setPosition(x, y)
     end
 
@@ -438,28 +439,17 @@ end
 
 function LightEncounter:setFlag(flag, value)
     if self.id == nil then return end
-    Game:setFlag("lightencounter#"..self.id..":"..flag, value)
+    Game:setFlag("lw_encounter#"..self.id..":"..flag, value)
 end
 
 function LightEncounter:getFlag(flag, default)
     if self.id == nil then return end
-    return Game:getFlag("lightencounter#"..self.id..":"..flag, default)
+    return Game:getFlag("lw_encounter#"..self.id..":"..flag, default)
 end
 
 function LightEncounter:addFlag(flag, amount)
     if self.id == nil then return end
-    return Game:addFlag("lightencounter#"..self.id..":"..flag, amount)
-end
-
-function LightEncounter:hasReducedTension()
-    return self.reduced_tension
-end
-
-function LightEncounter:getDefendTension(battler)
-    if self:hasReducedTension() then
-        return 2
-    end
-    return 16
+    return Game:addFlag("lw_encounter#"..self.id..":"..flag, amount)
 end
 
 function LightEncounter:canDeepCopy()
