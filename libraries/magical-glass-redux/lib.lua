@@ -2430,6 +2430,9 @@ function lib:init()
         self.can_die = false
         self.ut_death = false
         
+        -- Whether this enemy should use bigger dust particles upon death when ut_death is enabled.
+        self.large_dust = false
+        
         -- Whether the enemy deals bonus damage when having more HP (Light World only)
         self.bonus_damage = true
     end)
