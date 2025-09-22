@@ -4,7 +4,7 @@ function spell:onCast(user, target)
     if target.tired then
         target:spare(true)
         
-        if Kristal.getLibConfig("engine-fixes", "spells_style") == 0 or Kristal.getLibConfig("engine-fixes", "spells_style") > 1 then
+        if Kristal.getLibConfig("engine-fixes", "spells_style") == 0 and Game.chapter > 1 or Kristal.getLibConfig("engine-fixes", "spells_style") > 1 then
             Assets.playSound("spell_pacify")
 
             local pacify_x, pacify_y = target:getRelativePos(target.width/2, target.height/2)
