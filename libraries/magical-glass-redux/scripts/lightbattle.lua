@@ -1845,6 +1845,8 @@ function LightBattle:update()
             Input.clear("cancel", true)
             self:nextTurn()
         end
+    elseif self.state == "SHORTACTTEXT" then
+        self:updateShortActText()
     end
     
     for _,battler in ipairs(self.party) do
@@ -3196,20 +3198,7 @@ function LightBattle:onKeyPressed(key)
     elseif self.state == "BATTLETEXT" then
         -- Nothing here
     elseif self.state == "SHORTACTTEXT" then
-        if Input.isConfirm(key) then
-            if (not self.battle_ui.short_act_text_1:isTyping()) and
-               (not self.battle_ui.short_act_text_2:isTyping()) and
-               (not self.battle_ui.short_act_text_3:isTyping()) then
-                self.battle_ui.short_act_text_1:setText("")
-                self.battle_ui.short_act_text_2:setText("")
-                self.battle_ui.short_act_text_3:setText("")
-                for _,iaction in ipairs(self.short_actions) do
-                    self:finishAction(iaction)
-                end
-                self.short_actions = {}
-                self:setState("ACTIONS", "SHORTACTTEXT")
-            end
-        end
+        -- Nothing here
     elseif self.state == "ENEMYDIALOGUE" then
         -- Nothing here
     elseif self.state == "ACTIONSELECT" then
@@ -3347,6 +3336,24 @@ function LightBattle:updateMenuWaves()
     if all_done and not self.finished_menu_waves then
         self.finished_menu_waves = true
         self.encounter:onMenuWavesDone()
+    end
+end
+
+
+function LightBattle:updateShortActText()
+    if Input.pressed("confirm") or Kristal.getLibConfig("magical-glass", "undertale_text_skipping") ~= false and Input.down("menu") then
+        if (not self.battle_ui.short_act_text_1:isTyping()) and
+           (not self.battle_ui.short_act_text_2:isTyping()) and
+           (not self.battle_ui.short_act_text_3:isTyping()) then
+            self.battle_ui.short_act_text_1:setText("")
+            self.battle_ui.short_act_text_2:setText("")
+            self.battle_ui.short_act_text_3:setText("")
+            for _,iaction in ipairs(self.short_actions) do
+                self:finishAction(iaction)
+            end
+            self.short_actions = {}
+            self:setState("ACTIONS", "SHORTACTTEXT")
+        end
     end
 end
 

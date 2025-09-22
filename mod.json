@@ -6,7 +6,7 @@
     "version": "v2.26.16",
     "engineVer": "v0.10.0-dev",
 
-    "chapter": 2,
+    "chapter": 4,
 
     "map": "tundra3",
     //"map": "darktundra1",
@@ -38,6 +38,8 @@
             "undertale_menu_display": true,
             "light_battle_tp": true,
             "mercy_messages": true,
+            "tired_messages": true,
+            "awake_messages": true,
             "mercy_bar": true,
             "enemy_bar_percentages": true,
             "expanded_light_save_menu": true,

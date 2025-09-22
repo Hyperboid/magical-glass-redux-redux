@@ -167,7 +167,21 @@ function LightEnemyBattler:getHPVisibility() return self.show_hp end
 function LightEnemyBattler:getMercyVisibility() return self.show_mercy end
 
 function LightEnemyBattler:setTired(bool)
+    local old_tired = self.tired
     self.tired = bool
+    if self.tired then
+        if not old_tired and Kristal.getLibConfig("magical-glass", "tired_messages") and self.health > 0 then
+            -- Check for self.parent so setting Tired state in init doesn't crash
+            if self.parent then
+                self:lightStatusMessage("text", "TIRED", {0/255, 178/255, 255/255})
+                Assets.playSound("spellcast", 0.5, 0.9)
+            end
+        end
+    else
+        if old_tired and Kristal.getLibConfig("magical-glass", "awake_messages") and self.health > 0 then
+            if self.parent then self:lightStatusMessage("text", "AWAKE", {0/255, 178/255, 255/255}) end
+        end
+    end
 end
 
 function LightEnemyBattler:registerAct(name, description, party, tp, icons)

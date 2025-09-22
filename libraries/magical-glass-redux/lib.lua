@@ -520,8 +520,8 @@ function lib:init()
         end)
     end)
     
-    Utils.hook(Transition, "init", function(orig, self, x, y, w, h, properties)
-        orig(self, x, y, w, h, properties)
+    Utils.hook(Transition, "init", function(orig, self, x, y, shape, properties)
+        orig(self, x, y, shape, properties)
         
         properties = properties or {}
         
@@ -667,6 +667,12 @@ function lib:init()
         self.turn_count = self.turn_count - 1
         return orig(self)
     end)
+    
+    if Kristal.getLibConfig("magical-glass", "undertale_text_skipping") == true then
+        Utils.hook(Battle, "updateShortActText", function(orig, self)
+            if Input.pressed("confirm") then orig(self) end
+        end)
+    end
     
     Utils.hook(Battle, "onStateChange", function(orig, self, old, new)
         local result = self.encounter:beforeStateChange(old,new)
@@ -2011,8 +2017,10 @@ function lib:init()
                 if Input.shift() then
                     save_pos = {self.player.x, self.player.y}
                 end
-                if not Kristal.getLibConfig("magical-glass", "expanded_light_save_menu") then
+                if Kristal.getLibConfig("magical-glass", "savepoint_style") ~= "undertale" then
                     self:openMenu(LightSaveMenu(Game.save_id, save_pos))
+                elseif not Kristal.getLibConfig("magical-glass", "expanded_light_save_menu") then
+                    self:openMenu(LightSaveMenuNormal(Game.save_id, save_pos))
                 else
                     self:openMenu(LightSaveMenuExpanded(save_pos))
                 end
@@ -2418,6 +2426,10 @@ function lib:init()
     Utils.hook(EnemyBattler, "init", function(orig, self, actor, use_overlay)
         orig(self, actor, use_overlay)
         
+        -- Whether this enemy can die, and whether it's the Undertale death or Deltarune death
+        self.can_die = false
+        self.ut_death = false
+        
         -- Whether the enemy deals bonus damage when having more HP (Light World only)
         self.bonus_damage = true
     end)
@@ -2434,10 +2446,14 @@ function lib:init()
     end)
     
     Utils.hook(EnemyBattler, "freeze", function(orig, self)
-        if Game:isLight() then
-            Game.battle.money = Game.battle.money - 24 + 2
+        if not self.can_freeze then
+            self:onDefeat()
+        else
+            orig(self)
+            if Game:isLight() then
+                Game.battle.money = Game.battle.money - 24 + 2
+            end
         end
-        orig(self)
     end)
     
     Utils.hook(EnemyBattler, "defeat", function(orig, self, reason, violent)
@@ -2452,6 +2468,47 @@ function lib:init()
         else
             Game.battle.xp = Game.battle.xp - self.experience
         end
+    end)
+    
+    Utils.hook(EnemyBattler, "onDefeat", function(orig, self, damage, battler)
+        if self.exit_on_defeat then
+            if self.can_die then
+                if self.ut_death then
+                    self:onDefeatVaporized(damage, battler)
+                else
+                    self:onDefeatFatal(damage, battler)
+                end
+            else
+                self:onDefeatRun(damage, battler)
+            end
+        else
+            self.sprite:setAnimation("defeat")
+        end
+    end)
+    
+    Utils.hook(EnemyBattler, "onDefeatVaporized", function(orig, self, damage, battler)
+        self.hurt_timer = -1
+
+        Assets.playSound("vaporized", 1.2)
+
+        local sprite = self:getActiveSprite()
+
+        sprite.visible = false
+        sprite:stopShake()
+
+        local death_x, death_y = sprite:getRelativePos(0, 0, self)
+        local death
+        if self.large_dust then
+            death = DustEffectLarge(sprite:getTexture(), death_x, death_y, true, function() self:remove() end)
+        else
+            death = DustEffect(sprite:getTexture(), death_x, death_y, true, function() self:remove() end)
+        end
+         
+        death:setColor(sprite:getDrawColor())
+        death:setScale(sprite:getScale())
+        self:addChild(death)
+
+        self:defeat("KILLED", true)
     end)
 
     Utils.hook(PartyMember, "init", function(orig, self)
@@ -3488,8 +3545,10 @@ function lib:init()
                 end
             end
             
-            if self.simple_menu or (self.simple_menu == nil and not Kristal.getLibConfig("magical-glass", "expanded_light_save_menu")) then
+            if Kristal.getLibConfig("magical-glass", "savepoint_style") ~= "undertale" then
                 self.world:openMenu(LightSaveMenu(Game.save_id, self.marker))
+            elseif self.simple_menu or (self.simple_menu == nil and not Kristal.getLibConfig("magical-glass", "expanded_light_save_menu")) then
+                self.world:openMenu(LightSaveMenuNormal(Game.save_id, self.marker))
             else
                 self.world:openMenu(LightSaveMenuExpanded(self.marker))
             end
@@ -3501,55 +3560,6 @@ function lib:init()
             Interactable.update(self)
         end)
     end
-
-    Utils.hook(LightSaveMenu, "update", function(orig, self)
-        if self.state == "MAIN" and (Input.pressed("left") or Input.pressed("right")) then
-            Assets.stopAndPlaySound("ui_move")
-        end
-        orig(self)
-    end)
-
-    Utils.hook(LightSaveMenu, "draw", function(orig, self)
-        love.graphics.setFont(self.font)
-
-        if self.state == "SAVED" then
-            Draw.setColor(PALETTE["world_text_selected"])
-        else
-            Draw.setColor(PALETTE["world_text"])
-        end
-    
-        local data      = self.saved_file        or {}
-        local mg        = data.magical_glass     or {}
-
-        local name      = data.name              or "EMPTY"
-        local level     = mg.save_level          or 0
-        local playtime  = data.playtime          or 0
-        local room_name = data.room_name         or "--"
-    
-        love.graphics.print(name,         self.box.x + 8,        self.box.y - 10 + 8)
-        love.graphics.print(Kristal.getLibConfig("magical-glass", "light_level_name_short").." "..level, self.box.x + 210 - 42, self.box.y - 10 + 8)
-    
-        local minutes = math.floor(playtime / 60)
-        local seconds = math.floor(playtime % 60)
-        local time_text = string.format("%d:%02d", minutes, seconds)
-        love.graphics.printf(time_text, self.box.x - 280 + 148, self.box.y - 10 + 8, 500, "right")
-    
-        love.graphics.print(room_name, self.box.x + 8, self.box.y + 38)
-    
-        if self.state == "MAIN" then
-            love.graphics.print("Save",   self.box.x + 30  + 8, self.box.y + 98)
-            love.graphics.print("Return", self.box.x + 210 + 8, self.box.y + 98)
-    
-            Draw.setColor(Game:getSoulColor())
-            Draw.draw(self.heart_sprite, self.box.x + 10 + (self.selected_x - 1) * 180, self.box.y + 96 + 8, 0, 2, 2)
-        elseif self.state == "SAVED" then
-            love.graphics.print("File saved.", self.box.x + 30 + 8, self.box.y + 98)
-        end
-    
-        Draw.setColor(1, 1, 1)
-    
-        Object.draw(self)
-    end)
     
     Utils.hook(Spell, "init", function(orig, self)
         orig(self)
