@@ -9,7 +9,7 @@ function LightSoul:init(x, y, color)
         self:setColor(1, 0, 0)
     end
 
-    self.layer = BATTLE_LAYERS["soul"]
+    self.layer = LIGHT_BATTLE_LAYERS["soul"]
 
     self.sprite = Sprite("player/heart_light")
     self.sprite:setOrigin(0.5, 0.5)
@@ -297,19 +297,7 @@ function LightSoul:moveYExact(amount, move_x)
 end
 
 function LightSoul:onDamage(bullet, amount)
-    local best_amount
-    for _,battler in ipairs(Game.battle.party) do
-        local equip_amount = 0
-        for _,equip in ipairs(battler.chara:getEquipment()) do
-            if equip.getInvBonus then
-                equip_amount = equip_amount + equip:getInvBonus()
-            end
-        end
-        if not best_amount or equip_amount > best_amount then
-            best_amount = equip_amount
-        end
-    end
-    self.inv_timer = self.inv_timer + best_amount
+    -- Can be overridden, called when the soul actually takes damage from a bullet
 end
 
 function LightSoul:onCollide(bullet)
@@ -374,24 +362,26 @@ function LightSoul:update()
             table.insert(collided_bullets, bullet)
         end
         if self.inv_timer == 0 and Game.battle:getState() == "DEFENDING" then
-            if bullet.tp ~= 0 and bullet:collidesWith(self.graze_collider) then
+            if bullet:canGraze() and bullet:collidesWith(self.graze_collider) then
                 local old_graze = bullet.grazed
                 if bullet.grazed then
-                    Game:giveTension(bullet.tp * DT * self.graze_tp_factor)
-                    if Game.battle.wave_timer < Game.battle.wave_length - (1/3) then
+                    Game:giveTension(bullet:getGrazeTension() * DT * self.graze_tp_factor)
+                    if Game.battle.wave_timer < Game.battle.wave_length - (1 / 3) then
                         Game.battle.wave_timer = Game.battle.wave_timer + (bullet.time_bonus * (DT / 30) * self.graze_time_factor)
                     end
                     if self.graze_sprite.timer < 0.1 then
                         self.graze_sprite.timer = 0.1
                     end
+                    bullet:onGraze(false)
                 else
                     Assets.playSound("graze")
-                    Game:giveTension(bullet.tp * self.graze_tp_factor)
+                    Game:giveTension(bullet:getGrazeTension() * self.graze_tp_factor)
                     if Game.battle.wave_timer < Game.battle.wave_length - (1/3) then
                         Game.battle.wave_timer = Game.battle.wave_timer + ((bullet.time_bonus / 30) * self.graze_time_factor)
                     end
-                    self.graze_sprite.timer = 1/3
+                    self.graze_sprite.timer = 1 / 3
                     bullet.grazed = true
+                    bullet:onGraze(true)
                 end
                 self:onGraze(bullet, old_graze)
             end

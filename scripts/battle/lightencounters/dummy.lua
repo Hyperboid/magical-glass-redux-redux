@@ -1,14 +1,14 @@
 local Dummy, super = Class(LightEncounter)
 
 function Dummy:init()
-    super:init(self)
+    super.init(self)
 
     -- Text displayed at the bottom of the screen at the start of the encounter
     self.text = "* You encountered the Dummy...?"
 
     -- Battle music ("battleut" is undertale)
     -- self.music = nil
-    self.music = Game:isLight() and "prebattle1ut" or "prebattle1dt"
+    self.music = Game:isLight() and "prebattle_ut" or "prebattle_dt"
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("dummy")

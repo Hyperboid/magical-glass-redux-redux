@@ -7,11 +7,9 @@
         "Bor",                          // contributor
         "Just Another Random User",     // contributor
     ],
-
-    "version": "v2.21.12",
+    "dependencies": ["engine-fixes"],
+    "version": "v2.26.16",
     "engineVer": "v0.10.0-dev",
-    
-    "default": true, // Dark Place Rebirth
 
     "config": {
         
@@ -31,7 +29,7 @@
         /////
         "default_battle_system": ["deltarune", false],
         
-        ///// Shared Light EXP and LV
+        ///// Shared Light EXP
         // Whether EXP is global to all party members or local to each
         /////
         "shared_light_exp": false,
@@ -166,6 +164,16 @@
         // Shows the amount of mercy added to an enemy when their mercy gauge increases in Light Battles.
         /////
         "mercy_messages": false,
+        
+        ///// Tired Messages
+        // Shows a message when an enemy fall asleep in Light Battles.
+        /////
+        "tired_messages": false,
+        
+        ///// Awake Messages
+        // Shows a message when an enemy wake up in Light Battles.
+        /////
+        "awake_messages": false,
 
         ///// Enemy Bar Percentages
         // Draws the HP and Mercy text and Percentages on the gauges.
@@ -177,8 +185,24 @@
         /////
         "light_enemy_auras": false,
         
+        ///// Savepoint Style
+        // Determines the appearance of savepoints drawn in the light world.
+        ///// Values:
+        //
+        // "undertale"
+        // UNDERTALE-styled savepoints. (yellow, doesn't fade)
+        // Uses Undertale saving style
+        //
+        // "deltarune"
+        // deltarune-styled savepoints. (white, fades depending on the player's distance from it)
+        // Uses Deltarune saving style
+        //
+        /////
+        "savepoint_style": "deltarune",
+        
         ///// Expanded Light Save Menu
         // Allows having 3 save slots in the light world save points.
+        // (Ignored if "savepoint_style" is set to "deltarune")
         /////
         "expanded_light_save_menu": false,
         

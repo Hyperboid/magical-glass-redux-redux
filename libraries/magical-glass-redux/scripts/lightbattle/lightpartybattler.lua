@@ -33,8 +33,8 @@ function LightPartyBattler:calculateDamage(amount)
     local hp = self.chara:getHealth()
     
     if Game:isLight() then
-        local bonus = MagicalGlassLib.bonus_damage ~= false and hp > 20 and math.min(1 + math.floor((hp - 20) / 10), 8) or 0
-        amount = Utils.round(amount / 5 + bonus - def / 5)
+        local bonus = (MagicalGlassLib.bonus_damage ~= false and self.bonus_damage ~= false) and hp > 20 and math.min(1 + math.floor((hp - 20) / 10), 8) or 0
+        amount = Utils.round(amount + bonus - def / 5)
     else
         local threshold_a = (max_hp / 5)
         local threshold_b = (max_hp / 8)
@@ -57,7 +57,11 @@ function LightPartyBattler:calculateDamage(amount)
 end
 
 function LightPartyBattler:calculateDamageSimple(amount)
-    return math.ceil(amount - (self.chara:getStat("defense")))
+    if Game:isLight() then
+        return math.ceil(amount - (self.chara:getStat("defense") / 5))
+    else
+        return math.ceil(amount - (self.chara:getStat("defense") * 3))
+    end
 end
 
 function LightPartyBattler:getElementReduction(element)
@@ -83,10 +87,15 @@ function LightPartyBattler:getElementReduction(element)
 end
 
 function LightPartyBattler:hurt(amount, exact, color, options)
+    if type(exact) == "string" then
+        exact = false
+        self.bonus_damage = false
+    end
+    
     options = options or {}
     
     self:setSleeping(false)
-    Game.battle:shakeCamera(2, 2, 0.35, 1)
+    Game.battle:shakeCamera(2, 2, 0.35)
 
     if not options["all"] then
         Assets.playSound("hurt")
@@ -113,6 +122,8 @@ function LightPartyBattler:hurt(amount, exact, color, options)
         
         self:removeHealthBroken(amount)
     end
+    
+    self.bonus_damage = nil
 end
 
 function LightPartyBattler:removeHealth(amount)

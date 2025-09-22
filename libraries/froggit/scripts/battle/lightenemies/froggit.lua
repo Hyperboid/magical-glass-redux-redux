@@ -1,7 +1,7 @@
 local Froggit, super = Class(LightEnemyBattler)
 
 function Froggit:init()
-    super:init(self)
+    super.init(self)
 
     -- Enemy name
     self.name = "Froggit"
@@ -18,6 +18,9 @@ function Froggit:init()
     -- Enemy reward
     self.money = 2
     self.experience = 3
+    
+    -- Whether the enemy deals bonus damage when having more HP (Light World only)
+    self.bonus_damage = false
 
     -- The Speech bubble offset
     self.dialogue_offset = {20, 0}
@@ -101,7 +104,7 @@ function Froggit:onAct(battler, name)
 
     -- If the act is none of the above, run the base onAct function
     -- (this handles the Check act)
-    return super:onAct(self, battler, name)
+    return super.onAct(self, battler, name)
 end
 
 function Froggit:getDamageVoice()

@@ -43,8 +43,7 @@ function item:init()
 
     self.attack_sound = "punchstrong"
 
-    self.tags = {"punch"}
-
+    self.tags = {"punch", "crit_nerf"}
 end
 
 function item:getLightBoltSpeed()
@@ -94,24 +93,20 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         sprite:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
-        sprite.layer = BATTLE_LAYERS["above_ui"] + 5
+        sprite.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
         sprite.color = {battler.chara:getLightMultiboltAttackColor()}
         enemy.parent:addChild(sprite)
         
-        Game.battle:shakeCamera(2, 2, 0.35, 1)
+        Game.battle:shakeCamera(2, 2, 0.35)
         Game.battle:shakeAttackSprite(sprite)
+        
+        Game.battle.timer:after(10/30, function()
+            self:onLightAttackHurt(battler, enemy, damage, stretch, crit)
+        end)
 
         sprite:play(2/30, false, function(this)
-            local sound = enemy:getDamageSound() or "damage"
-            if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
-                Assets.stopAndPlaySound(sound)
-            end
-            enemy:hurt(damage, battler)
-
-            battler.chara:onLightAttackHit(enemy, damage)
             this:remove()
             Utils.removeFromTable(enemy.dmg_sprites, this)
-            Game.battle:finishActionBy(battler)
         end)
     else
         local state = "PRESS" -- PRESS, PUNCHING, DONE
@@ -120,7 +115,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
         local confirm_button
         local press = Sprite("ui/lightbattle/pressz_press")
-        local confirm_key = string.sub(Input.getText("confirm"), 2, -2)
+        local confirm_key = Utils.sub(Input.getText("confirm"), 2, -2)
         local relative_pos_x, relative_pos_y = 0, 0
         if Input.usingGamepad() then
             confirm_button = Sprite(Input.getTexture("confirm"))
@@ -142,10 +137,10 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         press:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2), (enemy.height / 2))
         press:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
-        press:setLayer(BATTLE_LAYERS["above_ui"] + 5)
+        press:setLayer(LIGHT_BATTLE_LAYERS["above_arena_border"])
         press.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, press)
-        confirm_button:setLayer(BATTLE_LAYERS["above_ui"] + 5)
+        confirm_button:setLayer(LIGHT_BATTLE_LAYERS["above_arena_border"])
         confirm_button.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
         table.insert(enemy.dmg_sprites, confirm_button)
 
@@ -160,24 +155,15 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             end
 
             if punches > 0 then
-                local sound = enemy:getDamageSound() or "damage"
-                if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
-                    Assets.stopAndPlaySound(sound)
-                end
-                local new_damage = math.ceil((crit and Utils.round(damage * (21/22)) or damage) * (punches / self.attack_punches))
-                enemy:hurt(new_damage, battler)
-        
-                if punches < self.attack_punches and damage <= 0 then
+                local new_damage = math.ceil(damage * (punches / self.attack_punches))
+                if punches < self.attack_punches and new_damage <= 0 then
                     enemy:onDodge(battler, true)
                 end
-                
-                battler.chara:onLightAttackHit(enemy, new_damage)
-                Game.battle:finishActionBy(battler)
+                self:onLightAttackHurt(battler, enemy, new_damage, stretch, crit)
             else
                 self:onLightMiss(battler, enemy, true, nil, false)
                 Game.battle:finishActionBy(battler)
             end
-
         end
 
         Game.battle.timer:during(self.attack_punch_time, function()
@@ -220,7 +206,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                         small_punch.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
                         table.insert(enemy.dmg_sprites, small_punch)
                         small_punch:setOrigin(0.5)
-                        small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
+                        small_punch.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
                         small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
                         small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
                         enemy.parent:addChild(small_punch)
@@ -235,17 +221,20 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                         src:setPitch(self:getLightAttackPitch() or 1)
                         
                         local punch = Sprite("effects/lightattack/hyperfist")
-                        Game.battle:shakeCamera(2, 2, 0.35, 1)
+                        Game.battle:shakeCamera(2, 2, 0.35)
                         punch.battler_id = battler and Game.battle:getPartyIndex(battler.chara.id) or nil
                         table.insert(enemy.dmg_sprites, punch)
                         punch:setOrigin(0.5)
-                        punch.layer = BATTLE_LAYERS["above_ui"] + 5
+                        punch.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
                         punch.color = {battler.chara:getLightMultiboltAttackColor()}
                         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2))
                         punch:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
                         enemy.parent:addChild(punch)
                         Game.battle:shakeAttackSprite(punch)
-                        punch:play(2/30, false, function(s) s:remove(); Utils.removeFromTable(enemy.dmg_sprites, punch) finishAttack() end)
+                        Game.battle.timer:after(10/30, function()
+                            finishAttack()
+                        end)
+                        punch:play(2/30, false, function(s) s:remove(); Utils.removeFromTable(enemy.dmg_sprites, punch) end)
                     end
 
                 end

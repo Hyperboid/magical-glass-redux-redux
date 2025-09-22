@@ -18,11 +18,10 @@ function character:init()
     -- Default light world equipment item IDs (saves current equipment)
     self.lw_weapon_default = "custom/scarf"
     self.lw_armor_default = "light/bandage"
-    
 end
 
 function character:lightLVStats()
-    self.lw_stats = {
+    return {
         health = self:getLightLV() == 20 and 99 or 16 + self:getLightLV() * 4,
         attack = 9 + self:getLightLV() + math.floor(self:getLightLV() / 3),
         defense = 9 + math.ceil(self:getLightLV() / 4),
