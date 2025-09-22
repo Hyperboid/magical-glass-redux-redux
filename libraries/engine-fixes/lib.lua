@@ -26,64 +26,74 @@ function lib:init()
         self.camera:stopShake()
     end)
     
-    Utils.hook(Battle, "hurt", function(orig, self, amount, exact, target, swoon)
-        pcall(function() orig(self, amount, exact, target, swoon) end)
-    end)
-    
     Utils.hook(Battle, "checkGameOver", function(orig, self)
         self:stopCameraShake()
         return orig(self)
     end)
     
     Utils.hook(PartyBattler, "hurt", function(orig, self, amount, exact, color, options)
-        Assets.playSound("hurt")
+        options = options or {}
+        
+        Game.battle:shakeCamera(4)
 
-        self:shakeCamera()
-        self:showHealthBars()
+        local swoon = options["swoon"]
 
-        if type(battler) == "number" then
-            amount = battler
-            battler = nil
+        if not options["all"] then
+            Assets.playSound("hurt")
+            if not exact then
+                amount = self:calculateDamage(amount)
+                if self.defending then
+                    amount = math.ceil((2 * amount) / 3)
+                end
+                -- we don't have elements right now
+                local element = 0
+                amount = math.ceil((amount * self:getElementReduction(element)))
+            end
+
+            self:removeHealth(amount, swoon)
+        else
+            -- We're targeting everyone.
+            if not exact then
+                amount = self:calculateDamage(amount)
+                -- we don't have elements right now
+                local element = 0
+                amount = math.ceil((amount * self:getElementReduction(element)))
+
+                if self.defending then
+                    amount = math.ceil((3 * amount) / 4) -- Slightly different than the above
+                end
+            end
+
+            self:removeHealthBroken(amount, swoon) -- Use a separate function for cleanliness
         end
 
-        local any_killed = false
-        local any_alive = false
-        for _,party in ipairs(Game.party) do
-            if not battler or battler == party.id or battler == party then
-                local current_health = party:getHealth()
-                party:setHealth(party:getHealth() - amount)
-                if party:getHealth() <= 0 then
-                    party:setHealth(1)
-                    any_killed = true
-                else
-                    any_alive = true
-                end
+        if (self.chara:getHealth() <= 0) then
+            self:statusMessage("msg", swoon and "swoon" or "down", color, true)
+        else
+            self:statusMessage("damage", amount, color, true)
+        end
 
-                local dealt_amount = current_health - party:getHealth()
+        self.hurt_timer = 0
 
-                if dealt_amount > 0 then
-                    self:getPartyCharacterInParty(party):statusMessage("damage", dealt_amount)
+        if (not self.defending) and (not self.is_down) then
+            self.sleeping = false
+            self.hurting = true
+            self:toggleOverlay(true)
+            self.overlay_sprite:setAnimation("battle/hurt", function()
+                if self.hurting then
+                    self.hurting = false
+                    self:toggleOverlay(false)
                 end
-            elseif party:getHealth() > amount then
-                any_alive = true
+            end)
+            if not self.overlay_sprite.anim_frames then -- backup if the ID doesn't animate, so it doesn't get stuck with the hurt animation
+                Game.battle.timer:after(0.5, function()
+                    if self.hurting then
+                        self.hurting = false
+                        self:toggleOverlay(false)
+                    end
+                end)
             end
         end
-
-        if self.player then
-            self.player.hurt_timer = 7
-        end
-
-        if any_killed and not any_alive then
-            self:stopCameraShake()
-            if not self.map:onGameOver() then
-                Game:gameOver(self.soul:getScreenPos())
-            end
-            return true
-        elseif battler then
-            return any_killed
-        end
-
-        return false
     end)
     
     -- Stops the camera shake.
