@@ -1,0 +1,61 @@
+Heyo! Thank you for installing the mod!!!
+
+If you have any questions message me on discord!! 
+
+saddiamondman
+
+that is my discord
+
+
+======================================
+V2 notes   undertale 9th anaversy
+===================================
+WOW!!!
+I can't believe it's been a full year already!
+Anywho...
+some people have been messaging me on discord on how to use the library.
+Please not that this does not replace kris but actually adds frisk into the engine as a party member
+
+
+
+
+
+
+to use frisk for when you open your mod edit your mod.json "party" table
+
+------------------
+    // The party. The first character is the player.
+    "party": ["kris", "susie", "ralsei"],
+------------------
+to
+------------------
+    // The party. The first character is the player.
+    "party": ["frisk"],
+------------------
+
+
+
+
+
+the dark world sprites are based off the twin runes comics frisk by Akanemnon on tumblur dot com
+
+{{I made the sprites so do not upload them to the spriters resource without asking for i have not asked Akanemnon if im allowed to use the design}}
+
+https://akanemnon.tumblr.com/
+
+check them out! You wont regret it!
+
+
+
+the light world sprites are made by Askywalker on the spriters resource undertale customs page
+slightly edited to make it a bit more accurate to undertale
+
+https://www.spriters-resource.com/custom_edited/undertalecustoms/sheet/125972/
+
+https://www.spriters-resource.com/submitter/Askywalker/
+
+
+
+I hope to see you all next year!
+
+

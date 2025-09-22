@@ -11,9 +11,6 @@ function bullet:init(x, y)
     local angle = Utils.angle(x, y, Game.battle.soul.x + 2, Game.battle.soul.y + 2)
     self.physics.direction = angle
     self.physics.speed = 2.5
-    
-    -- Whether the bullet deals bonus damage when having more HP (Light Battles only)
-    self.bonus_damage = false
 end
 
 return bullet

@@ -34,6 +34,7 @@ function item:onLightAttack(battler, enemy, damage, stretch)
         enemy:onDodge(battler, true)
     end
     self.counter = 0
+    self.strikes = 0
     Game.battle.timer:everyInstant(stretch / 1.5, function()
         self.counter = self.counter + 1
         local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
@@ -47,23 +48,17 @@ function item:onLightAttack(battler, enemy, damage, stretch)
         sprite:setOrigin(0.5)
         local relative_pos_x, relative_pos_y = enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 8)
         sprite:setPosition(relative_pos_x + enemy.dmg_sprite_offset[1], relative_pos_y + enemy.dmg_sprite_offset[2])
-        sprite.layer = BATTLE_LAYERS["above_ui"] + 5
+        sprite.layer = LIGHT_BATTLE_LAYERS["above_arena_border"]
         sprite.color = {battler.chara:getLightAttackColor()}
         enemy.parent:addChild(sprite)
-        sprite:play((stretch^(1/1.5) / 4) / 1.5, false, function(this)
-            local sound = enemy:getDamageSound() or "damage"
-            if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
-                Assets.stopAndPlaySound(sound)
-            end
-            enemy:hurt(damage, battler)
-
-            battler.chara:onLightAttackHit(enemy, damage)
+        sprite:play((stretch / 4) / 1.6, false, function(this)
+            self.strikes = self.strikes + 1
+            Game.battle.timer:after(3/30, function()
+                self:onLightAttackHurt(battler, enemy, damage, stretch, crit, true, self.strikes >= self.attacks_amount)
+            end)
+            
             this:remove()
             Utils.removeFromTable(enemy.dmg_sprites, this)
-            
-            if self.counter >= self.attacks_amount then
-                Game.battle:finishActionBy(battler)
-            end
         end)
     end, self.attacks_amount)
 

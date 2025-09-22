@@ -92,7 +92,11 @@ function lib:onBorderDraw(border_sprite)
             love.graphics.line(-100 + (i * 50) - math.floor(offset), 0, -100 + (i * 50) - math.floor(offset), BORDER_HEIGHT * BORDER_SCALE)
         end
 
-        love.graphics.setColor(0, 1, 0, BORDER_ALPHA)
+        if Game:isLight() then
+            love.graphics.setColor(1, 1, 1, BORDER_ALPHA)
+        else
+            love.graphics.setColor(0, 1, 0, BORDER_ALPHA)
+        end
 
         local width = 5
 
