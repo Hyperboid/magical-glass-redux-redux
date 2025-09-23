@@ -1844,9 +1844,13 @@ function LightBattle:update()
         end
         self.waves = {}
 
-        if self.state_reason == "TURNDONE" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
-            Input.clear("cancel", true)
-            self:nextTurn()
+        if #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
+            self:setSubState("ARENARESET", "DEFENDINGEND")
+            if self.state_reason == "TURNDONE" then
+                self:setSubState("NONE")
+                Input.clear("cancel", true)
+                self:nextTurn()
+            end
         end
     elseif self.state == "SHORTACTTEXT" then
         self:updateShortActText()
