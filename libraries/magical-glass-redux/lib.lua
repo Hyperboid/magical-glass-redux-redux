@@ -3662,30 +3662,6 @@ function lib:init()
         end
         return message
     end)
-    
-    Utils.hook(SnowGraveSpell, "update", function(orig, self)
-        if Game.battle.light then
-            Object.update(self)
-            self.timer = self.timer + DTMULT
-            self.since_last_snowflake = self.since_last_snowflake + DTMULT
-
-            if self.hurt_enemies then
-                self.hurt_enemies = false
-                for i, enemy in ipairs(Game.battle.enemies) do
-                    if enemy then
-                        enemy.hit_count = 0
-                        enemy:hurt(self.damage + Utils.round(math.random(100)), self.caster)
-                        enemy:flash()
-                        if enemy.health <= 0 then
-                            enemy.can_die = true
-                        end
-                    end
-                end
-            end
-        else
-            orig(self)
-        end
-    end)
 
     Utils.hook(SnowGraveSpell, "createSnowflake", function(orig, self, x, y)
         if Game.battle.light then
