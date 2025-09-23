@@ -1323,14 +1323,16 @@ function LightBattle:onStateChange(old,new)
             end
         end
 
-        if self:hasCutscene() then
-            self.cutscene:after(function()
-                self:setState("DEFENDINGEND", "TURNDONE")
-            end)
-        else
-            self.timer:after(15/30, function()
-                self:setState("DEFENDINGEND", "TURNDONE")
-            end)
+        if self.state_reason == "WAVEENDED" then
+            if self:hasCutscene() then
+                self.cutscene:after(function()
+                    self:setState("DEFENDINGEND", "TURNDONE")
+                end)
+            else
+                self.timer:after(15/30, function()
+                    self:setState("DEFENDINGEND", "TURNDONE")
+                end)
+            end
         end
     end
 
