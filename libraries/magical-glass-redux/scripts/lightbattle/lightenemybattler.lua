@@ -421,7 +421,7 @@ function LightEnemyBattler:addTemporaryMercy(amount, play_sound, clamp, kill_con
     local min, max = clamp[1], clamp[2]
     self.temporary_mercy = Utils.clamp(self.temporary_mercy, min, max)
 
-    if Game:getConfig("mercyMessages") then
+    if Kristal.getLibConfig("magical-glass", "mercy_messages") then
         if self.temporary_mercy == 0 then
             if not self.temporary_mercy_percent then
                 self.temporary_mercy_percent = self:lightStatusMessage("text", "MISS", COLORS.silver)
