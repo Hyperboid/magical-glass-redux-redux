@@ -131,7 +131,6 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.damage_offset = {5, -40}
 
     self.show_hp = true
-    self.show_mercy = true
 
     self.graze_tension = 1.6
 end
@@ -164,7 +163,6 @@ end
 function LightEnemyBattler:getDamageOffset() return self.damage_offset end
 
 function LightEnemyBattler:getHPVisibility() return self.show_hp end
-function LightEnemyBattler:getMercyVisibility() return self.show_mercy end
 
 function LightEnemyBattler:setTired(bool)
     local old_tired = self.tired
@@ -372,7 +370,7 @@ function LightEnemyBattler:addMercy(amount)
         return
     end
     
-    if Kristal.getLibConfig("magical-glass", "mercy_messages") and self:getMercyVisibility() then
+    if Kristal.getLibConfig("magical-glass", "mercy_messages") then
         if amount == 0 then
             self:lightStatusMessage("text", "MISS", COLORS.silver)
         else
@@ -967,26 +965,24 @@ function LightEnemyBattler:lightStatusMessage(type, arg, color, kill)
         self.x_number_offset = self.x_number_offset + 1
     end
     
-    if (type == "damage" and self:getHPVisibility()) or (type == "mercy" and self:getMercyVisibility()) then
+    if (type == "damage" and self:getHPVisibility()) or (type == "mercy") then
         local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
         self.parent:addChild(gauge)
     end
     
     local percent
-    if type == "mercy" and self:getMercyVisibility() or type ~= "mercy" then
-        percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
-        if kill then
-            percent.kill_others = true
-        end
-        self.parent:addChild(percent)
-        self.active_msg = self.active_msg + 1
-    
-        if not kill then
-            if self.light_hit_count >= 0 then
-                self.light_hit_count = self.light_hit_count + 1
-            else
-                self.light_hit_count = self.light_hit_count - 1
-            end
+    percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
+    if kill then
+        percent.kill_others = true
+    end
+    self.parent:addChild(percent)
+    self.active_msg = self.active_msg + 1
+
+    if not kill then
+        if self.light_hit_count >= 0 then
+            self.light_hit_count = self.light_hit_count + 1
+        else
+            self.light_hit_count = self.light_hit_count - 1
         end
     end
 

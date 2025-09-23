@@ -1,6 +1,12 @@
 local lib = {}
 
 function lib:init()
+    Utils.hook(EnemyBattler, "init", function(orig, self, actor, use_overlay)
+        orig(self, actor, use_overlay)
+        
+        self.show_hp = true
+    end)
+    
     Utils.hook(EnemyBattler, "setTired", function(orig, self, bool)
         local old_tired = self.tired
         self.tired = bool
@@ -21,91 +27,7 @@ function lib:init()
         end
     end)
     
-    -- Stops the camera shake.
-    Utils.hook(Battle, "stopCameraShake", function(orig, self)
-        self.camera:stopShake()
-    end)
-    
-    Utils.hook(Battle, "checkGameOver", function(orig, self)
-        self:stopCameraShake()
-        return orig(self)
-    end)
-    
-    Utils.hook(PartyBattler, "hurt", function(orig, self, amount, exact, target, swoon)
-        -- If target is a numberic value, it will hurt the party battler with that index
-        -- "ANY" will choose the target randomly
-        -- "ALL" will hurt the entire party all at once
-        target = target or "ANY"
-
-        -- Alright, first let's try to adjust targets.
-
-        if type(target) == "number" then
-            target = self.party[target]
-        end
-
-        if isClass(target) and target:includes(PartyBattler) then
-            if (not target) or (target.chara:getHealth() <= 0) then -- Why doesn't this look at :canTarget()? Weird.
-                target = self:randomTargetOld()
-            end
-        end
-
-        if target == "ANY" then
-            target = self:randomTargetOld()
-            
-            if isClass(target) and target:includes(PartyBattler) then
-                -- Calculate the average HP of the party.
-                -- This is "scr_party_hpaverage", which gets called multiple times in the original script.
-                -- We'll only do it once here, just for the slight optimization. This won't affect accuracy.
-
-                -- Speaking of accuracy, this function doesn't work at all!
-                -- It contains a bug which causes it to always return 0, unless all party members are at full health.
-                -- This is because of a random floor() call.
-                -- I won't bother making the code accurate; all that matters is the output.
-
-                local party_average_hp = 1
-
-                for _,battler in ipairs(self.party) do
-                    if battler.chara:getHealth() ~= battler.chara:getStat("health") then
-                        party_average_hp = 0
-                        break
-                    end
-                end
-
-                -- Retarget... twice.
-                if target.chara:getHealth() / target.chara:getStat("health") < (party_average_hp / 2) then
-                    target = self:randomTargetOld()
-                end
-                if target.chara:getHealth() / target.chara:getStat("health") < (party_average_hp / 2) then
-                    target = self:randomTargetOld()
-                end
-
-                -- If we landed on Kris (or, well, the first party member), and their health is low, retarget (plot armor lol)
-                if (target == self.party[1]) and ((target.chara:getHealth() / target.chara:getStat("health")) < 0.35) then
-                    target = self:randomTargetOld()
-                end
-
-                -- They got hit, so un-darken them
-                target.should_darken = false
-                target.targeted = true
-            end
-        end
-
-        -- Now it's time to actually damage them!
-        if isClass(target) and target:includes(PartyBattler) then
-            target:hurt(amount, exact, nil, { swoon = self.encounter:canSwoon(target) and swoon })
-            return { target }
-        end
-
-        if target == "ALL" then
-            Assets.playSound("hurt")
-            local alive_battlers = Utils.filter(self.party, function(battler) return not battler.is_down end)
-            for _,battler in ipairs(alive_battlers) do
-                battler:hurt(amount, exact, nil, { all = true, swoon = self.encounter:canSwoon(battler) and swoon })
-            end
-            -- Return the battlers who aren't down, aka the ones we hit.
-            return alive_battlers
-        end
-    end)
+    Utils.hook(EnemyBattler, "getHPVisibility", function(orig, self, bool) return self.show_hp end)
     
     Utils.hook(PartyBattler, "hurt", function(orig, self, amount, exact, color, options)
         options = options or {}
@@ -329,165 +251,147 @@ function lib:init()
         end
     end)
     
-    Utils.hook(Battle, "onStateChange", function(orig, self, old, new)
-        local result = self.encounter:beforeStateChange(old,new)
-        if result or self.state ~= new then
-            return
-        end
-    
-        if new == "VICTORY" then
-            self.current_selecting = 0
-
-            if self.tension_bar then
-                self.tension_bar:hide()
-            end
-
-            for _,battler in ipairs(self.party) do
-                battler:setSleeping(false)
-                battler.defending = false
-                battler.action = nil
-
-                battler.chara:resetBuffs()
-
-                if battler.chara:getHealth() <= 0 then
-                    battler:revive()
-                    battler.chara:setHealth(battler.chara:autoHealAmount())
-                end
-
-                battler:setAnimation("battle/victory")
-
-                local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
-                box:resetHeadIcon()
-            end
-
-            self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
-
-            for _,battler in ipairs(self.party) do
-                for _,equipment in ipairs(battler.chara:getEquipment()) do
-                    self.money = math.floor(equipment:applyMoneyBonus(self.money) or self.money)
-                end
-            end
-
-            self.money = math.floor(self.money)
-
-            self.money = self.encounter:getVictoryMoney(self.money) or self.money
-            self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
-            -- if (in_dojo) then
-            --     self.money = 0
-            -- end
-
-            Game.money = Game.money + self.money
-            Game.xp = Game.xp + self.xp
-
-            if (Game.money < 0) then
-                Game.money = 0
-            end
-
-            local win_text = "* You won!\n* Got " .. self.xp .. " EXP and " .. self.money .. " "..Game:getConfig("darkCurrencyShort").."."
-            -- if (in_dojo) then
-            --     win_text == "* You won the battle!"
-            -- end
-            if self.used_violence and Game:getConfig("growStronger") then
-                local stronger = "You"
-
-                local party_to_lvl_up = {}
-                for _,battler in ipairs(self.party) do
-                    table.insert(party_to_lvl_up, battler.chara)
-                    if Game:getConfig("growStrongerChara") and battler.chara.id == Game:getConfig("growStrongerChara") then
-                        stronger = battler.chara:getName()
-                    end
-                    for _,id in pairs(battler.chara:getStrongerAbsent()) do
-                        table.insert(party_to_lvl_up, Game:getPartyMember(id))
-                    end
-                end
-                
-                for _,party in ipairs(Utils.removeDuplicates(party_to_lvl_up)) do
-                    party.level_up_count = party.level_up_count + 1
-                    party:onLevelUp(party.level_up_count)
-                end
-
-                win_text = "* You won!\n* Got " .. self.money .. " "..Game:getConfig("darkCurrencyShort")..".\n* "..stronger.." became stronger."
-
-                Assets.playSound("dtrans_lw", 0.7, 2)
-                --scr_levelup()
-            end
-
-            win_text = self.encounter:getVictoryText(win_text, self.money, self.xp) or win_text
-
-            if self.encounter.no_end_message then
-                self:setState("TRANSITIONOUT")
-                self.encounter:onBattleEnd()
+    Utils.hook(ActionBoxDisplay, "draw", function(orig, self) -- Fixes an issue with HP higher than normal
+        if #Game.battle.party <= 3 then
+            if Game.battle.current_selecting == self.actbox.index then
+                Draw.setColor(self.actbox.battler.chara:getColor())
             else
-                self:battleText(win_text, function()
-                    self:setState("TRANSITIONOUT")
-                    self.encounter:onBattleEnd()
-                    return true
-                end)
-            end
-            
-            
-            -- List of states that should remove the arena.
-            -- A whitelist is better than a blacklist in case the modder adds more states.
-            -- And in case the modder adds more states and wants the arena to be removed, they can remove the arena themselves.
-            local remove_arena = {"DEFENDINGEND", "TRANSITIONOUT", "ACTIONSELECT", "VICTORY", "INTRO", "ACTIONS", "ENEMYSELECT", "XACTENEMYSELECT", "PARTYSELECT", "MENUSELECT", "ATTACKING"}
-
-            local should_end = true
-            if Utils.containsValue(remove_arena, new) then
-                for _,wave in ipairs(self.waves) do
-                    if wave:beforeEnd() then
-                        should_end = false
-                    end
-                end
-                if should_end then
-                    self:returnSoul()
-                    if self.arena then
-                        self.arena:remove()
-                        self.arena = nil
-                    end
-                    for _,battler in ipairs(self.party) do
-                        battler.targeted = false
-                    end
-                end
+                Draw.setColor(PALETTE["action_strip"], 1)
             end
 
-            local ending_wave = self.state_reason == "WAVEENDED"
+            love.graphics.setLineWidth(2)
+            love.graphics.line(0  , Game:getConfig("oldUIPositions") and 2 or 1, 213, Game:getConfig("oldUIPositions") and 2 or 1)
 
-            if old == "DEFENDING" and new ~= "DEFENDINGBEGIN" and should_end then
-                for _,wave in ipairs(self.waves) do
-                    if not wave:onEnd(false) then
-                        wave:clear()
-                        wave:remove()
-                    end
-                end
+            love.graphics.setLineWidth(2)
+            if Game.battle.current_selecting == self.actbox.index then
+                love.graphics.line(1  , 2, 1,   36)
+                love.graphics.line(212, 2, 212, 36)
+            end
 
-                local function exitWaves()
-                    for _,wave in ipairs(self.waves) do
-                        wave:onArenaExit()
-                    end
-                    self.waves = {}
-                end
+            Draw.setColor(PALETTE["action_fill"])
+            love.graphics.rectangle("fill", 2, Game:getConfig("oldUIPositions") and 3 or 2, 209, Game:getConfig("oldUIPositions") and 34 or 35)
 
-                if self:hasCutscene() then
-                    self.cutscene:after(function()
-                        exitWaves()
-                        if ending_wave then
-                            self:nextTurn()
-                        end
-                    end)
+            Draw.setColor(MagicalGlassLib and Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") and Game:isLight() and MG_PALETTE["player_health_bg"] or PALETTE["action_health_bg"])
+            love.graphics.rectangle("fill", 128, 22 - self.actbox.data_offset, 76, 9)
+
+            local health = (self.actbox.battler.chara:getHealth() / self.actbox.battler.chara:getStat("health")) * 76
+
+            if health > 0 then
+                if MagicalGlassLib and Kristal.getLibConfig("magical-glass", "light_world_dark_battle_color_override") and Game:isLight() then
+                    Draw.setColor(MG_PALETTE["player_health"])
                 else
-                    self.timer:after(15/30, function()
-                        exitWaves()
-                        if ending_wave then
-                            self:nextTurn()
-                        end
-                    end)
+                    Draw.setColor(self.actbox.battler.chara:getColor())
                 end
+                love.graphics.rectangle("fill", 128, 22 - self.actbox.data_offset, math.min(math.ceil(health), 76), 9) -- here
             end
 
-            self.encounter:onStateChange(old,new)
+
+            local color = PALETTE["action_health_text"]
+            if health <= 0 then
+                color = PALETTE["action_health_text_down"]
+            elseif (self.actbox.battler.chara:getHealth() <= (self.actbox.battler.chara:getStat("health") / 4)) then
+                color = PALETTE["action_health_text_low"]
+            else
+                color = PALETTE["action_health_text"]
+            end
+
+
+            local health_offset = 0
+            health_offset = (#tostring(self.actbox.battler.chara:getHealth()) - 1) * 8
+
+            Draw.setColor(color)
+            love.graphics.setFont(self.font)
+            love.graphics.print(self.actbox.battler.chara:getHealth(), 152 - health_offset, 9 - self.actbox.data_offset)
+            Draw.setColor(PALETTE["action_health_text"])
+            love.graphics.print("/", 161, 9 - self.actbox.data_offset)
+            local string_width = self.font:getWidth(tostring(self.actbox.battler.chara:getStat("health")))
+            Draw.setColor(color)
+            love.graphics.print(self.actbox.battler.chara:getStat("health"), 205 - string_width, 9 - self.actbox.data_offset)
+
+            Object.draw(self)
         else
-            orig(self, old, new)
+            orig(self)
         end
+    end)
+    
+    Utils.hook(OverworldActionBox, "draw", function(orig, self) -- Fixes an issue with HP higher than normal
+        if #Game.party > 3 then orig(self) return end
+        
+        -- Draw the line at the top
+        if self.selected then
+            Draw.setColor(self.chara:getColor())
+        else
+            Draw.setColor(PALETTE["action_strip"])
+        end
+
+        love.graphics.setLineWidth(2)
+        love.graphics.line(0, 1, 213, 1)
+        
+        if Game:getConfig("oldUIPositions") then
+            love.graphics.line(0, 2, 2, 2)
+            love.graphics.line(211, 2, 213, 2)
+        end
+
+        -- Draw health
+        Draw.setColor(PALETTE["action_health_bg"])
+        love.graphics.rectangle("fill", 128, 24, 76, 9)
+
+        local health = (self.chara:getHealth() / self.chara:getStat("health")) * 76
+
+        if health > 0 then
+            Draw.setColor(self.chara:getColor())
+            love.graphics.rectangle("fill", 128, 24, math.min(math.ceil(health), 76), 9)
+        end
+
+        local color = PALETTE["action_health_text"]
+        if health <= 0 then
+            color = PALETTE["action_health_text_down"]
+        elseif (self.chara:getHealth() <= (self.chara:getStat("health") / 4)) then
+            color = PALETTE["action_health_text_low"]
+        else
+            color = PALETTE["action_health_text"]
+        end
+
+        local health_offset = 0
+        health_offset = (#tostring(self.chara:getHealth()) - 1) * 8
+
+        Draw.setColor(color)
+        love.graphics.setFont(self.font)
+        love.graphics.print(self.chara:getHealth(), 152 - health_offset, 11)
+        Draw.setColor(PALETTE["action_health_text"])
+        love.graphics.print("/", 161, 11)
+        local string_width = self.font:getWidth(tostring(self.chara:getStat("health")))
+        Draw.setColor(color)
+        love.graphics.print(self.chara:getStat("health"), 205 - string_width, 11)
+
+        -- Draw name text if there's no sprite
+        if not self.name_sprite then
+            local font = Assets.getFont("name")
+            love.graphics.setFont(font)
+            Draw.setColor(1, 1, 1, 1)
+
+            local name = self.chara:getName():upper()
+            local spacing = 5 - Utils.len(name)
+
+            local off = 0
+            for i = 1, Utils.len(name) do
+                local letter = Utils.sub(name, i, i)
+                love.graphics.print(letter, 51 + off, 16 - 1)
+                off = off + font:getWidth(letter) + spacing
+            end
+        end
+
+        local reaction_x = -1
+
+        if self.x == 0 then -- lazy check for leftmost party member
+            reaction_x = 3
+        end
+
+        love.graphics.setFont(self.main_font)
+        Draw.setColor(1, 1, 1, self.reaction_alpha / 6)
+        love.graphics.print(self.reaction_text, reaction_x, 43, 0, 0.5, 0.5)
+
+        Object.draw(self)
     end)
 end
 

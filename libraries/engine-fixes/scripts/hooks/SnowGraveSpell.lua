@@ -48,7 +48,7 @@ function SnowGraveSpell:update()
             if enemy then
                 enemy.hit_count = 0
                 local secondary_damage = self.spell and self.spell.getSecondaryDamage and self.spell:getSecondaryDamage(self.caster, enemy) or 0
-                enemy:hurt(self.damage + secondary_damage, self.caster, Game.battle and not Game.battle.light and enemy.onDefeatFatal or nil)
+                enemy:hurt(self.damage + secondary_damage, self.caster, Game.battle and (not MagicalGlassLib or not Game.battle.light) and enemy.onDefeatFatal or nil)
                 if enemy.health > 0 then
                     enemy:flash()
                 end

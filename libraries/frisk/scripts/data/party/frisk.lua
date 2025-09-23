@@ -13,7 +13,7 @@ function character:init()
     -- Display level (saved to the save file)
     self.level = 1
     -- Default title / class (saved to the save file)
-    self.title = "Fallen Human\nArrived from a\ndifferent world."
+    self.title = "Human\nBody contains a\nhuman SOUL."
 
     -- Determines which character the soul comes from (higher number = higher priority)
     self.soul_priority = 2
