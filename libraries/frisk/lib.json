@@ -5,7 +5,7 @@
         "FireRainV" // Helper
     ],
     "dependencies": ["engine-fixes"],
-    "version": "v1.3.2",
+    "version": "v1.3.3",
     "engineVer": "v0.10.0-dev",
     
     "config": {

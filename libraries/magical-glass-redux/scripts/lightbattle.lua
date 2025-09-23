@@ -10,7 +10,7 @@ function LightBattle:init()
 
     self.party = {}
 
-    -- states: BATTLETEXT, TRANSITION, ACTIONSELECT, MENUSELECT, ENEMYSELECT, PARTYSELECT, TURNDONE
+    -- states: BATTLETEXT, TRANSITION, ACTIONSELECT, MENUSELECT, ENEMYSELECT, PARTYSELECT
     -- ENEMYDIALOGUE, DEFENDING, DEFENDINGEND, VICTORY, TRANSITIONOUT, ATTACKING, FLEEING, FLEEFAIL
     -- BUTNOBODYCAME
 
@@ -1299,7 +1299,7 @@ function LightBattle:onStateChange(old,new)
         end
     end
     
-    local normal_arena_state = {"TURNDONE", "DEFENDINGEND", "TRANSITIONOUT", "ACTIONSELECT", "VICTORY", "INTRO", "ACTIONS", "ENEMYSELECT", "PARTYSELECT", "MENUSELECT", "ATTACKING", "FLEEING", "FLEEFAIL", "BUTNOBODYCAME"}
+    local normal_arena_state = {"DEFENDINGEND", "TRANSITIONOUT", "ACTIONSELECT", "VICTORY", "INTRO", "ACTIONS", "ENEMYSELECT", "PARTYSELECT", "MENUSELECT", "ATTACKING", "FLEEING", "FLEEFAIL", "BUTNOBODYCAME"}
 
     local should_end = not self.encounter.event
     if Utils.containsValue(normal_arena_state, new) then
@@ -1325,11 +1325,11 @@ function LightBattle:onStateChange(old,new)
 
         if self:hasCutscene() then
             self.cutscene:after(function()
-                self:setState("TURNDONE", "WAVEENDED")
+                self:setState("DEFENDINGEND", "TURNDONE")
             end)
         else
             self.timer:after(15/30, function()
-                self:setState("TURNDONE", "WAVEENDED")
+                self:setState("DEFENDINGEND", "TURNDONE")
             end)
         end
     end
@@ -1376,7 +1376,7 @@ function LightBattle:nextTurn()
         battler.hit_count = 0
         battler.delay_turn_end = false
         battler.manual_spare = false
-        if (battler.chara:getHealth() <= 0) and battler.chara:canAutoHeal() then
+        if (battler.chara:getHealth() <= 0) and battler.chara:canAutoHeal() and self.encounter:isAutoHealingEnabled(battler) then
             battler:heal(battler.chara:autoHealAmount())
         end
         battler.action = nil
@@ -1836,13 +1836,13 @@ function LightBattle:update()
         end
 
         self:updateWaves()
-    elseif self.state == "TURNDONE" then
+    elseif self.state == "DEFENDINGEND" then
         for _,wave in ipairs(self.waves) do
             wave:onArenaExit()
         end
         self.waves = {}
 
-        if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
+        if self.state_reason == "TURNDONE" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
             Input.clear("cancel", true)
             self:nextTurn()
         end
@@ -1869,7 +1869,7 @@ function LightBattle:update()
         self:updateMenuWaves()
     end
     
-    if Utils.containsValue({"TURNDONE", "DEFENDINGEND", "ACTIONSELECT", "ACTIONS", "VICTORY", "TRANSITIONOUT", "BATTLETEXT", "FLEEING", "FLEEFAIL", "BUTNOBODYCAME"}, self.state) then
+    if Utils.containsValue({"DEFENDINGEND", "ACTIONSELECT", "ACTIONS", "VICTORY", "TRANSITIONOUT", "BATTLETEXT", "FLEEING", "FLEEFAIL", "BUTNOBODYCAME"}, self.state) then
         self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0, DTMULT * 0.05)
         self.arena.alpha = Utils.approach(self.arena.alpha, 1, DTMULT * 0.05)
     end
@@ -2489,7 +2489,7 @@ function LightBattle:getPartyFromTarget(target)
     end
 end
 
-function LightBattle:hurt(amount, exact, target)
+function LightBattle:hurt(amount, exact, target, swoon)
     -- If target is a numberic value, it will hurt the party battler with that index
     -- "ANY" will choose the target randomly
     -- "ALL" will hurt the entire party all at once
@@ -2548,7 +2548,7 @@ function LightBattle:hurt(amount, exact, target)
 
     -- Now it's time to actually damage them!
     if isClass(target) and target:includes(LightPartyBattler) then
-        target:hurt(amount, exact)
+        target:hurt(amount, exact, nil, { swoon = self.encounter:canSwoon(target) and swoon })
         return {target}
     end
 
@@ -2556,7 +2556,7 @@ function LightBattle:hurt(amount, exact, target)
         Assets.playSound("hurt")
         local alive_battlers = Utils.filter(self.party, function(battler) return not battler.is_down end)
         for _,battler in ipairs(alive_battlers) do
-            battler:hurt(amount, exact, nil, {all = true})
+            battler:hurt(amount, exact, nil, { all = true, swoon = self.encounter:canSwoon(battler) and swoon })
         end
         -- Return the battlers who aren't down, aka the ones we hit.
         return alive_battlers

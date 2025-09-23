@@ -914,7 +914,7 @@ function LightBattleUI:drawState()
 end
 
 function LightBattleUI:update()
-    local shapeshifting_arena = {"ENEMYDIALOGUE", "DIALOGUEEND", "DEFENDINGBEGIN", "DEFENDING", "DEFENDINGEND", "TURNDONE"}
+    local shapeshifting_arena = {"ENEMYDIALOGUE", "DIALOGUEEND", "DEFENDINGBEGIN", "DEFENDING", "DEFENDINGEND"}
     if math.ceil(self.help_window.y) < 280 and not Utils.containsValue(shapeshifting_arena, Game.battle.state) then
         self.help_window:toggleVisibility(true)
     else

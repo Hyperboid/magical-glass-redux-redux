@@ -462,6 +462,14 @@ function LightEncounter:getDefendTension(battler)
     return 16
 end
 
+function LightEncounter:isAutoHealingEnabled(battler)
+    return true
+end
+
+function LightEncounter:canSwoon(target)
+    return true
+end
+
 function LightEncounter:canDeepCopy()
     return false
 end

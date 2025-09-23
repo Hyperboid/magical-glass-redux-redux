@@ -94,6 +94,8 @@ function LightPartyBattler:hurt(amount, exact, color, options)
     
     options = options or {}
     
+    local swoon = options["swoon"]
+    
     self:setSleeping(false)
     Game.battle:shakeCamera(2, 2, 0.35)
 
@@ -108,7 +110,7 @@ function LightPartyBattler:hurt(amount, exact, color, options)
             amount = math.ceil((amount * self:getElementReduction(element)))
         end
 
-        self:removeHealth(amount)
+        self:removeHealth(amount, swoon)
     else
         if not exact then
             amount = self:calculateDamage(amount)
@@ -120,20 +122,22 @@ function LightPartyBattler:hurt(amount, exact, color, options)
             end
         end
         
-        self:removeHealthBroken(amount)
+        self:removeHealthBroken(amount, swoon)
     end
     
     self.bonus_damage = nil
 end
 
-function LightPartyBattler:removeHealth(amount)
+function LightPartyBattler:removeHealth(amount, swoon)
     if (self.chara:getHealth() <= 0) then
         amount = Utils.round(amount / 4)
         self.chara:setHealth(self.chara:getHealth() - amount)
     else
         self.chara:setHealth(self.chara:getHealth() - amount)
         if (self.chara:getHealth() <= 0) then
-            if not Game.battle.multi_mode then
+            if swoon then
+                self.chara:setHealth(-999)
+            elseif not Game.battle.multi_mode then
                 self.chara:setHealth(0)
             else
                 amount = math.abs((self.chara:getHealth() - (self.chara:getStat("health") / 2)))
@@ -141,20 +145,22 @@ function LightPartyBattler:removeHealth(amount)
             end
         end
     end
-    self:checkHealth()
+    self:checkHealth(swoon)
 end
 
-function LightPartyBattler:removeHealthBroken(amount)
+function LightPartyBattler:removeHealthBroken(amount, swoon)
     self.chara:setHealth(self.chara:getHealth() - amount)
     if (self.chara:getHealth() <= 0) then
-        if not Game.battle.multi_mode then
+        if swoon then
+            self.chara:setHealth(-999)
+        elseif not Game.battle.multi_mode then
             self.chara:setHealth(0)
         else
             -- BUG: Use Kris' max health...
             self.chara:setHealth(Utils.round(((-Game.party[1]:getStat("health")) / 2)))
         end
     end
-    self:checkHealth()
+    self:checkHealth(swoon)
 end
 
 function LightPartyBattler:down()
@@ -164,6 +170,10 @@ function LightPartyBattler:down()
         Game.battle:removeAction(Game.battle:getPartyIndex(self.chara.id))
     end
     Game.battle:checkGameOver()
+end
+
+function LightPartyBattler:swoon()
+    self:down()
 end
 
 function LightPartyBattler:setSleeping(sleeping)
@@ -195,12 +205,16 @@ function LightPartyBattler:heal(amount, playsound)
         self.chara:setHealth(math.min(self.chara:getStat("health"), self.chara:getHealth() + amount))
     end
     
-    self:checkHealth()
+    self:checkHealth(false)
 end
 
-function LightPartyBattler:checkHealth()
+function LightPartyBattler:checkHealth(swoon)
     if (not self.is_down) and self.chara:getHealth() <= 0 then
-        self:down()
+        if swoon then
+            self:swoon()
+        else
+            self:down()
+        end
     elseif (self.is_down) and self.chara:getHealth() > 0 then
         self:revive()
     end

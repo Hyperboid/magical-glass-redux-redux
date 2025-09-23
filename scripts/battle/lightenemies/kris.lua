@@ -62,6 +62,10 @@ function Dummy:update()
     elseif head.playing then
         head:stop()
     end
+    
+    if Game.battle:getState() == "DEFENDING" then
+        self:addTemporaryMercy(1)
+    end
 end
 
 function Dummy:getTarget()
