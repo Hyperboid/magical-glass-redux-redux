@@ -27,7 +27,7 @@ function lib:init()
         end
     end)
     
-    Utils.hook(EnemyBattler, "getHPVisibility", function(orig, self, bool) return self.show_hp end)
+    Utils.hook(EnemyBattler, "getHPVisibility", function(orig, self) return self.show_hp end)
     
     Utils.hook(PartyBattler, "hurt", function(orig, self, amount, exact, color, options)
         options = options or {}
