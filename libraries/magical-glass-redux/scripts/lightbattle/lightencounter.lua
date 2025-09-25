@@ -43,7 +43,7 @@ function LightEncounter:init()
     self.invincible = false
 
     -- Whether the flee command is available at the mercy button
-    self.can_flee = true
+    self.can_flee = Game:isLight()
 
     -- The chance of successful flee (increases by 10 every turn)
     self.flee_chance = 50
