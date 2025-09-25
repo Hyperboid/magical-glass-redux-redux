@@ -54,7 +54,7 @@ function actor:init()
 
         ["battle/act_end"]      = {"battle/act_01", 1/15, false, next="battle/idle"},
 
-        ["battle/hurt"]         = {"battle/hit", 1/15, false, temp=true, duration=0.5},
+        ["battle/hurt"]         = {"battle/hurt", 1/15, false, temp=true, duration=0.5},
         ["battle/defeat"]       = {"battle/down", 1/15, false},
         ["battle/swooned"]      = {"battle/defeat", 1/15, false},
 
@@ -85,7 +85,7 @@ function actor:init()
         -- Battle offsets
         ["battle/idle"] = {x, y},
         ["battle/attack_ready"] = {x, y},
-        ["battle/hit"] = {x, y},
+        ["battle/hurt"] = {x, y},
         ["battle/down"] = {x, y},
         ["battle/spare"] = {x, y},
 

@@ -45,10 +45,12 @@ function Mod:load(data, new_file)
         -- local party = Game:getPartyMember("noelle")
         -- party:setLightEXP(69420)
         -- party.lw_health = party.lw_stats.health
+        
+        Game.world:registerCall("Dimensional Box A", "cell.box_a")
+        Game.world:registerCall("Dimensional Box B", "cell.box_b")
+        Game.world:registerCall("Settings", "cell.settings")
+        Game.world:registerCall("Recruits Menu", "cell.recruits")
     end
-    Game.world:registerCall("Dimensional Box A", "cell.box_a")
-    Game.world:registerCall("Dimensional Box B", "cell.box_b")
-    Game.world:registerCall("Settings", "cell.settings")
 end
 
 -- function Mod:getUISkin()
@@ -71,6 +73,10 @@ end
 
 -- function Mod:getLightActionButtons(battler, buttons)
     -- return {"fight", "mercy", "defend"}
+-- end
+
+-- function Mod:getActionButtons(battler, buttons)
+    -- return {"act", "spare", "flee"}
 -- end
 
 -- function Mod:getLightActionButtonPairs(pairs)

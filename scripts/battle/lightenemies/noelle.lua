@@ -63,6 +63,7 @@ function Noelle:init()
 
     self.sniff = 0
     self.befriend = 0
+    self.sniff_tired = false
 end
 
 function Noelle:onSave(battler)
@@ -78,6 +79,15 @@ function Noelle:onShortAct(battler, name)
     return "* "..battler.chara:getName().." said hi!"
 end
 
+function Noelle:update()
+    super.update(self)
+    
+    if not self.sniff_tired and self.sniff >= 3 and Game.battle.state == "ACTIONSELECT" then
+       self:setTired(true)
+       self.sniff_tired = true
+    end
+end
+
 function Noelle:onAct(battler, name)
     if name == "Sniff" then
         self.sniff = self.sniff + 1
@@ -89,7 +99,6 @@ function Noelle:onAct(battler, name)
            return "* You sniffed " .. self.name .. " again.\n* Smells like oranges."
         elseif self.sniff == 3 then
            self.dialogue_override = {"My apples\nshampoo is\nalmost empty.","I'm getting sleepy\nfrom all those\nsniffes of yours..."}
-           self.tired = true
            return "* You sniffed " .. self.name .. " again.\n* Smells like apples."
         else
            self.dialogue_override = "..."

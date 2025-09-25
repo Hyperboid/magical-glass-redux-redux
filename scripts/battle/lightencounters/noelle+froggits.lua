@@ -12,8 +12,8 @@ function Noelle:init()
     self.fast_transition = true
 
     -- Add the dummy enemy to the encounter
-    self:addEnemy("noelle")
     self:addEnemy("froggit")
+    self:addEnemy("noelle")
     self:addEnemy("froggit")
 end
 

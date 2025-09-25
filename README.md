@@ -15,6 +15,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * All of UNDERTALE's weapons and armors!
 * Functionality for Spells and TP!
 * A Froggit encounter!
+* Frisk UNDERTALE!
 * Expands the light world!
 * Deltarune battles in the light world!
 * And some other stuff!
@@ -42,6 +43,10 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 ## Moldsmal Recreation:
 * BrendaK2700
 
+## Frisk Recreation:
+* SadDiamondMan
+* FireRainV
+
 ### Testers:
 * Racckoon
 * FireRainV
@@ -51,6 +56,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * DELTATRAVELER Team
 * AccurateJaney (Susie and Noelle Light World Sprites)
 * Discarded_Vessel (Kris Light World Sprites)
+* Askywalker (Frisk Light World Sprites)
 
 ### Sound Effects and Music:
 * UNDERTALE Team
