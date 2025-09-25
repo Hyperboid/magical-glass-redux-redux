@@ -1492,10 +1492,9 @@ function Battle:endActionAnimation(battler, action, callback)
         return
     end
     if action.action ~= "ATTACK" and action.action ~= "AUTOATTACK" then
-        local anim = action.action:lower()
-        if battler.sprite.anim == "battle/"..anim:lower() then
+        if battler.sprite.anim == "battle/"..action.action:lower() then
             -- Attempt to play the end animation if the sprite hasn't changed
-            if not battler:setAnimation("battle/"..anim:lower().."_end", callback) then
+            if not battler:setAnimation("battle/"..action.action:lower().."_end", callback) then
                 battler:resetSprite()
             end
         else
