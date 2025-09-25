@@ -29,4 +29,11 @@ function character:lightLVStats()
     }
 end
 
+function character:getGameOverMessage(main)
+    return {
+        main:getName().."![wait:10]\nPlease wake up!",
+        "I don't want to\nbe left alone\nin the dark...!"
+    }
+end
+
 return character
