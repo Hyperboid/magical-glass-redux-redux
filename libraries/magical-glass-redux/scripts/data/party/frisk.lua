@@ -24,7 +24,7 @@ function character:init()
     self.has_act = true
     self.has_spells = false
     
-    -- Magical Glass only
+    -- Use Undertale Movement
     self.undertale_movement = true
 
     -- Whether the party member can use their X-Action
@@ -53,13 +53,8 @@ function character:init()
     self:setWeapon("wood_rapier")
 
     -- Default light world equipment item IDs (saves current equipment)
-    if MagicalGlassLib then
-        self.lw_weapon_default = "undertale/stick"
-        self.lw_armor_default = "undertale/bandage"
-    else
-        self.lw_weapon_default = "light/stick"
-        self.lw_armor_default = "light/bandage"
-    end
+    self.lw_weapon_default = "undertale/stick"
+    self.lw_armor_default = "undertale/bandage"
 
     -- Character color (for action box outline and hp bar)
     self.color = {170/255, 1, 0}
@@ -72,7 +67,6 @@ function character:init()
     -- X-Action color (for the color of X-Action menu items) (defaults to the main color)
     self.xact_color = {170/255, 1, 0}
     
-    -- Magical Glass only
     -- Light Battle Colors
     self.light_color = COLORS.white
     self.light_dmg_color = COLORS.red
@@ -118,7 +112,7 @@ function character:init()
 end
 
 function character:getName()
-    if Kristal.getLibConfig("frisk-lib", "use_player_name") then
+    if Kristal.getLibConfig("magical-glass", "frisk_use_player_name") then
         return Game.save_name
     else
         return super.getName(self)
@@ -126,7 +120,7 @@ function character:getName()
 end
 
 function character:getNameSprite()
-    if Kristal.getLibConfig("frisk-lib", "use_player_name") then
+    if Kristal.getLibConfig("magical-glass", "frisk_use_player_name") then
         return nil
     else
         return super.getNameSprite(self)
