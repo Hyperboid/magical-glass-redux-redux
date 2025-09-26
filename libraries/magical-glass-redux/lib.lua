@@ -4308,6 +4308,24 @@ function lib:init()
             end
         end
     end)
+    
+    Utils.hook(Recruit, "init", function(orig, self)
+        orig(self)
+        
+        self.light = nil
+    end)
+    
+    Utils.hook(Recruit, "getHidden", function(orig, self)
+        if self.light ~= nil and not orig(self) then
+            if self.light and Game:isLight() then
+                return false
+            elseif not self.light and not Game:isLight() then
+                return false
+            end
+            return true
+        end
+        return orig(self)
+    end)
 end
 
 function lib:onActionSelect(battler, button)

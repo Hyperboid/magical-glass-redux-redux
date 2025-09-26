@@ -31,8 +31,8 @@ end
 
 function character:getGameOverMessage(main)
     return {
-        main:getName().."![wait:10]\nPlease wake up!",
-        "I don't want to\nbe left alone\nin the dark...!"
+        main:getName()..",[wait:15] are you\nokay?!",
+        "Please,[wait:15]\nwake up...!"
     }
 end
 
