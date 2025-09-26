@@ -2047,8 +2047,6 @@ function lib:init()
 
     Utils.hook(LightItemMenu, "init", function(orig, self)
         orig(self)
-        if TARGET_MOD == "dpr_main" then return end
-
         if Mod.libs["moreparty"] and #Game.party > 3 then
             if not Kristal.getLibConfig("moreparty", "classic_mode") then
                 self.party_select_bg = UIBox(-97, 242, 492, #Game.party == 4 and 52 or 90)
@@ -2065,8 +2063,6 @@ function lib:init()
     end)
     
     Utils.hook(LightItemMenu, "update", function(orig, self)
-        if TARGET_MOD == "dpr_main" then orig(self) return end
-        
         if self.state == "ITEMOPTION" then
             if Input.pressed("cancel") then
                 self.state = "ITEMSELECT"
@@ -2142,8 +2138,6 @@ function lib:init()
     end)
 
     Utils.hook(LightItemMenu, "draw", function(orig, self)
-        if TARGET_MOD == "dpr_main" then orig(self) return end
-        
         love.graphics.setFont(self.font)
 
         local inventory = Game.inventory:getStorage(self.storage)
@@ -2222,8 +2216,6 @@ function lib:init()
     end)
 
     Utils.hook(LightItemMenu, "useItem", function(orig, self, item)
-        if TARGET_MOD == "dpr_main" then orig(self, item) return end
-        
         local result
         if item.target == "ally" then
             result = item:onWorldUse(Game.party[self.party_selecting])
@@ -3367,8 +3359,6 @@ function lib:init()
     end)
 
     Utils.hook(LightMenu, "draw", function(orig, self)
-        if TARGET_MOD == "dpr_main" then orig(self) return end
-        
         Object.draw(self)
         
         if self.box and self.box.state == "PARTYSELECT" then
