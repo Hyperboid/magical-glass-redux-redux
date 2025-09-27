@@ -38,6 +38,9 @@ function Noelle:init()
     -- Boolean: True = Recruited | False = Lost Forever
     self.recruited = 0
     
+    -- Whether this recruit will only be displayed in a specific world
+    self.light = true
+    
     -- Whether the recruit will be hidden from the recruit menu (saved to the save file)
     self.hidden = false
 end
