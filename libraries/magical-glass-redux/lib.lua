@@ -4287,13 +4287,17 @@ function lib:init()
             if type(btn) == "string" then
                 local button = ActionButton(btn, self.battler, math.floor(start_x + ((i - 1) * 35)) + 0.5, 21)
                 button.actbox = self
-                table.insert(self.buttons, button)
+                if button.usable then
+                    table.insert(self.buttons, button)
+                end
                 self:addChild(button)
             elseif type(btn) ~= "boolean" then -- nothing if a boolean value, used to create an empty space
                 btn:setPosition(math.floor(start_x + ((i - 1) * 35)) + 0.5, 21)
                 btn.battler = self.battler
                 btn.actbox = self
-                table.insert(self.buttons, btn)
+                if btn.usable then
+                    table.insert(self.buttons, btn)
+                end
                 self:addChild(btn)
             end
         end
@@ -4514,21 +4518,22 @@ end
 function lib:modifyActionButtons(battler, buttons)
     if battler.flee_button == nil and not battler.already_has_flee_button then
         for i,button in ipairs(buttons) do
-            if button == "flee" then
+            if button == fleebutton().type then
                 battler.already_has_flee_button = true
+                buttons[i] = fleebutton()
                 break
             end
         end
     elseif battler.flee_button == true then
         for i,button in ipairs(buttons) do
             if button == "spare" then
-                buttons[i] = "flee"
+                buttons[i] = fleebutton()
                 break
             end
         end
     elseif battler.flee_button == false then
         for i,button in ipairs(buttons) do
-            if button == "flee" then
+            if button == fleebutton().type then
                 buttons[i] = "spare"
                 break
             end

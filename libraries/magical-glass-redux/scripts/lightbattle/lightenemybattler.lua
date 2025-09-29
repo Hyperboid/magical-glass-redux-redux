@@ -146,6 +146,10 @@ function LightEnemyBattler:getHealthDisplay()
     return math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%"
 end
 
+function LightEnemyBattler:getMercyDisplay()
+    return math.floor(self.mercy) .. "%"
+end
+
 function LightEnemyBattler:getGrazeTension()
     return self.graze_tension
 end

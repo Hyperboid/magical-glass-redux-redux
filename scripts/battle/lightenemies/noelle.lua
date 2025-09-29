@@ -44,8 +44,6 @@ function Noelle:init()
     self.dialogue_bubble = "ut_round"
     self.dialogue_offset = {0, -40}
     
-    self.save_no_acts = true
-    
     -- Text displayed at the bottom of the screen when the enemy has low health
     self.low_health_text = "* " .. self.name .. " is afraid of dying."
     self.spareable_text = "* " .. self.name .. " doesn't want to\nfight anymore."
