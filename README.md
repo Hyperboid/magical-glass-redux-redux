@@ -55,6 +55,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * UNDERTALE Team
 * DELTATRAVELER Team
 * AccurateJaney (Susie and Noelle Light World Sprites)
+* DabiBear (Noelle Light World Sprites)
 * Discarded_Vessel (Kris Light World Sprites)
 * Askywalker (Frisk Light World Sprites)
 
