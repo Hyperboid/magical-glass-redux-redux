@@ -8,7 +8,7 @@ function actor:init()
 
     -- Width and height for this actor, used to determine its center
     self.width = 19
-    self.height = 55
+    self.height = 53
 
     -- Path to this actor's sprites (defaults to "")
     self.path = "party/noelle/dark_transition"
