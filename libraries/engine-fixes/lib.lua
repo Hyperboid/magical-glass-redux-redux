@@ -281,21 +281,6 @@ function lib:init()
         return math.max(amount, 1)
     end)
     
-    Utils.hook(Shop, "init", function(orig, self)
-        orig(self)
-        
-        self.background = nil
-        self.background_speed = 5/30
-    end)
-    
-    Utils.hook(Shop, "postInit", function(orig, self)
-        orig(self)
-        
-        if self.background and self.background ~= "" then 
-            self.background_sprite:play(self.background_speed, true)
-        end
-    end)
-    
     Utils.hook(ActionBoxDisplay, "draw", function(orig, self) -- Fixes an issue with HP higher than normal + MGR Karma
         if #Game.battle.party <= 3 then
             if Game.battle.current_selecting == self.actbox.index then
