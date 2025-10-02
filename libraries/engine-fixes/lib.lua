@@ -453,13 +453,6 @@ function lib:init()
         Object.draw(self)
     end)
     
-    Utils.hook(Recruit, "load", function(orig, self, data)
-        self.recruited = data.recruited
-        self.hidden = data.hidden
-        
-        self:onLoad(data)
-    end)
-    
     Utils.hook(DebugSystem, "returnMenu", function(orig, self)
         orig(self)
         if not (#self.menu_history == 0) then
