@@ -3224,8 +3224,8 @@ function Battle:onKeyPressed(key)
                 end
                 self:pushAction("XACT", enemy, xaction)
             elseif self.state_reason == "SPARE" then
-                self:pushAction("SPARE", self.enemies_index[self.selected_enemy])
-            elseif MagicalGlassLib and self.state_reason == "ACT" and self.substate == "SAVE" and self.enemies_index[self.selected_enemy].save_no_acts then
+                self:pushAction("SPARE", enemy)
+            elseif MagicalGlassLib and self.state_reason == "ACT" and self.substate == "SAVE" and enemy.save_no_acts then
                 local save_act = {
                     ["character"] = nil,
                     ["name"] = "_SAVE",
@@ -3236,7 +3236,7 @@ function Battle:onKeyPressed(key)
                     ["short"] = false,
                     ["icons"] = nil
                 }
-                self:pushAction("ACT", self.enemies_index[self.selected_enemy], save_act)
+                self:pushAction("ACT", enemy, save_act)
             elseif self.state_reason == "ACT" then
                 self:clearMenuItems()
                 for _,v in ipairs(enemy.acts) do
