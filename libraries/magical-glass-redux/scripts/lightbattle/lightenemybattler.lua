@@ -177,19 +177,19 @@ function LightEnemyBattler:getGaugeSize()
 end
 function LightEnemyBattler:getDamageOffset() return self.damage_offset end
 
-function LightEnemyBattler:isTiredMessageEnabled()
-    return self.health > 0
+function LightEnemyBattler:shouldDisplayTiredMessage()
+    return self.tired_percentage > 0
 end
 
-function LightEnemyBattler:isAwakeMessageEnabled()
-    return self.health > 0
+function LightEnemyBattler:shouldDisplayAwakeMessage()
+    return true
 end
 
 function LightEnemyBattler:setTired(bool)
     local old_tired = self.tired
     self.tired = bool
     if self.tired then
-        if not old_tired and Kristal.getLibConfig("magical-glass", "tired_messages") and self:isTiredMessageEnabled() then
+        if not old_tired and Kristal.getLibConfig("magical-glass", "tired_messages") and self:shouldDisplayTiredMessage() then
             -- Check for self.parent so setting Tired state in init doesn't crash
             if self.parent then
                 self:lightStatusMessage("text", "TIRED", {0/255, 178/255, 255/255})
@@ -197,7 +197,7 @@ function LightEnemyBattler:setTired(bool)
             end
         end
     else
-        if old_tired and Kristal.getLibConfig("magical-glass", "awake_messages") and self:isAwakeMessageEnabled() then
+        if old_tired and Kristal.getLibConfig("magical-glass", "awake_messages") and self:shouldDisplayAwakeMessage() then
             if self.parent then self:lightStatusMessage("text", "AWAKE", {0/255, 178/255, 255/255}) end
         end
     end
