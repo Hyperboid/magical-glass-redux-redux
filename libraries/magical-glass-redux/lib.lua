@@ -339,6 +339,8 @@ end
 
 function lib:init()
 
+    assert(not Mod.libs["engine-fixes"], "MGRR conflicts with engine-fixes library! Remove it!")
+
     print("Loaded Magical Glass: Redux " .. self.info.version .. "!")
     
     -- Undertale Borders
