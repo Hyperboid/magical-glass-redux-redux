@@ -29,6 +29,7 @@
             "lightCurrency": "Gold",
             "lightCurrencyShort": "G",
             "overworldSpells": true,
+            "canTossLightWeapons": true,
             //"targetSystem": true,
             // End of config
         },
