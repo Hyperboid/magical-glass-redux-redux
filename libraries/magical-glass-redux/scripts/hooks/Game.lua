@@ -60,14 +60,14 @@ end
 function Game:encounter(encounter, transition, enemy, context, light)
     if MagicalGlassLib.current_battle_system then
         if MagicalGlassLib.current_battle_system == "undertale" then
-            Game:encounterLight(encounter, transition, enemy, context)
+            self:encounterLight(encounter, transition, enemy, context)
         else
             super.encounter(self, encounter, transition, enemy, context)
         end
     elseif context and isClass(context) and context:includes(ChaserEnemy) then
         if context.light_encounter then
             MagicalGlassLib.current_battle_system = "undertale"
-            Game:encounterLight(encounter, transition, enemy, context)
+            self:encounterLight(encounter, transition, enemy, context)
         else
             MagicalGlassLib.current_battle_system = "deltarune"
             super.encounter(self, encounter, transition, enemy, context)
@@ -75,7 +75,7 @@ function Game:encounter(encounter, transition, enemy, context, light)
     elseif light ~= nil then
         if light then
             MagicalGlassLib.current_battle_system = "undertale"
-            Game:encounterLight(encounter, transition, enemy, context)
+            self:encounterLight(encounter, transition, enemy, context)
         else
             MagicalGlassLib.current_battle_system = "deltarune"
             super.encounter(self, encounter, transition, enemy, context)
@@ -83,7 +83,7 @@ function Game:encounter(encounter, transition, enemy, context, light)
     else
         if Kristal.getLibConfig("magical-glass", "default_battle_system")[1] == "undertale" then
             MagicalGlassLib.current_battle_system = "undertale"
-            Game:encounterLight(encounter, transition, enemy, context)
+            self:encounterLight(encounter, transition, enemy, context)
         else
             MagicalGlassLib.current_battle_system = "deltarune"
             super.encounter(self, encounter, transition, enemy, context)
