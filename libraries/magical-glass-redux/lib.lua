@@ -320,11 +320,11 @@ function lib:onRegistered()
     end
     Kristal.callEvent(MG_EVENT.onRegisterLightWaves)
 
-    self.light_shops = {}
     for _,path,light_shop in Registry.iterScripts("lightshops") do
         assert(light_shop ~= nil, '"lightshops/'..path..'.lua" does not return value')
+        Kristal.Console:warn("scripts/lightshops is deprecated. Please place light shops in scripts/shops.")
         light_shop.id = light_shop.id or path
-        self.light_shops[light_shop.id] = light_shop
+        Registry.registerShop(light_shop.id, light_shop)
     end
     Kristal.callEvent(MG_EVENT.onRegisterLightShops)
     
@@ -649,10 +649,6 @@ function lib:createLightWave(id, ...)
     end
 end
 
-function lib:registerLightShop(id, class)
-    self.light_shops[id] = class
-end
-
 function lib:getLightShop(id)
     return self.light_shops[id]
 end
@@ -871,56 +867,11 @@ function lib:registerDebugOptions(debug)
     end
 end
 
-function lib:setupLightShop(shop)
-    local check_shop
-    if type(shop) == "string" then
-        check_shop =  MagicalGlassLib:getLightShop(shop)
-    else
-        check_shop = shop
-    end
-    
-    if check_shop:includes(Shop) then
-        error("Attempted to use Shop in a LightShop. Convert the shop \"" .. check_shop.id .. "\" file to a LightShop")
-    end
-    
-    if Game.shop then
-        error("Attempt to enter light shop while already in shop")
-    end
 
-    if type(shop) == "string" then
-        shop = MagicalGlassLib:createLightShop(shop)
-    end
-
-    if shop == nil then
-        error("Attempt to enter light shop with nil shop")
-    end
-
-    Game.shop = shop
-    Game.shop:postInit()
-end
-
+---@deprecated
 function lib:enterLightShop(shop, options)
-    -- Add the shop to the stage and enter it.
-    if Game.shop then
-        Game.shop:leaveImmediate()
-    end
-
-    MagicalGlassLib:setupLightShop(shop)
-
-    if options then
-        Game.shop.leave_options = options
-    end
-
-    if Game.world and Game.shop.shop_music then
-        Game.world.music:stop()
-    end
-
-    Game.state = "SHOP"
-    
-    MagicalGlassLib.in_light_shop = true
-
-    Game.stage:addChild(Game.shop)
-    Game.shop:onEnter()
+    Kristal.Console:warn("MagicalGlassLib:enterLightShop is deprecated. Please use Game:enterShop instead.")
+    return Game:enterShop(shop, options)
 end
 
 function lib:setLightBattleShakingText(v)

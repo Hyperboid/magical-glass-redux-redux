@@ -9,9 +9,6 @@ function Game:setupShop(shop)
         check_shop = shop
     end
     
-    if check_shop:includes(LightShop) then
-        error("Attempted to use LightShop in a Shop. Convert the shop \"" .. check_shop.id .. "\" file to a Shop")
-    end
     
     super.setupShop(self, shop)
 end
