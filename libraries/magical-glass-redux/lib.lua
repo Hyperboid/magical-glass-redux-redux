@@ -21,9 +21,9 @@ LightStatusDisplay       = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightShop                = libRequire("magical-glass", "scripts/lightshop")
 RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter")
 
-MagicalGlassLib = {}
-local lib = MagicalGlassLib
--- Mod.libs["magical-glass"]
+local lib = {}
+Registry.registerGlobal("MagicalGlassLib", lib)
+MagicalGlassLib = lib
 
 function lib:unload()
     MagicalGlassLib          = nil
@@ -61,16 +61,16 @@ end
 
 function lib:save(data)
     data.magical_glass = {}
-    data.magical_glass["kills"] = lib.kills
-    data.magical_glass["serious_mode"] = lib.serious_mode
-    data.magical_glass["spare_color"] = lib.spare_color
-    data.magical_glass["spare_color_name"] = lib.spare_color_name
+    data.magical_glass["kills"] = MagicalGlassLib.kills
+    data.magical_glass["serious_mode"] = MagicalGlassLib.serious_mode
+    data.magical_glass["spare_color"] = MagicalGlassLib.spare_color
+    data.magical_glass["spare_color_name"] = MagicalGlassLib.spare_color_name
     data.magical_glass["save_level"] = Game.party[1] and Game.party[1]:getLightLV() or 0
-    data.magical_glass["in_light_shop"] = lib.in_light_shop
-    data.magical_glass["current_battle_system"] = lib.current_battle_system
-    data.magical_glass["random_encounter"] = lib.random_encounter
-    data.magical_glass["light_battle_shake_text"] = lib.light_battle_shake_text
-    data.magical_glass["rearrange_cell_calls"] = lib.rearrange_cell_calls
+    data.magical_glass["in_light_shop"] = MagicalGlassLib.in_light_shop
+    data.magical_glass["current_battle_system"] = MagicalGlassLib.current_battle_system
+    data.magical_glass["random_encounter"] = MagicalGlassLib.random_encounter
+    data.magical_glass["light_battle_shake_text"] = MagicalGlassLib.light_battle_shake_text
+    data.magical_glass["rearrange_cell_calls"] = MagicalGlassLib.rearrange_cell_calls
     
     data.light_recruits_data = {}
     for k,v in pairs(Game.light_recruits_data) do
@@ -86,17 +86,17 @@ function lib:load(data, new_file)
     Game.light = Kristal.getLibConfig("magical-glass", "default_battle_system")[2] or false
     
     data.magical_glass = data.magical_glass or {}
-    lib.kills = data.magical_glass["kills"] or 0
-    lib.serious_mode = data.magical_glass["serious_mode"] or false
-    lib.spare_color = data.magical_glass["spare_color"] or COLORS.yellow
-    lib.spare_color_name = data.magical_glass["spare_color_name"] or "YELLOW"
-    lib.in_light_shop = data.magical_glass["in_light_shop"] or false
-    lib.current_battle_system = data.magical_glass["current_battle_system"] or nil
-    lib.random_encounter = data.magical_glass["random_encounter"] or nil
-    lib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
-    lib.rearrange_cell_calls = data.magical_glass["rearrange_cell_calls"] or false
+    MagicalGlassLib.kills = data.magical_glass["kills"] or 0
+    MagicalGlassLib.serious_mode = data.magical_glass["serious_mode"] or false
+    MagicalGlassLib.spare_color = data.magical_glass["spare_color"] or COLORS.yellow
+    MagicalGlassLib.spare_color_name = data.magical_glass["spare_color_name"] or "YELLOW"
+    MagicalGlassLib.in_light_shop = data.magical_glass["in_light_shop"] or false
+    MagicalGlassLib.current_battle_system = data.magical_glass["current_battle_system"] or nil
+    MagicalGlassLib.random_encounter = data.magical_glass["random_encounter"] or nil
+    MagicalGlassLib.light_battle_shake_text = data.magical_glass["light_battle_shake_text"] or 0
+    MagicalGlassLib.rearrange_cell_calls = data.magical_glass["rearrange_cell_calls"] or false
     
-    lib:initLightRecruits()
+    MagicalGlassLib:initLightRecruits()
     if data.light_recruits_data then
         for k,v in pairs(data.light_recruits_data) do
             if Game.light_recruits_data[k] then
@@ -108,7 +108,7 @@ function lib:load(data, new_file)
     if new_file then
         self:setGameOvers(0)
         
-        lib.initialize_armor_conversion = true
+        MagicalGlassLib.initialize_armor_conversion = true
         if not Kristal.getLibConfig("magical-glass", "item_conversion") then
             Game:setFlag("has_cell_phone", Kristal.getModOption("cell") ~= false)
         end
@@ -143,12 +143,12 @@ function lib:initGlobalSave()
 end
 
 function lib:setGameOvers(amount)
-    lib.game_overs = amount
-    lib:writeToGlobalSaveFile("game_overs", lib.game_overs)
+    MagicalGlassLib.game_overs = amount
+    MagicalGlassLib:writeToGlobalSaveFile("game_overs", MagicalGlassLib.game_overs)
 end
 
 function lib:getGameOvers()
-    return lib:readFromGlobalSaveFile("game_overs")
+    return MagicalGlassLib:readFromGlobalSaveFile("game_overs")
 end
 
 function lib:writeToGlobalSaveFile(key, data, file)
@@ -373,7 +373,7 @@ function lib:init()
     
     Utils.hook(LightCellMenu, "runCall", function(orig, self, call)
         orig(self, call)
-        if lib.rearrange_cell_calls then
+        if MagicalGlassLib.rearrange_cell_calls then
             table.insert(Game.world.calls, 1, Utils.removeFromTable(Game.world.calls, call))
         end
     end)
@@ -497,28 +497,28 @@ function lib:init()
     
     Utils.hook(World, "mapTransition", function(orig, self, ...)
         orig(self, ...)
-        lib.map_transitioning = true
-        lib.steps_until_encounter = nil
-        if lib.initiating_random_encounter then
+        MagicalGlassLib.map_transitioning = true
+        MagicalGlassLib.steps_until_encounter = nil
+        if MagicalGlassLib.initiating_random_encounter then
             Game.lock_movement = false
-            lib.initiating_random_encounter = nil
+            MagicalGlassLib.initiating_random_encounter = nil
         end
     end)
     
     Utils.hook(World, "loadMap", function(orig, self, ...) -- Punch Card Exploit Emulation
-        if lib.exploit then
+        if MagicalGlassLib.exploit then
             self:stopCutscene()
         end
         orig(self, ...)
-        lib.map_transitioning = false
-        if lib.viewing_image then
+        MagicalGlassLib.map_transitioning = false
+        if MagicalGlassLib.viewing_image then
             local facing = Game.world.player and Game.world.player.facing or "down"
             for _,party in ipairs(Utils.mergeMultiple(Game.stage:getObjects(Player), Game.stage:getObjects(Follower))) do
                 party:remove()
             end
             self:spawnParty("spawn", nil, nil, facing)
         end
-        lib.viewing_image = false
+        MagicalGlassLib.viewing_image = false
     end)
     
     Utils.hook(World, "showHealthBars", function(orig, self)
@@ -536,7 +536,7 @@ function lib:init()
     end)
     
     Utils.hook(Game, "enterShop", function(orig, self, shop, options, light)
-        if lib.in_light_shop or light then
+        if MagicalGlassLib.in_light_shop or light then
             MagicalGlassLib:enterLightShop(shop, options)
         else
             orig(self, shop, options)
@@ -1026,34 +1026,34 @@ function lib:init()
     Utils.hook(Encounter, "onFleeFail", function(orig, self) end)
 
     Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context, light)
-        if lib.current_battle_system then
-            if lib.current_battle_system == "undertale" then
+        if MagicalGlassLib.current_battle_system then
+            if MagicalGlassLib.current_battle_system == "undertale" then
                 Game:encounterLight(encounter, transition, enemy, context)
             else
                 orig(self, encounter, transition, enemy, context)
             end
         elseif context and isClass(context) and context:includes(ChaserEnemy) then
             if context.light_encounter then
-                lib.current_battle_system = "undertale"
+                MagicalGlassLib.current_battle_system = "undertale"
                 Game:encounterLight(encounter, transition, enemy, context)
             else
-                lib.current_battle_system = "deltarune"
+                MagicalGlassLib.current_battle_system = "deltarune"
                 orig(self, encounter, transition, enemy, context)
             end
         elseif light ~= nil then
             if light then
-                lib.current_battle_system = "undertale"
+                MagicalGlassLib.current_battle_system = "undertale"
                 Game:encounterLight(encounter, transition, enemy, context)
             else
-                lib.current_battle_system = "deltarune"
+                MagicalGlassLib.current_battle_system = "deltarune"
                 orig(self, encounter, transition, enemy, context)
             end
         else
             if Kristal.getLibConfig("magical-glass", "default_battle_system")[1] == "undertale" then
-                lib.current_battle_system = "undertale"
+                MagicalGlassLib.current_battle_system = "undertale"
                 Game:encounterLight(encounter, transition, enemy, context)
             else
-                lib.current_battle_system = "deltarune"
+                MagicalGlassLib.current_battle_system = "deltarune"
                 orig(self, encounter, transition, enemy, context)
             end
         end
@@ -1244,7 +1244,7 @@ function lib:init()
 
     Utils.hook(Battle, "returnToWorld", function(orig, self)
         orig(self)
-        lib.current_battle_system = nil
+        MagicalGlassLib.current_battle_system = nil
     end)
 
     Utils.hook(Item, "init", function(orig, self)
@@ -2007,15 +2007,15 @@ function lib:init()
     end)
     
     Utils.hook(Bullet, "onDamage", function(orig, self, soul)
-        lib.bonus_damage = nil
+        MagicalGlassLib.bonus_damage = nil
         if self.attacker then
-            lib.bonus_damage = self.attacker.bonus_damage
+            MagicalGlassLib.bonus_damage = self.attacker.bonus_damage
         end
         if self.bonus_damage ~= nil then
-            lib.bonus_damage = self.bonus_damage
+            MagicalGlassLib.bonus_damage = self.bonus_damage
         end
         local battlers = orig(self, soul)
-        lib.bonus_damage = nil
+        MagicalGlassLib.bonus_damage = nil
         
         if self:getDamage() > 0 then
             local best_amount
@@ -2280,7 +2280,7 @@ function lib:init()
 
     Utils.hook(World, "heal", function(orig, self, target, amount, text, item)
         if Game:isLight() then
-            lib.heal_amount = amount
+            MagicalGlassLib.heal_amount = amount
             
             if type(target) == "string" then
                 target = Game:getPartyMember(target)
@@ -2734,7 +2734,7 @@ function lib:init()
             local def = self.chara:getStat("defense")
             local hp = self.chara:getHealth()
             
-            local bonus = (lib.bonus_damage ~= false and self.bonus_damage ~= false) and hp > 20 and math.min(1 + math.floor((hp - 20) / 10), 8) or 0
+            local bonus = (MagicalGlassLib.bonus_damage ~= false and self.bonus_damage ~= false) and hp > 20 and math.min(1 + math.floor((hp - 20) / 10), 8) or 0
             amount = Utils.round(amount + bonus - def / 5)
             
             return math.max(amount, 1)
@@ -3976,7 +3976,7 @@ function lib:init()
     end)
 
     Utils.hook(Spell, "onLightStart", function(orig, self, user, target)
-        lib.heal_amount = nil
+        MagicalGlassLib.heal_amount = nil
         if Utils.containsValue(self.tags, "damage") then
             if isClass(target) then
                 if target:includes(LightEnemyBattler) and target.immune_to_damage then
@@ -4002,11 +4002,11 @@ function lib:init()
     end)
 
     Utils.hook(Spell, "getLightCastMessage", function(orig, self, user, target)
-        return "* "..user.chara:getNameOrYou().." cast "..self:getName().."."..(Utils.containsValue(self.tags, "heal") and self:getHealMessage(user, target, lib.heal_amount) and "\n"..self:getHealMessage(user, target, lib.heal_amount) or "")
+        return "* "..user.chara:getNameOrYou().." cast "..self:getName().."."..(Utils.containsValue(self.tags, "heal") and self:getHealMessage(user, target, MagicalGlassLib.heal_amount) and "\n"..self:getHealMessage(user, target, MagicalGlassLib.heal_amount) or "")
     end)
     
     Utils.hook(Spell, "onLightWorldStart", function(orig, self, user, target)
-        lib.heal_amount = nil
+        MagicalGlassLib.heal_amount = nil
         self:onLightWorldCast(target)
         Game.world:showText(self:getLightWorldCastMessage(user, target))
     end)
@@ -4016,7 +4016,7 @@ function lib:init()
     end)
     
     Utils.hook(Spell, "getLightWorldCastMessage", function(orig, self, user, target)
-        return "* "..user:getNameOrYou().." cast "..self:getName().."."..(Utils.containsValue(self.tags, "heal") and self:getWorldHealMessage(user, target, lib.heal_amount) and "\n"..self:getWorldHealMessage(user, target, lib.heal_amount) or "")
+        return "* "..user:getNameOrYou().." cast "..self:getName().."."..(Utils.containsValue(self.tags, "heal") and self:getWorldHealMessage(user, target, MagicalGlassLib.heal_amount) and "\n"..self:getWorldHealMessage(user, target, MagicalGlassLib.heal_amount) or "")
     end)
     
     Utils.hook(Spell, "getWorldHealMessage", function(orig, self, user, target, amount) 
@@ -4185,7 +4185,7 @@ function lib:init()
             end
         end
         orig(self, x, y, redraw)
-        lib:setGameOvers((lib:getGameOvers() or 0) + 1)
+        MagicalGlassLib:setGameOvers((MagicalGlassLib:getGameOvers() or 0) + 1)
     end)
     
     Utils.hook(GameOver, "init", function(orig, self, x, y)
@@ -4280,7 +4280,7 @@ function lib:init()
             btn_types = Kristal.libCall(lib_id, "getActionButtons", self.battler, btn_types) or btn_types
         end
         btn_types = Kristal.modCall("getActionButtons", self.battler, btn_types) or btn_types
-        btn_types = lib:modifyActionButtons(self.battler, btn_types) or btn_types
+        btn_types = MagicalGlassLib:modifyActionButtons(self.battler, btn_types) or btn_types
 
         local start_x = (213 / 2) - ((#btn_types-1) * 35 / 2) - 1
 
@@ -4657,9 +4657,9 @@ end
 
 function lib:initLightRecruits()
     Game.light_recruits_data = {}
-    for id,_ in pairs(lib.light_recruits) do
-        if lib:getLightRecruit(id) then
-            Game.light_recruits_data[id] = lib:createLightRecruit(id)
+    for id,_ in pairs(MagicalGlassLib.light_recruits) do
+        if MagicalGlassLib:getLightRecruit(id) then
+            Game.light_recruits_data[id] = MagicalGlassLib:createLightRecruit(id)
             if not Game.light_recruits_data[id]:includes(LightRecruit) then
                 error("Attempted to use Recruit in a LightRecruit. Convert the recruit \"" .. id .. "\" file to a LightRecruit")
             end
@@ -4879,7 +4879,7 @@ function lib:enterLightShop(shop, options)
         Game.shop:leaveImmediate()
     end
 
-    lib:setupLightShop(shop)
+    MagicalGlassLib:setupLightShop(shop)
 
     if options then
         Game.shop.leave_options = options
@@ -4891,7 +4891,7 @@ function lib:enterLightShop(shop, options)
 
     Game.state = "SHOP"
     
-    lib.in_light_shop = true
+    MagicalGlassLib.in_light_shop = true
 
     Game.stage:addChild(Game.shop)
     Game.shop:onEnter()
@@ -4899,38 +4899,38 @@ end
 
 function lib:setLightBattleShakingText(v)
     if v == true then
-        lib.light_battle_shake_text = 0.501
+        MagicalGlassLib.light_battle_shake_text = 0.501
     elseif v == false then
-        lib.light_battle_shake_text = 0
+        MagicalGlassLib.light_battle_shake_text = 0
     elseif type(v) == "number" then
-        lib.light_battle_shake_text = v
+        MagicalGlassLib.light_battle_shake_text = v
     end
 end
 
 function lib:setLightBattleSpareColor(value, color_name)
     if value == "pink" then
-        lib.spare_color, lib.spare_color_name = MG_PALETTE["pink_spare"], "PINK"
+        MagicalGlassLib.spare_color, MagicalGlassLib.spare_color_name = MG_PALETTE["pink_spare"], "PINK"
     elseif type(value) == "table" then
-        lib.spare_color, lib.spare_color_name = value, "SPAREABLE"
+        MagicalGlassLib.spare_color, MagicalGlassLib.spare_color_name = value, "SPAREABLE"
     else
         for name,color in pairs(COLORS) do
             if value == name then
-                lib.spare_color, lib.spare_color_name = color, name:upper()
+                MagicalGlassLib.spare_color, MagicalGlassLib.spare_color_name = color, name:upper()
                 break
             end
         end
     end
     if type(color_name) == "string" then
-        lib.spare_color_name = color_name:upper()
+        MagicalGlassLib.spare_color_name = color_name:upper()
     end
 end
 
 function lib:setCellCallsRearrangement(v)
-    lib.rearrange_cell_calls = v
+    MagicalGlassLib.rearrange_cell_calls = v
 end
 
 function lib:setSeriousMode(v)
-    lib.serious_mode = v
+    MagicalGlassLib.serious_mode = v
 end
 
 function lib:onFootstep(char, num)
@@ -5110,9 +5110,9 @@ function lib:postUpdate()
         end
     end
     if not Game.battle then
-        if lib.random_encounter then
-            lib:createRandomEncounter(lib.random_encounter):resetSteps(false)
-            lib.random_encounter = nil
+        if MagicalGlassLib.random_encounter then
+            MagicalGlassLib:createRandomEncounter(MagicalGlassLib.random_encounter):resetSteps(false)
+            MagicalGlassLib.random_encounter = nil
         end
     end
     
@@ -5128,4 +5128,4 @@ function lib:postUpdate()
     end
 end
 
-return lib
+return MagicalGlassLib
